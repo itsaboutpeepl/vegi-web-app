@@ -43,6 +43,7 @@ class UserCartState with _$UserCartState {
     @JsonKey(ignore: true) @Default(true) bool isDelivery,
     @Default([]) List<DeliveryAddresses> listOfDeliveryAddresses,
     @JsonKey(ignore: true) @Default("") userWalletAddress,
+    @JsonKey(ignore: true) @Default("") userDisplayName,
   }) = _UserCartState;
 
   factory UserCartState.initial() => UserCartState(
@@ -76,6 +77,7 @@ class UserCartState with _$UserCartState {
         isDelivery: true,
         listOfDeliveryAddresses: [],
         userWalletAddress: "",
+        userDisplayName: "",
       );
 
   factory UserCartState.fromJson(dynamic json) => _$UserCartStateFromJson(json);

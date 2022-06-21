@@ -54,16 +54,27 @@
       });
     });
 
-    var isFlutterInAppWebViewReady = false;
-window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
- isFlutterInAppWebViewReady = true;
-});
-// then, somewhere in your code
+var isFlutterInAppWebViewReady = false;
+    window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
+      isFlutterInAppWebViewReady = true;
+    });
 
+    async function getWalletAddress() {
+      var temp = await window.flutter_inappwebview.callHandler('getWalletAddress', ["hello"]);
 
-function getWalletAddress() {
-  window.flutter_inappwebview.callHandler('isWebView', ["hello"]);
-}
+      return temp['walletAddress'];
+    }
+
+    async function getDisplayName() {
+      var temp =  await window.flutter_inappwebview.callHandler('getDisplayName', ["hello"]);
+
+      return temp['displayName'];
+    }
+
+    async function makePayment(paymentIntentID)
+    {
+      return await window.flutter_inappwebview.callHandler('makePayment', [paymentIntentID, "hello"]);
+    }
 
   </script>
 </body>

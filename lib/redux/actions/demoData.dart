@@ -330,7 +330,7 @@ Map<String, dynamic> testOrdersList = {
       "deliveryAddressInstructions": "",
       "customerWalletAddress": "test",
       "paymentStatus": "unpaid", //Status of Order
-      "paymentIntentId": "b27df1fb-a90e-4d62-a8da-5f11b97f87e2",
+      "paymentIntentID": "b27df1fb-a90e-4d62-a8da-5f11b97f87e2",
       "isArchived": false,
       "deliveryId": "",
       "fulfilmentSlotFrom": "2022-03-03T11:00:00.000Z",
@@ -448,7 +448,7 @@ Map<String, dynamic> testOrdersList = {
       "deliveryAddressInstructions": "",
       "customerWalletAddress": "test",
       "paymentStatus": "unpaid",
-      "paymentIntentId": "20d903b4-89ae-4880-bf57-b558f8d0a97e",
+      "paymentIntentID": "20d903b4-89ae-4880-bf57-b558f8d0a97e",
       "isArchived": false,
       "deliveryId": "",
       "fulfilmentSlotFrom": "2022-03-03T11:00:00.000Z",

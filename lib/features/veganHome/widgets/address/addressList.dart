@@ -29,6 +29,8 @@ class _AddressListState extends State<AddressList> {
           store.dispatch(UpdateSelectedDeliveryAddress(store.state.cartState.listOfDeliveryAddresses[0]));
         }
         store.dispatch(SetFulfilmentMethod(FulfilmentMethod.delivery));
+
+        if (!store.state.cartState.isDelivery) store.dispatch(SetFulfilmentMethod(FulfilmentMethod.collection));
       },
       builder: (context, viewmodel) {
         return SizedBox(
@@ -54,18 +56,20 @@ class _AddressListState extends State<AddressList> {
                     }
                   },
                 )
-              : PageView.builder(
-                  scrollDirection: Axis.horizontal,
-                  physics: PageScrollPhysics(),
-                  controller: _pageController,
-                  itemBuilder: (context, index) {
-                    return PickUpCard();
-                  },
-                  itemCount: 1,
-                  onPageChanged: (index) {
-                    viewmodel.updateFulfilmentMethod(FulfilmentMethod.collection);
-                  },
-                ),
+              : PickUpCard(),
+          // : PageView.builder(
+          //     padEnds: false,
+          //     scrollDirection: Axis.horizontal,
+          //     physics: PageScrollPhysics(),
+          //     controller: _pageController,
+          //     itemBuilder: (context, index) {
+          //       return PickUpCard();
+          //     },
+          //     itemCount: 1,
+          //     onPageChanged: (index) {
+          //       viewmodel.updateFulfilmentMethod(FulfilmentMethod.collection);
+          //     },
+          //   ),
         );
       },
       converter: DeliveryAddressesVM.fromStore,

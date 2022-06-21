@@ -23,24 +23,27 @@ class CheckoutViewModel extends Equatable {
   final Function(void Function(String errroMessage), VoidCallback) createOrder;
   final Function(DateTime newDate) updateSlotTimes;
   final String userWalletAddress;
+  final String paymentIntentID;
 
-  CheckoutViewModel(
-      {required this.deliverySlots,
-      required this.collectionSlots,
-      required this.selectedUserTip,
-      required this.selectedDeliveryAddress,
-      required this.discountCode,
-      required this.discountPercent,
-      required this.updateDiscount,
-      required this.cartTotal,
-      required this.selectedTimeSlot,
-      required this.updateSelectedTimeSlot,
-      required this.updateTipAmount,
-      required this.createOrder,
-      required this.updateSlotTimes,
-      required this.fulfilmentMethod,
-      required this.isDelivery,
-      required this.userWalletAddress});
+  CheckoutViewModel({
+    required this.deliverySlots,
+    required this.collectionSlots,
+    required this.selectedUserTip,
+    required this.selectedDeliveryAddress,
+    required this.discountCode,
+    required this.discountPercent,
+    required this.updateDiscount,
+    required this.cartTotal,
+    required this.selectedTimeSlot,
+    required this.updateSelectedTimeSlot,
+    required this.updateTipAmount,
+    required this.createOrder,
+    required this.updateSlotTimes,
+    required this.fulfilmentMethod,
+    required this.isDelivery,
+    required this.userWalletAddress,
+    required this.paymentIntentID,
+  });
 
   static CheckoutViewModel fromStore(Store<AppState> store) {
     return CheckoutViewModel(
@@ -55,6 +58,7 @@ class CheckoutViewModel extends Equatable {
       fulfilmentMethod: store.state.cartState.fulfilmentMethod,
       isDelivery: store.state.cartState.isDelivery,
       userWalletAddress: store.state.cartState.userWalletAddress,
+      paymentIntentID: store.state.cartState.paymentIntentID,
       updateDiscount: (discountCode, errorCallback) {
         store.dispatch(updateCartDiscount(discountCode, errorCallback));
       },
@@ -86,5 +90,6 @@ class CheckoutViewModel extends Equatable {
         selectedDeliveryAddress,
         fulfilmentMethod,
         userWalletAddress,
+        paymentIntentID,
       ];
 }

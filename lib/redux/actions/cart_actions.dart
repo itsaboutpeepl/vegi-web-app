@@ -130,11 +130,20 @@ class UpdateUserWalletAddress {
   UpdateUserWalletAddress(this.userWalletAddress);
 }
 
-ThunkAction getUserWalletAddress() {
+class UpdateUserDisplayName {
+  final String userDisplayName;
+  UpdateUserDisplayName(this.userDisplayName);
+}
+
+class UpdatePaymentIntentID {
+  final String paymentIntentID;
+  UpdatePaymentIntentID(this.paymentIntentID);
+}
+
+ThunkAction getUserData() {
   return (Store store) async {
-    Map<String, String> test = await testingFunction();
-    print(test);
-    store.dispatch(UpdateUserWalletAddress("test.values.first"));
+    store.dispatch(UpdateUserWalletAddress(await promiseToFuture(getWalletAddress())));
+    store.dispatch(UpdateUserDisplayName(await promiseToFuture(getDisplayName())));
   };
 }
 
@@ -331,7 +340,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
         "marketingOptIn": false,
         "discountCode": store.state.cartState.discountCode,
         "vendor": store.state.cartState.restaurantID,
-        "walletAddress": store.state.userState.walletAddress, //TODO: get wallet address from guide
+        "walletAddress": store.state.cartState.userWalletAddress ?? "0x846253e3ac22ad7910d6170db514789a322c09c5",
       });
 
       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.delivery) {
@@ -344,11 +353,9 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
         orderObject.addAll(
           {
             "address": {
-              "name": store.state.userState.displayName, //TODO: get username from guide
-              "phoneNumber": selectedAddress.phoneNumber ?? store.state.userState.phoneNumber ?? "",
-              "email": store.state.userState.email == ""
-                  ? "email@notprovided.com"
-                  : store.state.userState.email, //TODO: get email from guide
+              "name": store.state.cartState.userDisplayName,
+              "phoneNumber": selectedAddress.phoneNumber ?? "",
+              "email": "email@notprovided.com",
               "lineOne": selectedAddress.addressLine1,
               "lineTwo": selectedAddress.addressLine2 + ", " + selectedAddress.townCity,
               "postCode": selectedAddress.postalCode,
@@ -386,6 +393,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
       });
 
       if (result.isNotEmpty) {
+        store.dispatch(UpdatePaymentIntentID(result['paymentIntentID']));
         //Call Peepl Pay API to start checking the paymentIntentID
         Map checkResult = await peeplPayService.startPaymentIntentCheck(result['paymentIntentID']);
 
@@ -397,8 +405,8 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
 
           //subscribe to firebase topic of orderID
 
-          firebaseMessaging.subscribeToTopic('order-' + result['orderID'].toString());
-
+          //firebaseMessaging.subscribeToTopic('order-' + result['orderID'].toString());
+          paymentFunction(result['paymentIntentID']);
           successCallback();
         } else {
           //check if it is better to just update the total value with the api returned or return an error
@@ -419,87 +427,43 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
   };
 }
 
-// ThunkAction sendTokenPayment(VoidCallback successCallback, VoidCallback errorCallback) {
-//   return (Store store) async {
-//     try {
-//       //Set loading to true
-//       store.dispatch(SetTransferringPayment(true));
-
-//       //Get tokens for GBPx and PPL
-//       Token GBPxToken = store.state.cashWalletState.tokens.values.firstWhere(
-//         (token) => token.symbol.toLowerCase() == "GBPx".toString().toLowerCase(),
-//       );
-
-//       Token PPLToken = store.state.cashWalletState.tokens.values.firstWhere(
-//         (token) => token.symbol.toLowerCase() == "PPL".toString().toLowerCase(),
-//       );
-
-//       //If Selected GBPx amount is not 0, transfer GBPx
-//       Map<String, dynamic> GBPxResponse = store.state.cartState.selectedGBPxAmount != 0.0
-//           ? double.parse(GBPxToken.getBalance().replaceAll(",", "")) > store.state.cartState.selectedGBPxAmount
-//               ? await walletApi.tokenTransfer(
-//                   getIt<Web3>(instanceName: 'fuseWeb3'),
-//                   store.state.userState.walletAddress,
-//                   GBPxToken.address,
-//                   store.state.cartState.restaurantWalletAddress,
-//                   store.state.cartState.selectedGBPxAmount.toString(),
-//                   externalId: store.state.cartState.paymentIntentID,
-//                 )
-//               : {}
-//           : {};
-
-//       print(GBPxResponse);
-
-//       //If Selected PPL Amount is not 0, transfer PPL
-//       Map<String, dynamic> PPLResponse = store.state.cartState.selectedPPLAmount != 0.0
-//           ? double.parse(PPLToken.getBalance().replaceAll(",", "")) > store.state.cartState.selectedPPLAmount
-//               ? await walletApi.tokenTransfer(
-//                   getIt<Web3>(instanceName: 'fuseWeb3'),
-//                   store.state.userState.walletAddress,
-//                   PPLToken.address,
-//                   store.state.cartState.restaurantWalletAddress,
-//                   store.state.cartState.selectedPPLAmount.toString(),
-//                   externalId: store.state.cartState.paymentIntentID,
-//                 )
-//               : {}
-//           : {};
-
-//       print(PPLResponse);
-
-//       //Make periodic API calls to check the order status
-//       //If status is paid, then set loading = false, and confirmed = true
-
-//       if (GBPxResponse.isNotEmpty || PPLResponse.isNotEmpty) {
-//         Timer.periodic(
-//           const Duration(seconds: 4),
-//           (timer) async {
-//             final Future<Map<dynamic, dynamic>> checkOrderResponse =
-//                 peeplEatsService.checkOrderStatus(store.state.cartState.orderID);
-
-//             checkOrderResponse.then(
-//               (completedValue) {
-//                 if (completedValue['paymentStatus'] == "paid") {
-//                   store.dispatch(SetTransferringPayment(false));
-//                   store.dispatch(SetConfirmed(true));
-//                   successCallback();
-//                   timer.cancel();
-//                 }
-//               },
-//             );
-//           },
-//         );
-//       }
-//     } catch (e, s) {
-//       store.dispatch(SetError(true));
-//       log.error('ERROR - sendTokenPayment $e');
-//       await Sentry.captureException(
-//         e,
-//         stackTrace: s,
-//         hint: 'ERROR - sendTokenPayment $e',
-//       );
-//     }
-//   };
-// }
+ThunkAction startCheckTimer(VoidCallback successCallback, VoidCallback errorCallback) {
+  return (Store store) async {
+    try {
+      print("start check timer");
+      //Set loading to true
+      Timer.periodic(
+        const Duration(seconds: 4),
+        (timer) async {
+          print("inside timer");
+          final Future<Map<dynamic, dynamic>> checkOrderResponse =
+              peeplEatsService.checkOrderStatus(store.state.cartState.orderID);
+          print("after api call");
+          checkOrderResponse.then(
+            (completedValue) {
+              print("after .then");
+              if (completedValue['paymentStatus'] == "paid") {
+                print("inside paid");
+                store.dispatch(SetTransferringPayment(false));
+                store.dispatch(SetConfirmed(true));
+                successCallback();
+                timer.cancel();
+              }
+            },
+          );
+        },
+      );
+    } catch (e, s) {
+      store.dispatch(SetError(true));
+      log.error('ERROR - sendTokenPayment $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - sendTokenPayment $e',
+      );
+    }
+  };
+}
 
 ThunkAction setRestaurantDetails(String restaurantID, String restaurantName, DeliveryAddresses restaurantAddress,
     String walletAddress, VoidCallback sendSnackBar) {

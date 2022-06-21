@@ -4,4 +4,10 @@ import 'package:js/js.dart';
 external void JSlog(dynamic str);
 
 @JS('getWalletAddress')
-external Map<String, String> testingFunction();
+external String getWalletAddress();
+
+@JS('getDisplayName')
+external String getDisplayName();
+
+@JS('makePayment')
+external void paymentFunction(String paymentIntentID);

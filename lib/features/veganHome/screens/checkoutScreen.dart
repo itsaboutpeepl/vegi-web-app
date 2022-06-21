@@ -1,8 +1,10 @@
 import 'dart:html';
 
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:vegan_liverpool/common/router/routes.dart';
 import 'package:vegan_liverpool/features/shared/widgets/secondaryButton.dart';
 import 'package:vegan_liverpool/features/shared/widgets/snackbars.dart';
 import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
@@ -37,12 +39,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       converter: CheckoutViewModel.fromStore,
       distinct: true,
       onInit: (store) {
-        store.dispatch(getUserWalletAddress());
+        store.dispatch(getUserData());
       },
       builder: (_, viewmodel) {
         return Scaffold(
           appBar: CustomAppBar(
-            pageTitle: viewmodel.userWalletAddress,
+            pageTitle: "Checkout",
           ),
           body: SingleChildScrollView(
             child: Padding(
@@ -60,49 +62,42 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     child: SecondaryButton(
                       width: double.infinity,
                       onPressed: () {
-                        viewmodel.createOrder((errorMessage) {
-                          //errorCallBack
-                          print("error took place");
-                          showErrorSnack(context: context, title: errorMessage);
-                        }, () {
-                          //successCallBack
-                          showModalBottomSheet(
-                            backgroundColor: Colors.grey[900],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(20),
+                        viewmodel.createOrder(
+                          (errorMessage) {
+                            //errorCallBack
+                            showErrorSnack(context: context, title: errorMessage);
+                          },
+                          () {
+                            //successCallBack
+                            context.router.push(AwaitingPaymentPage());
+
+                            print("PAYMENT INTENT ID IS" + viewmodel.paymentIntentID);
+                          },
+                        );
+                      },
+                      buttonContent: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Pay',
+                              style: TextStyle(
+                                color: Colors.grey[800],
+                                fontWeight: FontWeight.w900,
+                                fontSize: 20.0,
                               ),
                             ),
-                            elevation: 5,
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                child: Center(child: Text("Not implemented yet")),
-                              );
-                            },
-                          );
-                        });
-                      },
-                      buttonContent: Row(
-                        children: [
-                          Text(
-                            'Pay',
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                              fontWeight: FontWeight.w900,
-                              fontSize: 20.0,
+                            Spacer(),
+                            Text(
+                              cFPrice(viewmodel.cartTotal),
+                              style: TextStyle(
+                                color: Colors.grey[800],
+                                fontWeight: FontWeight.w900,
+                                fontSize: 20.0,
+                              ),
                             ),
-                          ),
-                          Spacer(),
-                          Text(
-                            cFPrice(viewmodel.cartTotal),
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                              fontWeight: FontWeight.w900,
-                              fontSize: 20.0,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

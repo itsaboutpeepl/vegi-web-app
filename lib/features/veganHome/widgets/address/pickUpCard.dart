@@ -20,20 +20,23 @@ class _PickUpCardState extends State<PickUpCard> {
       distinct: true,
       builder: (_, viewmodel) {
         return Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          margin: EdgeInsets.only(right: 10),
+          height: MediaQuery.of(context).size.height * 0.25,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(10)),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.25,
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(10)),
-                  child: CachedNetworkImage(
-                    imageUrl: mapPreviewImage(
-                        latitude: 53.40232093140704,
-                        longitude: -2.9833307421239623),
-                    fit: BoxFit.cover,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: CachedNetworkImage(
+                      imageUrl: mapPreviewImage(
+                          latitude: 53.40232093140704,
+                          longitude: -2.9833307421239623,
+                          size: MediaQuery.of(context).size),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -60,8 +63,7 @@ class _PickUpCardState extends State<PickUpCard> {
                                   children: [
                                     TextSpan(text: "\n"),
                                     TextSpan(
-                                      text:
-                                          viewmodel.deliveryAddress.postalCode,
+                                      text: viewmodel.deliveryAddress.postalCode,
                                     ),
                                   ],
                                 ),

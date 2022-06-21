@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
@@ -14,8 +16,8 @@ String parseHtmlString(String htmlString) {
   return parsedString;
 }
 
-String mapPreviewImage({required double latitude, required double longitude}) {
-  return 'https://maps.googleapis.com/maps/api/staticmap?center=&$latitude,$longitude&zoom=16&size=800x400&maptype=roadmap&markers=color:red%7Clabel:A%7C$latitude,$longitude&key=${dotenv.env['MAP_API_KEY']!}&style=feature:|element:|visibility:simplified';
+String mapPreviewImage({required double latitude, required double longitude, required Size size}) {
+  return 'https://maps.googleapis.com/maps/api/staticmap?center=&$latitude,$longitude&zoom=14&size=800x${(size.height * 0.3).toStringAsFixed(0)}&maptype=roadmap&markers=color:red%7Clabel:A%7C$latitude,$longitude&key=${dotenv.env['MAP_API_KEY']!}&style=feature:|element:|visibility:simplified';
 }
 
 String mapToString(Map<String, String> map) {
