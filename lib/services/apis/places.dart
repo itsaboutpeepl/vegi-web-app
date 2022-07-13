@@ -57,7 +57,10 @@ class PlaceApiProvider {
         'sessionToken': sessionToken
       },
     );
-    final response = await client.get(request, headers: await headers);
+
+    String temp = "https:/cors.itsaboutpeepl.com/" + request.toString(); //TODO: change for proxy
+
+    final response = await client.get(Uri.parse(temp), headers: await headers);
 
     if (response.statusCode == 200) {
       final result = json.decode(response.body);

@@ -110,3 +110,11 @@ bool shouldEndOngoing(Map<String, String> selectedSlot) {
     return false;
   }
 }
+
+double getPPLValueFromPence(num penceAmount) {
+  return penceAmount / 10;
+}
+
+double getPPLRewardsFromPence(num penceAmount) {
+  return getPPLValueFromPence((penceAmount * 5) / 100);
+}

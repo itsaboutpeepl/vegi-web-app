@@ -71,6 +71,12 @@ var isFlutterInAppWebViewReady = false;
       return temp['displayName'];
     }
 
+    async function getOrderAmounts() {
+      var temp =  await window.flutter_inappwebview.callHandler('getOrderAmounts', ["hello"]);
+
+      return temp;
+    }
+
     async function makePayment(paymentIntentID)
     {
       return await window.flutter_inappwebview.callHandler('makePayment', [paymentIntentID, "hello"]);

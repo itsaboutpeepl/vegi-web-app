@@ -2,6 +2,7 @@ import 'package:auto_route/src/router/auto_router_x.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:js/js_util.dart';
 import 'package:vegan_liverpool/common/router/routes.gr.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:vegan_liverpool/features/shared/widgets/secondaryButton.dart';
@@ -9,6 +10,7 @@ import 'package:vegan_liverpool/features/veganHome/Helpers/drawStar.dart';
 import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/singleOrderItem.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
+import 'package:vegan_liverpool/models/webViewHandlers.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/order_confirmed.dart';
 
 class OrderConfirmedScreen extends StatefulWidget {
@@ -20,6 +22,8 @@ class OrderConfirmedScreen extends StatefulWidget {
 
 class _OrderConfirmedScreenState extends State<OrderConfirmedScreen> {
   late ConfettiController _confettiController;
+  String GBPxAmountPaid = "";
+  String PPLAmountPaid = "";
 
   @override
   void initState() {
@@ -27,7 +31,16 @@ class _OrderConfirmedScreenState extends State<OrderConfirmedScreen> {
 
     playConfetti();
 
+    fetchOrderAmounts();
+
     super.initState();
+  }
+
+  void fetchOrderAmounts() async {
+    dynamic temp = await promiseToFuture(getOrderAmounts());
+    GBPxAmountPaid = temp.gbpAmount;
+    PPLAmountPaid = temp.pplAmount;
+    setState(() {});
   }
 
   void playConfetti() {
@@ -132,7 +145,7 @@ class _OrderConfirmedScreenState extends State<OrderConfirmedScreen> {
                                         children: [
                                           TextSpan(
                                             text: viewmodel.isDelivery
-                                                ? "${"viewmodel.userName"}\n"
+                                                ? "${viewmodel.userName}\n"
                                                 : "${viewmodel.restaurantName}\n",
                                             style: TextStyle(
                                               fontWeight: FontWeight.w900,
@@ -140,16 +153,13 @@ class _OrderConfirmedScreenState extends State<OrderConfirmedScreen> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: viewmodel.orderAddress.addressLine1 + ", ",
-                                          ),
-                                          TextSpan(
                                             text: viewmodel.orderAddress.addressLine2 + "\n",
                                           ),
                                           TextSpan(
-                                            text: viewmodel.orderAddress.postalCode + ", ",
+                                            text: viewmodel.orderAddress.addressLine1 + "\n",
                                           ),
                                           TextSpan(
-                                            text: viewmodel.orderAddress.townCity,
+                                            text: viewmodel.orderAddress.postalCode,
                                           ),
                                           TextSpan(text: "\nSlot: " + mapToString(viewmodel.selectedSlot))
                                         ],
@@ -184,10 +194,10 @@ class _OrderConfirmedScreenState extends State<OrderConfirmedScreen> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: "${viewmodel.GBPxAmountPaid.toStringAsFixed(2)} GBPx\n",
+                                            text: "$GBPxAmountPaid GBPx \n",
                                           ),
                                           TextSpan(
-                                            text: "${viewmodel.PPLAmountPaid.toStringAsFixed(2)} ",
+                                            text: PPLAmountPaid + " ",
                                           ),
                                           WidgetSpan(
                                             child: Image.asset(
@@ -196,7 +206,8 @@ class _OrderConfirmedScreenState extends State<OrderConfirmedScreen> {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: "\n${(viewmodel.GBPxAmountPaid * 5).toStringAsFixed(2)} ",
+                                            text:
+                                                "\n${getPPLRewardsFromPence(double.parse(GBPxAmountPaid) * 100).toStringAsFixed(2)} ",
                                           ),
                                           WidgetSpan(
                                             child: Image.asset(

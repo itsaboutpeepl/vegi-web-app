@@ -14,7 +14,7 @@ class OrderConfirmedViewModel extends Equatable {
   final int cartTotal;
   final String orderID;
   final Function() clearCart;
-  //final String userName;
+  final String userName;
   //final String phoneNumber;
   final double GBPxAmountPaid;
   final double PPLAmountPaid;
@@ -28,7 +28,7 @@ class OrderConfirmedViewModel extends Equatable {
     required this.cartTotal,
     required this.orderID,
     required this.clearCart,
-    //required this.userName,
+    required this.userName,
     //required this.phoneNumber,
     required this.GBPxAmountPaid,
     required this.PPLAmountPaid,
@@ -45,7 +45,7 @@ class OrderConfirmedViewModel extends Equatable {
       cartItems: store.state.cartState.cartItems,
       cartTotal: store.state.cartState.cartTotal,
       orderID: store.state.cartState.orderID,
-      //userName: store.state.userState.displayName,
+      userName: store.state.cartState.userDisplayName,
       //phoneNumber: store.state.userState.phoneNumber,
       GBPxAmountPaid: store.state.cartState.selectedGBPxAmount,
       PPLAmountPaid: store.state.cartState.selectedPPLAmount,

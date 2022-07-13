@@ -6,6 +6,9 @@ external void JSlog(dynamic str);
 @JS('getWalletAddress')
 external String getWalletAddress();
 
+@JS('getOrderAmounts')
+external Map<String, String> getOrderAmounts();
+
 @JS('getDisplayName')
 external String getDisplayName();
 
