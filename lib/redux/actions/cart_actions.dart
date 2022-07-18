@@ -93,8 +93,17 @@ class SetRestaurantDetails {
   final String restaurantName;
   final DeliveryAddresses restaurantAddress;
   final String walletAddress;
+  final int minimumOrder;
+  final int platformFee;
 
-  SetRestaurantDetails(this.restaurantID, this.restaurantName, this.restaurantAddress, this.walletAddress);
+  SetRestaurantDetails(
+    this.restaurantID,
+    this.restaurantName,
+    this.restaurantAddress,
+    this.walletAddress,
+    this.minimumOrder,
+    this.platformFee,
+  );
 }
 
 class SetDeliveryCharge {
@@ -138,6 +147,11 @@ class UpdateUserDisplayName {
 class UpdatePaymentIntentID {
   final String paymentIntentID;
   UpdatePaymentIntentID(this.paymentIntentID);
+}
+
+class SetDeliveryInstructions {
+  final String deliveryInstructions;
+  SetDeliveryInstructions(this.deliveryInstructions);
 }
 
 ThunkAction getUserData() {
@@ -282,6 +296,7 @@ ThunkAction computeCartTotals() {
       int cartTax = 0;
       int cartTotal = 0;
       int deliveryPrice = store.state.cartState.cartDeliveryCharge;
+      int platformFee = store.state.cartState.restaurantPlatformFee;
       int cartDiscountPercent = store.state.cartState.cartDiscountPercent;
       int cartDiscountComputed = 0;
       int cartTip = store.state.cartState.selectedTipAmount * 100;
@@ -296,7 +311,7 @@ ThunkAction computeCartTotals() {
 
       //cartTax = ((cartSubTotal - cartDiscountComputed) * 5) ~/ 100;
 
-      cartTotal = (cartSubTotal + cartTax + cartTip + deliveryPrice) - cartDiscountComputed;
+      cartTotal = (cartSubTotal + cartTax + cartTip + deliveryPrice + platformFee) - cartDiscountComputed;
 
       store.dispatch(UpdateComputedCartValues(cartSubTotal, cartTax, cartTotal, cartDiscountComputed));
     } catch (e, s) {
@@ -318,6 +333,9 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
         return;
       } else if (store.state.cartState.selectedTimeSlot.isEmpty) {
         errorCallback("Please select a time slot");
+        return;
+      } else if (store.state.cartState.restaurantMinimumOrder > store.state.cartState.cartTotal) {
+        errorCallback("Your order does not satisfy the minimum order amount");
         return;
       }
 
@@ -359,7 +377,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
               "lineOne": selectedAddress.addressLine1,
               "lineTwo": selectedAddress.addressLine2 + ", " + selectedAddress.townCity,
               "postCode": selectedAddress.postalCode,
-              "deliveryInstructions": "",
+              "deliveryInstructions": store.state.cartState.deliveryInstructions,
             },
             "fulfilmentMethod": 1,
             "fulfilmentSlotFrom": formatDateForOrderObject(store.state.cartState.selectedTimeSlot.entries.first.value),
@@ -376,7 +394,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
               "lineOne": "10 Collection Street",
               "lineTwo": "",
               "postCode": "L7 0HG",
-              "deliveryInstructions": ""
+              "deliveryInstructions": store.state.cartState.deliveryInstructions,
             },
             "fulfilmentMethod": 2,
             "fulfilmentSlotFrom": formatDateForOrderObject(store.state.cartState.selectedTimeSlot.entries.first.value),
@@ -465,8 +483,15 @@ ThunkAction startCheckTimer(VoidCallback successCallback, VoidCallback errorCall
   };
 }
 
-ThunkAction setRestaurantDetails(String restaurantID, String restaurantName, DeliveryAddresses restaurantAddress,
-    String walletAddress, VoidCallback sendSnackBar) {
+ThunkAction setRestaurantDetails({
+  required String restaurantID,
+  required String restaurantName,
+  required DeliveryAddresses restaurantAddress,
+  required String walletAddress,
+  required int minimumOrder,
+  required int platformFee,
+  required VoidCallback sendSnackBar,
+}) {
   return (Store store) async {
     try {
       //If cart has existing items -> clear cart, set new restaurant details, show snackbar if cart had items.
@@ -480,6 +505,8 @@ ThunkAction setRestaurantDetails(String restaurantID, String restaurantName, Del
             restaurantName,
             restaurantAddress,
             walletAddress,
+            minimumOrder,
+            platformFee,
           ),
         );
       } else {
@@ -489,6 +516,8 @@ ThunkAction setRestaurantDetails(String restaurantID, String restaurantName, Del
             restaurantName,
             restaurantAddress,
             walletAddress,
+            minimumOrder,
+            platformFee,
           ),
         );
       }

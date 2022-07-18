@@ -24,6 +24,8 @@ class CheckoutViewModel extends Equatable {
   final Function(DateTime newDate) updateSlotTimes;
   final String userWalletAddress;
   final String paymentIntentID;
+  final String deliveryInstructions;
+  final Function(String deliveryInstructions) setDeliveryInstructions;
 
   CheckoutViewModel({
     required this.deliverySlots,
@@ -43,6 +45,8 @@ class CheckoutViewModel extends Equatable {
     required this.isDelivery,
     required this.userWalletAddress,
     required this.paymentIntentID,
+    required this.deliveryInstructions,
+    required this.setDeliveryInstructions,
   });
 
   static CheckoutViewModel fromStore(Store<AppState> store) {
@@ -59,6 +63,7 @@ class CheckoutViewModel extends Equatable {
       isDelivery: store.state.cartState.isDelivery,
       userWalletAddress: store.state.cartState.userWalletAddress,
       paymentIntentID: store.state.cartState.paymentIntentID,
+      deliveryInstructions: store.state.cartState.deliveryInstructions,
       updateDiscount: (discountCode, errorCallback) {
         store.dispatch(updateCartDiscount(discountCode, errorCallback));
       },
@@ -78,6 +83,9 @@ class CheckoutViewModel extends Equatable {
       updateSlotTimes: (newDate) {
         store.dispatch(getFullfillmentMethods(newDate: newDate));
       },
+      setDeliveryInstructions: (deliveryInstructions) {
+        store.dispatch(SetDeliveryInstructions(deliveryInstructions));
+      },
     );
   }
 
@@ -91,5 +99,6 @@ class CheckoutViewModel extends Equatable {
         fulfilmentMethod,
         userWalletAddress,
         paymentIntentID,
+        deliveryInstructions,
       ];
 }

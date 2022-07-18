@@ -26,6 +26,7 @@ final CartStateReducers = combineReducers<UserCartState>([
   TypedReducer<UserCartState, UpdateUserWalletAddress>(_updateUserWalletAddress),
   TypedReducer<UserCartState, UpdateUserDisplayName>(_updateUserDisplayName),
   TypedReducer<UserCartState, UpdatePaymentIntentID>(_updatePaymentIntentID),
+  TypedReducer<UserCartState, SetDeliveryInstructions>(_setDeliveryInstructions),
 ]);
 
 UserCartState _updateCartItems(
@@ -153,6 +154,8 @@ UserCartState _setRestaurantDetails(
     restaurantName: action.restaurantName,
     restaurantAddress: action.restaurantAddress,
     restaurantWalletAddress: action.walletAddress,
+    restaurantMinimumOrder: action.minimumOrder,
+    restaurantPlatformFee: action.platformFee,
   );
 }
 
@@ -200,4 +203,8 @@ UserCartState _updateUserDisplayName(UserCartState state, UpdateUserDisplayName 
 
 UserCartState _updatePaymentIntentID(UserCartState state, UpdatePaymentIntentID action) {
   return state.copyWith(paymentIntentID: action.paymentIntentID);
+}
+
+UserCartState _setDeliveryInstructions(UserCartState state, SetDeliveryInstructions action) {
+  return state.copyWith(deliveryInstructions: action.deliveryInstructions);
 }

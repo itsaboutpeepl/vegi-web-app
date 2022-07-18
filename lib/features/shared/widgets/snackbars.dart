@@ -29,7 +29,7 @@ void showErrorSnack({
         ),
       ),
       backgroundColor: Theme.of(context).bottomAppBarColor,
-      margin: margin ?? EdgeInsets.only(top: 8, right: 8, left: 8, bottom: MediaQuery.of(context).size.height * 0.01),
+      margin: margin ?? EdgeInsets.only(top: 8, right: 8, left: 8, bottom: MediaQuery.of(context).size.height * 0.06),
       borderRadius: BorderRadius.all(
         Radius.circular(8.0),
       ),

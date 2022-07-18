@@ -35,6 +35,9 @@ mixin _$RestaurantItem {
       throw _privateConstructorUsedError;
   String get walletAddress => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
+  bool get isVegan => throw _privateConstructorUsedError;
+  int get minimumOrderAmount => throw _privateConstructorUsedError;
+  int get platformFee => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -60,7 +63,10 @@ abstract class $RestaurantItemCopyWith<$Res> {
       DeliveryAddresses address,
       List<RestaurantMenuItem> listOfMenuItems,
       String walletAddress,
-      String status});
+      String status,
+      bool isVegan,
+      int minimumOrderAmount,
+      int platformFee});
 
   $DeliveryAddressesCopyWith<$Res> get address;
 }
@@ -89,6 +95,9 @@ class _$RestaurantItemCopyWithImpl<$Res>
     Object? listOfMenuItems = freezed,
     Object? walletAddress = freezed,
     Object? status = freezed,
+    Object? isVegan = freezed,
+    Object? minimumOrderAmount = freezed,
+    Object? platformFee = freezed,
   }) {
     return _then(_value.copyWith(
       restaurantID: restaurantID == freezed
@@ -143,6 +152,18 @@ class _$RestaurantItemCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
+      isVegan: isVegan == freezed
+          ? _value.isVegan
+          : isVegan // ignore: cast_nullable_to_non_nullable
+              as bool,
+      minimumOrderAmount: minimumOrderAmount == freezed
+          ? _value.minimumOrderAmount
+          : minimumOrderAmount // ignore: cast_nullable_to_non_nullable
+              as int,
+      platformFee: platformFee == freezed
+          ? _value.platformFee
+          : platformFee // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 
@@ -174,7 +195,10 @@ abstract class _$$_RestaurantItemCopyWith<$Res>
       DeliveryAddresses address,
       List<RestaurantMenuItem> listOfMenuItems,
       String walletAddress,
-      String status});
+      String status,
+      bool isVegan,
+      int minimumOrderAmount,
+      int platformFee});
 
   @override
   $DeliveryAddressesCopyWith<$Res> get address;
@@ -206,6 +230,9 @@ class __$$_RestaurantItemCopyWithImpl<$Res>
     Object? listOfMenuItems = freezed,
     Object? walletAddress = freezed,
     Object? status = freezed,
+    Object? isVegan = freezed,
+    Object? minimumOrderAmount = freezed,
+    Object? platformFee = freezed,
   }) {
     return _then(_$_RestaurantItem(
       restaurantID: restaurantID == freezed
@@ -260,6 +287,18 @@ class __$$_RestaurantItemCopyWithImpl<$Res>
           ? _value.status
           : status // ignore: cast_nullable_to_non_nullable
               as String,
+      isVegan: isVegan == freezed
+          ? _value.isVegan
+          : isVegan // ignore: cast_nullable_to_non_nullable
+              as bool,
+      minimumOrderAmount: minimumOrderAmount == freezed
+          ? _value.minimumOrderAmount
+          : minimumOrderAmount // ignore: cast_nullable_to_non_nullable
+              as int,
+      platformFee: platformFee == freezed
+          ? _value.platformFee
+          : platformFee // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -281,7 +320,10 @@ class _$_RestaurantItem extends _RestaurantItem {
       required this.address,
       required this.listOfMenuItems,
       required this.walletAddress,
-      required this.status})
+      required this.status,
+      required this.isVegan,
+      required this.minimumOrderAmount,
+      required this.platformFee})
       : super._();
 
   factory _$_RestaurantItem.fromJson(Map<String, dynamic> json) =>
@@ -313,10 +355,16 @@ class _$_RestaurantItem extends _RestaurantItem {
   final String walletAddress;
   @override
   final String status;
+  @override
+  final bool isVegan;
+  @override
+  final int minimumOrderAmount;
+  @override
+  final int platformFee;
 
   @override
   String toString() {
-    return 'RestaurantItem(restaurantID: $restaurantID, name: $name, phoneNumber: $phoneNumber, description: $description, deliveryRestrictionDetails: $deliveryRestrictionDetails, imageURL: $imageURL, category: $category, costLevel: $costLevel, rating: $rating, address: $address, listOfMenuItems: $listOfMenuItems, walletAddress: $walletAddress, status: $status)';
+    return 'RestaurantItem(restaurantID: $restaurantID, name: $name, phoneNumber: $phoneNumber, description: $description, deliveryRestrictionDetails: $deliveryRestrictionDetails, imageURL: $imageURL, category: $category, costLevel: $costLevel, rating: $rating, address: $address, listOfMenuItems: $listOfMenuItems, walletAddress: $walletAddress, status: $status, isVegan: $isVegan, minimumOrderAmount: $minimumOrderAmount, platformFee: $platformFee)';
   }
 
   @override
@@ -342,7 +390,12 @@ class _$_RestaurantItem extends _RestaurantItem {
                 .equals(other.listOfMenuItems, listOfMenuItems) &&
             const DeepCollectionEquality()
                 .equals(other.walletAddress, walletAddress) &&
-            const DeepCollectionEquality().equals(other.status, status));
+            const DeepCollectionEquality().equals(other.status, status) &&
+            const DeepCollectionEquality().equals(other.isVegan, isVegan) &&
+            const DeepCollectionEquality()
+                .equals(other.minimumOrderAmount, minimumOrderAmount) &&
+            const DeepCollectionEquality()
+                .equals(other.platformFee, platformFee));
   }
 
   @JsonKey(ignore: true)
@@ -361,7 +414,10 @@ class _$_RestaurantItem extends _RestaurantItem {
       const DeepCollectionEquality().hash(address),
       const DeepCollectionEquality().hash(listOfMenuItems),
       const DeepCollectionEquality().hash(walletAddress),
-      const DeepCollectionEquality().hash(status));
+      const DeepCollectionEquality().hash(status),
+      const DeepCollectionEquality().hash(isVegan),
+      const DeepCollectionEquality().hash(minimumOrderAmount),
+      const DeepCollectionEquality().hash(platformFee));
 
   @JsonKey(ignore: true)
   @override
@@ -388,7 +444,10 @@ abstract class _RestaurantItem extends RestaurantItem {
       required final DeliveryAddresses address,
       required final List<RestaurantMenuItem> listOfMenuItems,
       required final String walletAddress,
-      required final String status}) = _$_RestaurantItem;
+      required final String status,
+      required final bool isVegan,
+      required final int minimumOrderAmount,
+      required final int platformFee}) = _$_RestaurantItem;
   _RestaurantItem._() : super._();
 
   factory _RestaurantItem.fromJson(Map<String, dynamic> json) =
@@ -422,6 +481,12 @@ abstract class _RestaurantItem extends RestaurantItem {
   String get walletAddress => throw _privateConstructorUsedError;
   @override
   String get status => throw _privateConstructorUsedError;
+  @override
+  bool get isVegan => throw _privateConstructorUsedError;
+  @override
+  int get minimumOrderAmount => throw _privateConstructorUsedError;
+  @override
+  int get platformFee => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
   _$$_RestaurantItemCopyWith<_$_RestaurantItem> get copyWith =>

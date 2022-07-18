@@ -21,6 +21,9 @@ RestaurantItem restaurantItem1 = new RestaurantItem(
   address: demoAddress,
   listOfMenuItems: [bagel1, bagel3, bagel2],
   walletAddress: "",
+  isVegan: false,
+  minimumOrderAmount: 0,
+  platformFee: 0,
 );
 
 RestaurantItem restaurantItem2 = new RestaurantItem(
@@ -37,6 +40,9 @@ RestaurantItem restaurantItem2 = new RestaurantItem(
   address: demoAddress,
   listOfMenuItems: [bagel1, bagel2, bagel3],
   walletAddress: "",
+  isVegan: false,
+  minimumOrderAmount: 0,
+  platformFee: 0,
 );
 
 RestaurantItem restaurantItem3 = new RestaurantItem(
@@ -54,6 +60,9 @@ RestaurantItem restaurantItem3 = new RestaurantItem(
   address: demoAddress,
   listOfMenuItems: [bagel3, bagel2, bagel1],
   walletAddress: "",
+  isVegan: false,
+  minimumOrderAmount: 0,
+  platformFee: 0,
 );
 
 DeliveryAddresses demoAddress = new DeliveryAddresses(

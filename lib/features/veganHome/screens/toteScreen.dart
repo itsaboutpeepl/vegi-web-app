@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:vegan_liverpool/common/router/routes.gr.dart';
 import 'package:vegan_liverpool/features/shared/widgets/secondaryButton.dart';
+import 'package:vegan_liverpool/features/shared/widgets/snackbars.dart';
 import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/shared/customAppBar.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/cart/SingleCartItem.dart';
@@ -61,8 +62,14 @@ class _ToteScreenState extends State<ToteScreen> {
                             "Subtotal",
                             cFPrice(viewmodel.cartSubTotal),
                           ),
+                          viewmodel.isDelivery
+                              ? totalsPriceItemTile(
+                                  "Delivery Charge",
+                                  cFPrice(viewmodel.cartDeliveryCharge),
+                                )
+                              : SizedBox.shrink(),
                           totalsPriceItemTile(
-                            "Delivery Charge",
+                            "Service Charge",
                             cFPrice(viewmodel.cartDeliveryCharge),
                           ),
                           Divider(
@@ -80,7 +87,16 @@ class _ToteScreenState extends State<ToteScreen> {
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                             child: SecondaryButton(
                               width: double.infinity,
-                              onPressed: () => context.router.push(CheckoutScreen()),
+                              onPressed: () {
+                                if (viewmodel.minimumOrderAmount > viewmodel.cartTotal) {
+                                  showErrorSnack(
+                                      context: context,
+                                      title: "This restaurant has a minimum order!",
+                                      message: "Try adding more items to your tote!");
+                                  return;
+                                }
+                                context.router.push(CheckoutScreen());
+                              },
                               buttonContent: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -111,7 +127,7 @@ class _ToteScreenState extends State<ToteScreen> {
                 )
               : EmptyStatePage(
                   emoji: "😐",
-                  title: "Pretty empty here, isn't it?",
+                  title: "No items in your bag… yet!",
                   subtitle: "Try adding an item from one of our amazing restauarants to fill this page up!",
                 ),
         );

@@ -44,6 +44,9 @@ class UserCartState with _$UserCartState {
     @Default([]) List<DeliveryAddresses> listOfDeliveryAddresses,
     @JsonKey(ignore: true) @Default("") userWalletAddress,
     @JsonKey(ignore: true) @Default("") userDisplayName,
+    @JsonKey(ignore: true) @Default(0) int restaurantMinimumOrder,
+    @JsonKey(ignore: true) @Default(0) int restaurantPlatformFee,
+    @JsonKey(ignore: true) @Default("") String deliveryInstructions,
   }) = _UserCartState;
 
   factory UserCartState.initial() => UserCartState(

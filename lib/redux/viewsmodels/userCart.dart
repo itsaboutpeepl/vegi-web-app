@@ -12,9 +12,10 @@ class UserCartViewModel extends Equatable {
   final int cartDiscountPercent;
   final int cartDiscountComputed;
   final int cartDeliveryCharge;
-  //final String avatarUrl;
-  // final String pplBalance;
-  // final String gbpXBalance;
+  final int cartServiceCharge;
+  final int minimumOrderAmount;
+  final bool isDelivery;
+
   final Function(CartItem itemToAdd) addCartItem;
   final Function(CartItem itemToUpdate) updateCartItem;
   final Function() clearCart;
@@ -27,12 +28,12 @@ class UserCartViewModel extends Equatable {
     required this.cartDeliveryCharge,
     required this.cartDiscountPercent,
     required this.cartDiscountComputed,
-    //required this.avatarUrl,
-    // required this.pplBalance,
-    // required this.gbpXBalance,
     required this.addCartItem,
     required this.updateCartItem,
     required this.clearCart,
+    required this.cartServiceCharge,
+    required this.minimumOrderAmount,
+    required this.isDelivery,
   });
 
   static UserCartViewModel fromStore(Store<AppState> store) {
@@ -42,11 +43,11 @@ class UserCartViewModel extends Equatable {
       cartTax: store.state.cartState.cartTax,
       cartTotal: store.state.cartState.cartTotal,
       cartDeliveryCharge: store.state.cartState.cartDeliveryCharge,
+      cartServiceCharge: store.state.cartState.restaurantPlatformFee,
+      minimumOrderAmount: store.state.cartState.restaurantMinimumOrder,
       cartDiscountComputed: store.state.cartState.cartDiscountComputed,
       cartDiscountPercent: store.state.cartState.cartDiscountPercent,
-      //avatarUrl: store.state.userState.avatarUrl,
-      // pplBalance: store.state.cashWalletState.tokens[PeeplToken.address]!.getBalance(),
-      // gbpXBalance: store.state.cashWalletState.tokens[GBPxToken.address]!.getBalance(),
+      isDelivery: store.state.cartState.isDelivery,
       addCartItem: (itemToAdd) {
         //store.dispatch(updateCartItems(itemToAdd));
       },
@@ -67,5 +68,6 @@ class UserCartViewModel extends Equatable {
         cartTotal,
         cartDiscountPercent,
         cartDiscountComputed,
+        isDelivery,
       ];
 }

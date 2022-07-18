@@ -9,6 +9,11 @@ String cFPrice(int price) {
   return "£" + (price / 100).toStringAsFixed(2);
 }
 
+String cFPriceNoDec(int price) {
+  //isPence ? price = price ~/ 100 : price;
+  return "£" + (price / 100).toStringAsFixed(0);
+}
+
 String parseHtmlString(String htmlString) {
   final document = parse(htmlString);
   final String parsedString = parse(document.body!.text).documentElement!.text;
@@ -39,6 +44,12 @@ String formatDateForOrderObject(String date) {
 
 String formatDate(DateTime dateToFormat) {
   DateFormat formatter = DateFormat("HH:mm - EEE, dd MMM");
+
+  return formatter.format(dateToFormat);
+}
+
+String formatDateForCalendar(DateTime dateToFormat) {
+  DateFormat formatter = DateFormat("EEE, dd MMM");
 
   return formatter.format(dateToFormat);
 }
