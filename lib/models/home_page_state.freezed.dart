@@ -180,7 +180,9 @@ class _$_HomePageState extends _HomePageState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_HomePageStateToJson(this);
+    return _$$_HomePageStateToJson(
+      this,
+    );
   }
 }
 
@@ -199,14 +201,13 @@ abstract class _HomePageState extends HomePageState {
 
   @override
   @JsonKey(ignore: true)
-  List<RestaurantItem> get featuredRestaurants =>
-      throw _privateConstructorUsedError;
+  List<RestaurantItem> get featuredRestaurants;
   @override
   @JsonKey(ignore: true)
-  bool get isLoadingHomePage => throw _privateConstructorUsedError;
+  bool get isLoadingHomePage;
   @override
   @JsonKey(ignore: true)
-  List<String> get postalCodes => throw _privateConstructorUsedError;
+  List<String> get postalCodes;
   @override
   @JsonKey(ignore: true)
   _$$_HomePageStateCopyWith<_$_HomePageState> get copyWith =>

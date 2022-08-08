@@ -860,7 +860,9 @@ class _$_UserCartState extends _UserCartState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_UserCartStateToJson(this);
+    return _$$_UserCartStateToJson(
+      this,
+    );
   }
 }
 
@@ -940,111 +942,105 @@ abstract class _UserCartState extends UserCartState {
 
   @override
   @JsonKey(ignore: true)
-  List<CartItem> get cartItems => throw _privateConstructorUsedError;
+  List<CartItem> get cartItems;
   @override
   @JsonKey(ignore: true)
-  int get cartSubTotal => throw _privateConstructorUsedError;
+  int get cartSubTotal;
   @override
   @JsonKey(ignore: true)
-  int get cartTax => throw _privateConstructorUsedError;
+  int get cartTax;
   @override
   @JsonKey(ignore: true)
-  int get cartTotal => throw _privateConstructorUsedError;
+  int get cartTotal;
   @override
   @JsonKey(ignore: true)
-  int get cartDiscountPercent => throw _privateConstructorUsedError;
+  int get cartDiscountPercent;
   @override
   @JsonKey(ignore: true)
-  int get cartDiscountComputed => throw _privateConstructorUsedError;
+  int get cartDiscountComputed;
   @override
   @JsonKey(ignore: true)
-  int get cartDeliveryCharge => throw _privateConstructorUsedError;
+  int get cartDeliveryCharge;
   @override
   @JsonKey(ignore: true)
-  List<Map<String, String>> get deliverySlots =>
-      throw _privateConstructorUsedError;
+  List<Map<String, String>> get deliverySlots;
   @override
   @JsonKey(ignore: true)
-  List<Map<String, String>> get collectionSlots =>
-      throw _privateConstructorUsedError;
+  List<Map<String, String>> get collectionSlots;
   @override
   @JsonKey(ignore: true)
-  DeliveryAddresses? get selectedDeliveryAddress =>
-      throw _privateConstructorUsedError;
+  DeliveryAddresses? get selectedDeliveryAddress;
   @override
   @JsonKey(ignore: true)
-  Map<String, String> get selectedTimeSlot =>
-      throw _privateConstructorUsedError;
+  Map<String, String> get selectedTimeSlot;
   @override
   @JsonKey(ignore: true)
-  int get selectedTipAmount => throw _privateConstructorUsedError;
+  int get selectedTipAmount;
   @override
   @JsonKey(ignore: true)
-  String get discountCode => throw _privateConstructorUsedError;
+  String get discountCode;
   @override
   @JsonKey(ignore: true)
-  String get paymentIntentID => throw _privateConstructorUsedError;
+  String get paymentIntentID;
   @override
   @JsonKey(ignore: true)
-  String get orderID => throw _privateConstructorUsedError;
+  String get orderID;
   @override
   @JsonKey(ignore: true)
-  double get selectedGBPxAmount => throw _privateConstructorUsedError;
+  double get selectedGBPxAmount;
   @override
   @JsonKey(ignore: true)
-  double get selectedPPLAmount => throw _privateConstructorUsedError;
+  double get selectedPPLAmount;
   @override
   @JsonKey(ignore: true)
-  bool get transferringTokens => throw _privateConstructorUsedError;
+  bool get transferringTokens;
   @override
   @JsonKey(ignore: true)
-  bool get errorCompletingPayment => throw _privateConstructorUsedError;
+  bool get errorCompletingPayment;
   @override
   @JsonKey(ignore: true)
-  bool get confirmedPayment => throw _privateConstructorUsedError;
+  bool get confirmedPayment;
   @override
   @JsonKey(ignore: true)
-  String get restaurantName => throw _privateConstructorUsedError;
+  String get restaurantName;
   @override
   @JsonKey(ignore: true)
-  String get restaurantID => throw _privateConstructorUsedError;
+  String get restaurantID;
   @override
   @JsonKey(ignore: true)
-  DeliveryAddresses? get restaurantAddress =>
-      throw _privateConstructorUsedError;
+  DeliveryAddresses? get restaurantAddress;
   @override
   @JsonKey(ignore: true)
-  String get restaurantWalletAddress => throw _privateConstructorUsedError;
+  String get restaurantWalletAddress;
   @override
   @JsonKey(ignore: true)
-  int get deliveryCharge => throw _privateConstructorUsedError;
+  int get deliveryCharge;
   @override
   @JsonKey(ignore: true)
-  int get collectionCharge => throw _privateConstructorUsedError;
+  int get collectionCharge;
   @override
   @JsonKey(ignore: true)
-  FulfilmentMethod get fulfilmentMethod => throw _privateConstructorUsedError;
+  FulfilmentMethod get fulfilmentMethod;
   @override
   @JsonKey(ignore: true)
-  bool get isDelivery => throw _privateConstructorUsedError;
+  bool get isDelivery;
   @override
-  List<DeliveryAddresses> get listOfDeliveryAddresses =>
-      throw _privateConstructorUsedError;
-  @override
-  @JsonKey(ignore: true)
-  dynamic get userWalletAddress => throw _privateConstructorUsedError;
+  List<DeliveryAddresses> get listOfDeliveryAddresses;
   @override
   @JsonKey(ignore: true)
-  dynamic get userDisplayName => throw _privateConstructorUsedError;
+  dynamic get userWalletAddress;
   @override
   @JsonKey(ignore: true)
-  int get restaurantMinimumOrder => throw _privateConstructorUsedError;
+  dynamic get userDisplayName;
   @override
   @JsonKey(ignore: true)
-  int get restaurantPlatformFee => throw _privateConstructorUsedError;
+  int get restaurantMinimumOrder;
   @override
   @JsonKey(ignore: true)
-  String get deliveryInstructions => throw _privateConstructorUsedError;
+  int get restaurantPlatformFee;
+  @override
+  @JsonKey(ignore: true)
+  String get deliveryInstructions;
   @override
   @JsonKey(ignore: true)
   _$$_UserCartStateCopyWith<_$_UserCartState> get copyWith =>

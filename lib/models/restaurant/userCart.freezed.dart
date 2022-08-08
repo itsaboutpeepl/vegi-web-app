@@ -204,7 +204,9 @@ class _$_UserCart extends _UserCart {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_UserCartToJson(this);
+    return _$$_UserCartToJson(
+      this,
+    );
   }
 }
 
@@ -220,15 +222,15 @@ abstract class _UserCart extends UserCart {
   factory _UserCart.fromJson(Map<String, dynamic> json) = _$_UserCart.fromJson;
 
   @override
-  List<CartItem> get cartItems => throw _privateConstructorUsedError;
+  List<CartItem> get cartItems;
   @override
-  int get cartSubTotal => throw _privateConstructorUsedError;
+  int get cartSubTotal;
   @override
-  int get cartTax => throw _privateConstructorUsedError;
+  int get cartTax;
   @override
-  int get cartTotal => throw _privateConstructorUsedError;
+  int get cartTotal;
   @override
-  int get cartDiscount => throw _privateConstructorUsedError;
+  int get cartDiscount;
   @override
   @JsonKey(ignore: true)
   _$$_UserCartCopyWith<_$_UserCart> get copyWith =>

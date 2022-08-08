@@ -208,7 +208,9 @@ class _$_ProductOptions extends _ProductOptions {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ProductOptionsToJson(this);
+    return _$$_ProductOptionsToJson(
+      this,
+    );
   }
 }
 
@@ -225,15 +227,15 @@ abstract class _ProductOptions extends ProductOptions {
       _$_ProductOptions.fromJson;
 
   @override
-  int get optionID => throw _privateConstructorUsedError;
+  int get optionID;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  String get description => throw _privateConstructorUsedError;
+  String get description;
   @override
-  int get price => throw _privateConstructorUsedError;
+  int get price;
   @override
-  bool get isAvaliable => throw _privateConstructorUsedError;
+  bool get isAvaliable;
   @override
   @JsonKey(ignore: true)
   _$$_ProductOptionsCopyWith<_$_ProductOptions> get copyWith =>

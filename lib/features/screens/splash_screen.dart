@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:vegan_liverpool/common/router/routes.dart';
@@ -16,8 +15,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  late Flushbar flush;
-
   @override
   void initState() {
     Future.delayed(Duration(seconds: 1), () => context.router.push(VeganHomeScreen()));

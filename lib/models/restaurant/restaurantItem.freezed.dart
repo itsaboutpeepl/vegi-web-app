@@ -426,7 +426,9 @@ class _$_RestaurantItem extends _RestaurantItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RestaurantItemToJson(this);
+    return _$$_RestaurantItemToJson(
+      this,
+    );
   }
 }
 
@@ -454,39 +456,37 @@ abstract class _RestaurantItem extends RestaurantItem {
       _$_RestaurantItem.fromJson;
 
   @override
-  String get restaurantID => throw _privateConstructorUsedError;
+  String get restaurantID;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  String get phoneNumber => throw _privateConstructorUsedError;
+  String get phoneNumber;
   @override
-  String get description => throw _privateConstructorUsedError;
+  String get description;
   @override
-  List<String> get deliveryRestrictionDetails =>
-      throw _privateConstructorUsedError;
+  List<String> get deliveryRestrictionDetails;
   @override
-  String get imageURL => throw _privateConstructorUsedError;
+  String get imageURL;
   @override
-  String get category => throw _privateConstructorUsedError;
+  String get category;
   @override
-  int get costLevel => throw _privateConstructorUsedError;
+  int get costLevel;
   @override
-  int get rating => throw _privateConstructorUsedError;
+  int get rating;
   @override
-  DeliveryAddresses get address => throw _privateConstructorUsedError;
+  DeliveryAddresses get address;
   @override
-  List<RestaurantMenuItem> get listOfMenuItems =>
-      throw _privateConstructorUsedError;
+  List<RestaurantMenuItem> get listOfMenuItems;
   @override
-  String get walletAddress => throw _privateConstructorUsedError;
+  String get walletAddress;
   @override
-  String get status => throw _privateConstructorUsedError;
+  String get status;
   @override
-  bool get isVegan => throw _privateConstructorUsedError;
+  bool get isVegan;
   @override
-  int get minimumOrderAmount => throw _privateConstructorUsedError;
+  int get minimumOrderAmount;
   @override
-  int get platformFee => throw _privateConstructorUsedError;
+  int get platformFee;
   @override
   @JsonKey(ignore: true)
   _$$_RestaurantItemCopyWith<_$_RestaurantItem> get copyWith =>

@@ -1,14 +1,9 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:country_code_picker/country_localizations.dart';
-import 'package:form_builder_validators/localization/l10n.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_localized_locales/flutter_localized_locales.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:vegan_liverpool/common/di/di.dart';
 import 'package:vegan_liverpool/constants/strings.dart';
-import 'package:vegan_liverpool/generated/l10n.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/redux/actions/home_page_actions.dart';
 import 'package:vegan_liverpool/services.dart';
@@ -79,33 +74,6 @@ class _MyAppState extends State<MyApp> {
                   ResponsiveBreakpoint.autoScale(2460, name: "4K"),
                 ],
               ),
-              localizationsDelegates: [
-                LocaleNamesLocalizationsDelegate(),
-                I10n.delegate,
-                CountryLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                FormBuilderLocalizations.delegate,
-              ],
-              supportedLocales: I10n.delegate.supportedLocales,
-              localeListResolutionCallback: (locales, supportedLocales) {
-                for (Locale locale in locales!) {
-                  if (supportedLocales.contains(locale)) {
-                    return locale;
-                  }
-                }
-                return Locale('en', 'US');
-              },
-              localeResolutionCallback: (locale, supportedLocales) {
-                for (var supportedLocale in supportedLocales) {
-                  if (supportedLocale.languageCode == locale?.languageCode &&
-                      supportedLocale.countryCode == locale?.countryCode) {
-                    return supportedLocale;
-                  }
-                }
-                return supportedLocales.first;
-              },
             ),
           );
         } else {

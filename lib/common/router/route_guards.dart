@@ -9,12 +9,12 @@ class AuthGuard extends AutoRouteGuard {
     if (isAuthenticated) {
       resolver.next(true);
     } else {
-      router.push(
-        SplashScreen(onLoginResult: (bool isLoggedIn) {
-          isAuthenticated = isLoggedIn;
-          resolver.next(isLoggedIn);
-        }),
-      );
+      // router.push(
+      //   VeganHomeScreen(onLoginResult: (bool isLoggedIn) {
+      //     isAuthenticated = isLoggedIn;
+      //     resolver.next(isLoggedIn);
+      //   }),
+      // );
     }
   }
 }

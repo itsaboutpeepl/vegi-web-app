@@ -197,7 +197,9 @@ class _$_FullfilmentMethods extends _FullfilmentMethods {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_FullfilmentMethodsToJson(this);
+    return _$$_FullfilmentMethodsToJson(
+      this,
+    );
   }
 }
 
@@ -214,17 +216,13 @@ abstract class _FullfilmentMethods extends FullfilmentMethods {
       _$_FullfilmentMethods.fromJson;
 
   @override
-  Map<String, dynamic>? get collectionMethod =>
-      throw _privateConstructorUsedError;
+  Map<String, dynamic>? get collectionMethod;
   @override
-  Map<String, dynamic>? get deliveryMethod =>
-      throw _privateConstructorUsedError;
+  Map<String, dynamic>? get deliveryMethod;
   @override
-  List<Map<String, String>> get collectionSlots =>
-      throw _privateConstructorUsedError;
+  List<Map<String, String>> get collectionSlots;
   @override
-  List<Map<String, String>> get deliverySlots =>
-      throw _privateConstructorUsedError;
+  List<Map<String, String>> get deliverySlots;
   @override
   @JsonKey(ignore: true)
   _$$_FullfilmentMethodsCopyWith<_$_FullfilmentMethods> get copyWith =>

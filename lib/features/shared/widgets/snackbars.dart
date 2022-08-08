@@ -1,7 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:vegan_liverpool/generated/l10n.dart';
 
 void showErrorSnack({
   required BuildContext context,
@@ -19,7 +18,7 @@ void showErrorSnack({
       ],
       duration: Duration(seconds: duration),
       titleText: Text(
-        title ?? I10n.of(context).transaction_failed,
+        title ?? "Transaction Failed",
         style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
       ),
       messageText: Text(
@@ -51,7 +50,7 @@ void showCopiedFlushbar(context) {
       ),
     ],
     messageText: Text(
-      I10n.of(context).copied_to_clipboard,
+      "Copied to Clipboard",
       textAlign: TextAlign.center,
     ),
     backgroundColor: Theme.of(context).bottomAppBarColor,

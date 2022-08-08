@@ -219,7 +219,9 @@ class _$_CartItem extends _CartItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CartItemToJson(this);
+    return _$$_CartItemToJson(
+      this,
+    );
   }
 }
 
@@ -236,16 +238,15 @@ abstract class _CartItem extends CartItem {
   factory _CartItem.fromJson(Map<String, dynamic> json) = _$_CartItem.fromJson;
 
   @override
-  int get internalID => throw _privateConstructorUsedError;
+  int get internalID;
   @override
-  RestaurantMenuItem get menuItem => throw _privateConstructorUsedError;
+  RestaurantMenuItem get menuItem;
   @override
-  int get totalItemPrice => throw _privateConstructorUsedError;
+  int get totalItemPrice;
   @override
-  int get itemQuantity => throw _privateConstructorUsedError;
+  int get itemQuantity;
   @override
-  Map<int, ProductOptions> get selectedProductOptions =>
-      throw _privateConstructorUsedError;
+  Map<int, ProductOptions> get selectedProductOptions;
   @override
   @JsonKey(ignore: true)
   _$$_CartItemCopyWith<_$_CartItem> get copyWith =>

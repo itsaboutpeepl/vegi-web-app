@@ -249,7 +249,9 @@ class _$_MenuItemState extends _MenuItemState {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_MenuItemStateToJson(this);
+    return _$$_MenuItemStateToJson(
+      this,
+    );
   }
 }
 
@@ -272,20 +274,19 @@ abstract class _MenuItemState extends MenuItemState {
 
   @override
   @JsonKey(ignore: true)
-  RestaurantMenuItem? get menuItem => throw _privateConstructorUsedError;
+  RestaurantMenuItem? get menuItem;
   @override
   @JsonKey(ignore: true)
-  int get totalPrice => throw _privateConstructorUsedError;
+  int get totalPrice;
   @override
   @JsonKey(ignore: true)
-  int get itemReward => throw _privateConstructorUsedError;
+  int get itemReward;
   @override
   @JsonKey(ignore: true)
-  Map<int, ProductOptions> get selectedProductOptionsForCategory =>
-      throw _privateConstructorUsedError;
+  Map<int, ProductOptions> get selectedProductOptionsForCategory;
   @override
   @JsonKey(ignore: true)
-  int get quantity => throw _privateConstructorUsedError;
+  int get quantity;
   @override
   @JsonKey(ignore: true)
   _$$_MenuItemStateCopyWith<_$_MenuItemState> get copyWith =>

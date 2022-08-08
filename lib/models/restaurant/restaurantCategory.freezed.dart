@@ -174,7 +174,9 @@ class _$_RestaurantCategory extends _RestaurantCategory {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RestaurantCategoryToJson(this);
+    return _$$_RestaurantCategoryToJson(
+      this,
+    );
   }
 }
 
@@ -190,12 +192,11 @@ abstract class _RestaurantCategory extends RestaurantCategory {
       _$_RestaurantCategory.fromJson;
 
   @override
-  String get categoryName => throw _privateConstructorUsedError;
+  String get categoryName;
   @override
-  String get imageURL => throw _privateConstructorUsedError;
+  String get imageURL;
   @override
-  List<RestaurantItem> get listOfRestaurants =>
-      throw _privateConstructorUsedError;
+  List<RestaurantItem> get listOfRestaurants;
   @override
   @JsonKey(ignore: true)
   _$$_RestaurantCategoryCopyWith<_$_RestaurantCategory> get copyWith =>

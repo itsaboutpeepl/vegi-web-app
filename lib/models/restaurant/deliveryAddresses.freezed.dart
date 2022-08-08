@@ -266,7 +266,9 @@ class _$_DeliveryAddresses extends _DeliveryAddresses {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_DeliveryAddressesToJson(this);
+    return _$$_DeliveryAddressesToJson(
+      this,
+    );
   }
 }
 
@@ -286,21 +288,21 @@ abstract class _DeliveryAddresses extends DeliveryAddresses {
       _$_DeliveryAddresses.fromJson;
 
   @override
-  int get internalID => throw _privateConstructorUsedError;
+  int get internalID;
   @override
-  String get addressLine1 => throw _privateConstructorUsedError;
+  String get addressLine1;
   @override
-  String get addressLine2 => throw _privateConstructorUsedError;
+  String get addressLine2;
   @override
-  String get townCity => throw _privateConstructorUsedError;
+  String get townCity;
   @override
-  String get postalCode => throw _privateConstructorUsedError;
+  String get postalCode;
   @override
-  double get latitude => throw _privateConstructorUsedError;
+  double get latitude;
   @override
-  double get longitude => throw _privateConstructorUsedError;
+  double get longitude;
   @override
-  String? get phoneNumber => throw _privateConstructorUsedError;
+  String? get phoneNumber;
   @override
   @JsonKey(ignore: true)
   _$$_DeliveryAddressesCopyWith<_$_DeliveryAddresses> get copyWith =>

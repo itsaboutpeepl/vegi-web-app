@@ -216,7 +216,9 @@ class _$_AppState extends _AppState with DiagnosticableTreeMixin {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_AppStateToJson(this);
+    return _$$_AppStateToJson(
+      this,
+    );
   }
 }
 
@@ -234,13 +236,13 @@ abstract class _AppState extends AppState {
 
   @override
   @HomePageStateConverter()
-  HomePageState get homePageState => throw _privateConstructorUsedError;
+  HomePageState get homePageState;
   @override
   @UserCartStateConverter()
-  UserCartState get cartState => throw _privateConstructorUsedError;
+  UserCartState get cartState;
   @override
   @MenuItemStateConverter()
-  MenuItemState get menuItemState => throw _privateConstructorUsedError;
+  MenuItemState get menuItemState;
   @override
   @JsonKey(ignore: true)
   _$$_AppStateCopyWith<_$_AppState> get copyWith =>

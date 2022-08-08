@@ -321,7 +321,9 @@ class _$_RestaurantMenuItem extends _RestaurantMenuItem {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RestaurantMenuItemToJson(this);
+    return _$$_RestaurantMenuItemToJson(
+      this,
+    );
   }
 }
 
@@ -344,28 +346,27 @@ abstract class _RestaurantMenuItem extends RestaurantMenuItem {
       _$_RestaurantMenuItem.fromJson;
 
   @override
-  String get menuItemID => throw _privateConstructorUsedError;
+  String get menuItemID;
   @override
-  String get restaurantID => throw _privateConstructorUsedError;
+  String get restaurantID;
   @override
-  String get name => throw _privateConstructorUsedError;
+  String get name;
   @override
-  String get imageURL => throw _privateConstructorUsedError;
+  String get imageURL;
   @override
-  String get category => throw _privateConstructorUsedError;
+  String get category;
   @override
-  int get price => throw _privateConstructorUsedError;
+  int get price;
   @override
-  String get description => throw _privateConstructorUsedError;
+  String get description;
   @override
-  Map<String, int> get extras => throw _privateConstructorUsedError;
+  Map<String, int> get extras;
   @override
-  List<ProductOptionsCategory> get listOfProductOptions =>
-      throw _privateConstructorUsedError;
+  List<ProductOptionsCategory> get listOfProductOptions;
   @override
-  bool get isFeatured => throw _privateConstructorUsedError;
+  bool get isFeatured;
   @override
-  int get priority => throw _privateConstructorUsedError;
+  int get priority;
   @override
   @JsonKey(ignore: true)
   _$$_RestaurantMenuItemCopyWith<_$_RestaurantMenuItem> get copyWith =>
