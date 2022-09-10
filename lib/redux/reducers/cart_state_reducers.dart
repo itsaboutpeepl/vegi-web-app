@@ -11,7 +11,8 @@ final CartStateReducers = combineReducers<UserCartState>([
   TypedReducer<UserCartState, UpdateSlots>(_updateSlots),
   TypedReducer<UserCartState, UpdateSelectedTimeSlot>(_updateSelectedTimeSlot),
   TypedReducer<UserCartState, UpdateTipAmount>(_updateTipAmount),
-  TypedReducer<UserCartState, UpdateSelectedDeliveryAddress>(_updateSelectedDeliveryAddress),
+  TypedReducer<UserCartState, UpdateSelectedDeliveryAddress>(
+      _updateSelectedDeliveryAddress),
   TypedReducer<UserCartState, CreateOrder>(_createOrder),
   TypedReducer<UserCartState, SetTransferringPayment>(_toggleTransfer),
   TypedReducer<UserCartState, SetError>(_toggleError),
@@ -23,10 +24,13 @@ final CartStateReducers = combineReducers<UserCartState>([
   TypedReducer<UserCartState, SetFulfilmentMethod>(_setFulfilmentMethod),
   TypedReducer<UserCartState, SetIsDelivery>(_setIsDelivery),
   TypedReducer<UserCartState, AddDeliveryAddress>(_addDeliveryAddress),
-  TypedReducer<UserCartState, UpdateUserWalletAddress>(_updateUserWalletAddress),
+  TypedReducer<UserCartState, UpdateUserWalletAddress>(
+      _updateUserWalletAddress),
   TypedReducer<UserCartState, UpdateUserDisplayName>(_updateUserDisplayName),
   TypedReducer<UserCartState, UpdatePaymentIntentID>(_updatePaymentIntentID),
-  TypedReducer<UserCartState, SetDeliveryInstructions>(_setDeliveryInstructions),
+  TypedReducer<UserCartState, SetDeliveryInstructions>(
+      _setDeliveryInstructions),
+  TypedReducer<UserCartState, SetFulfilmentMethodIds>(_setFulfilmentMethodIds)
 ]);
 
 UserCartState _updateCartItems(
@@ -79,14 +83,18 @@ UserCartState _updateCartDiscount(
   UserCartState state,
   UpdateCartDiscount action,
 ) {
-  return state.copyWith(cartDiscountPercent: action.cartDiscountPercent, discountCode: action.discountCode);
+  return state.copyWith(
+      cartDiscountPercent: action.cartDiscountPercent,
+      discountCode: action.discountCode);
 }
 
 UserCartState _updateSlots(
   UserCartState state,
   UpdateSlots action,
 ) {
-  return state.copyWith(deliverySlots: action.deliverySlots, collectionSlots: action.collectionSlots);
+  return state.copyWith(
+      deliverySlots: action.deliverySlots,
+      collectionSlots: action.collectionSlots);
 }
 
 UserCartState _updateSelectedTimeSlot(
@@ -114,7 +122,8 @@ UserCartState _createOrder(
   UserCartState state,
   CreateOrder action,
 ) {
-  return state.copyWith(orderID: action.orderID, paymentIntentID: action.paymentIntentID);
+  return state.copyWith(
+      orderID: action.orderID, paymentIntentID: action.paymentIntentID);
 }
 
 UserCartState _toggleTransfer(
@@ -142,7 +151,9 @@ UserCartState _updateSelectedAmounts(
   UserCartState state,
   UpdateSelectedAmounts action,
 ) {
-  return state.copyWith(selectedGBPxAmount: action.GBPxAmount, selectedPPLAmount: action.PPLAmount);
+  return state.copyWith(
+      selectedGBPxAmount: action.GBPxAmount,
+      selectedPPLAmount: action.PPLAmount);
 }
 
 UserCartState _setRestaurantDetails(
@@ -189,22 +200,34 @@ UserCartState _setIsDelivery(UserCartState state, SetIsDelivery action) {
   return state.copyWith(isDelivery: action.isDelivery);
 }
 
-UserCartState _addDeliveryAddress(UserCartState state, AddDeliveryAddress action) {
+UserCartState _addDeliveryAddress(
+    UserCartState state, AddDeliveryAddress action) {
   return state.copyWith(listOfDeliveryAddresses: action.listOfAddresses);
 }
 
-UserCartState _updateUserWalletAddress(UserCartState state, UpdateUserWalletAddress action) {
+UserCartState _updateUserWalletAddress(
+    UserCartState state, UpdateUserWalletAddress action) {
   return state.copyWith(userWalletAddress: action.userWalletAddress);
 }
 
-UserCartState _updateUserDisplayName(UserCartState state, UpdateUserDisplayName action) {
+UserCartState _updateUserDisplayName(
+    UserCartState state, UpdateUserDisplayName action) {
   return state.copyWith(userDisplayName: action.userDisplayName);
 }
 
-UserCartState _updatePaymentIntentID(UserCartState state, UpdatePaymentIntentID action) {
+UserCartState _updatePaymentIntentID(
+    UserCartState state, UpdatePaymentIntentID action) {
   return state.copyWith(paymentIntentID: action.paymentIntentID);
 }
 
-UserCartState _setDeliveryInstructions(UserCartState state, SetDeliveryInstructions action) {
+UserCartState _setDeliveryInstructions(
+    UserCartState state, SetDeliveryInstructions action) {
   return state.copyWith(deliveryInstructions: action.deliveryInstructions);
+}
+
+UserCartState _setFulfilmentMethodIds(
+    UserCartState state, SetFulfilmentMethodIds action) {
+  return state.copyWith(
+      deliveryMethodId: action.deliveryMethodId,
+      collectionMethodId: action.collectionMethodId);
 }

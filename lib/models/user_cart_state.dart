@@ -21,8 +21,12 @@ class UserCartState with _$UserCartState {
     @JsonKey(ignore: true) @Default(0) int cartDiscountComputed,
     @JsonKey(ignore: true) @Default(0) int cartDeliveryCharge,
     @JsonKey(ignore: true) @Default([]) List<Map<String, String>> deliverySlots,
-    @JsonKey(ignore: true) @Default([]) List<Map<String, String>> collectionSlots,
-    @JsonKey(ignore: true) @Default(null) DeliveryAddresses? selectedDeliveryAddress,
+    @JsonKey(ignore: true)
+    @Default([])
+        List<Map<String, String>> collectionSlots,
+    @JsonKey(ignore: true)
+    @Default(null)
+        DeliveryAddresses? selectedDeliveryAddress,
     @JsonKey(ignore: true) @Default({}) Map<String, String> selectedTimeSlot,
     @JsonKey(ignore: true) @Default(0) int selectedTipAmount,
     @JsonKey(ignore: true) @Default("") String discountCode,
@@ -39,7 +43,9 @@ class UserCartState with _$UserCartState {
     @JsonKey(ignore: true) @Default("") String restaurantWalletAddress,
     @JsonKey(ignore: true) @Default(0) int deliveryCharge,
     @JsonKey(ignore: true) @Default(0) int collectionCharge,
-    @JsonKey(ignore: true) @Default(FulfilmentMethod.delivery) FulfilmentMethod fulfilmentMethod,
+    @JsonKey(ignore: true)
+    @Default(FulfilmentMethod.delivery)
+        FulfilmentMethod fulfilmentMethod,
     @JsonKey(ignore: true) @Default(true) bool isDelivery,
     @Default([]) List<DeliveryAddresses> listOfDeliveryAddresses,
     @JsonKey(ignore: true) @Default("") userWalletAddress,
@@ -47,6 +53,8 @@ class UserCartState with _$UserCartState {
     @JsonKey(ignore: true) @Default(0) int restaurantMinimumOrder,
     @JsonKey(ignore: true) @Default(0) int restaurantPlatformFee,
     @JsonKey(ignore: true) @Default("") String deliveryInstructions,
+    @JsonKey(ignore: true) @Default(0) int deliveryMethodId,
+    @JsonKey(ignore: true) @Default(0) int collectionMethodId,
   }) = _UserCartState;
 
   factory UserCartState.initial() => UserCartState(
@@ -81,12 +89,15 @@ class UserCartState with _$UserCartState {
         listOfDeliveryAddresses: [],
         userWalletAddress: "",
         userDisplayName: "",
+        deliveryMethodId: 0,
+        collectionMethodId: 0,
       );
 
   factory UserCartState.fromJson(dynamic json) => _$UserCartStateFromJson(json);
 }
 
-class UserCartStateConverter implements JsonConverter<UserCartState, Map<String, dynamic>?> {
+class UserCartStateConverter
+    implements JsonConverter<UserCartState, Map<String, dynamic>?> {
   const UserCartStateConverter();
 
   @override

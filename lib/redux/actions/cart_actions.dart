@@ -26,7 +26,8 @@ class UpdateComputedCartValues {
   final int cartTotal;
   final int cartDiscountComputed;
 
-  UpdateComputedCartValues(this.cartSubTotal, this.cartTax, this.cartTotal, this.cartDiscountComputed);
+  UpdateComputedCartValues(this.cartSubTotal, this.cartTax, this.cartTotal,
+      this.cartDiscountComputed);
 }
 
 class UpdateCartDiscount {
@@ -154,10 +155,19 @@ class SetDeliveryInstructions {
   SetDeliveryInstructions(this.deliveryInstructions);
 }
 
+class SetFulfilmentMethodIds {
+  final int deliveryMethodId;
+  final int collectionMethodId;
+
+  SetFulfilmentMethodIds(this.deliveryMethodId, this.collectionMethodId);
+}
+
 ThunkAction getUserData() {
   return (Store store) async {
-    store.dispatch(UpdateUserWalletAddress(await promiseToFuture(getWalletAddress())));
-    store.dispatch(UpdateUserDisplayName(await promiseToFuture(getDisplayName())));
+    store.dispatch(
+        UpdateUserWalletAddress(await promiseToFuture(getWalletAddress())));
+    store.dispatch(
+        UpdateUserDisplayName(await promiseToFuture(getDisplayName())));
   };
 }
 
@@ -169,17 +179,30 @@ ThunkAction getFullfillmentMethods({DateTime? newDate}) {
 
       if ([null, ""].contains(newDate)) {
         fullfilmentMethods = await peeplEatsService.getFulfilmentSlots(
-            vendorID: store.state.cartState.restaurantID, dateRequired: formatter.format(DateTime.now()));
+            vendorID: store.state.cartState.restaurantID,
+            dateRequired: formatter.format(DateTime.now()));
       } else {
         fullfilmentMethods = await peeplEatsService.getFulfilmentSlots(
-            vendorID: store.state.cartState.restaurantID, dateRequired: formatter.format(newDate!));
+            vendorID: store.state.cartState.restaurantID,
+            dateRequired: formatter.format(newDate!));
       }
-      store.dispatch(UpdateSlots(fullfilmentMethods.deliverySlots, fullfilmentMethods.collectionSlots));
+      store.dispatch(UpdateSlots(fullfilmentMethods.deliverySlots,
+          fullfilmentMethods.collectionSlots));
 
       store.dispatch(SetFulfilmentFees(
-        fullfilmentMethods.deliveryMethod == null ? 0 : fullfilmentMethods.deliveryMethod!['priceModifier'] ?? 0,
-        fullfilmentMethods.collectionMethod == null ? 0 : fullfilmentMethods.collectionMethod!['priceModifier'] ?? 0,
+        fullfilmentMethods.deliveryMethod == null
+            ? 0
+            : fullfilmentMethods.deliveryMethod!['priceModifier'] ?? 0,
+        fullfilmentMethods.collectionMethod == null
+            ? 0
+            : fullfilmentMethods.collectionMethod!['priceModifier'] ?? 0,
       ));
+
+      store.dispatch(SetFulfilmentMethodIds(
+          fullfilmentMethods.deliveryMethod!['id'],
+          fullfilmentMethods.collectionMethod!['id']));
+
+      store.dispatch(computeCartTotals());
     } catch (e, s) {
       log.error('ERROR - getFullfillmentMethods $e');
       await Sentry.captureException(
@@ -207,14 +230,16 @@ ThunkAction updateCartTip(int newTip) {
   };
 }
 
-ThunkAction updateCartDiscount(String newDiscountCode, VoidCallback errorCallback) {
+ThunkAction updateCartDiscount(
+    String newDiscountCode, VoidCallback errorCallback) {
   return (Store store) async {
     try {
       if (newDiscountCode == 'REMOVE') {
         store.dispatch(UpdateCartDiscount(0, ""));
         store.dispatch(computeCartTotals());
       } else {
-        int discountPercent = await peeplEatsService.checkDiscountCode(newDiscountCode).onError(
+        int discountPercent =
+            await peeplEatsService.checkDiscountCode(newDiscountCode).onError(
           (error, stackTrace) {
             errorCallback();
             return 0;
@@ -264,11 +289,14 @@ ThunkAction updateCartItemQuantity(CartItem itemToAdd) {
     try {
       List<CartItem> cartItems = store.state.cartState.cartItems;
       if (itemToAdd.itemQuantity == 0) {
-        cartItems.removeWhere((element) => element.internalID == itemToAdd.internalID);
+        cartItems.removeWhere(
+            (element) => element.internalID == itemToAdd.internalID);
       } else {
-        int index = cartItems.indexWhere((element) => element.internalID == itemToAdd.internalID);
+        int index = cartItems.indexWhere(
+            (element) => element.internalID == itemToAdd.internalID);
 
-        cartItems.removeWhere((element) => element.internalID == itemToAdd.internalID);
+        cartItems.removeWhere(
+            (element) => element.internalID == itemToAdd.internalID);
 
         cartItems.insert(index, itemToAdd);
       }
@@ -307,13 +335,17 @@ ThunkAction computeCartTotals() {
 
       // add price of each order Item (which has options included)
 
-      cartDiscountComputed = (cartSubTotal * cartDiscountPercent) ~/ 100; // subtotal * discount
+      cartDiscountComputed =
+          (cartSubTotal * cartDiscountPercent) ~/ 100; // subtotal * discount
 
       //cartTax = ((cartSubTotal - cartDiscountComputed) * 5) ~/ 100;
 
-      cartTotal = (cartSubTotal + cartTax + cartTip + deliveryPrice + platformFee) - cartDiscountComputed;
+      cartTotal =
+          (cartSubTotal + cartTax + cartTip + deliveryPrice + platformFee) -
+              cartDiscountComputed;
 
-      store.dispatch(UpdateComputedCartValues(cartSubTotal, cartTax, cartTotal, cartDiscountComputed));
+      store.dispatch(UpdateComputedCartValues(
+          cartSubTotal, cartTax, cartTotal, cartDiscountComputed));
     } catch (e, s) {
       log.error('ERROR - updateComputeUserCart $e');
       await Sentry.captureException(
@@ -325,7 +357,8 @@ ThunkAction computeCartTotals() {
   };
 }
 
-ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, VoidCallback successCallback) {
+ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
+    VoidCallback successCallback) {
   return (Store store) async {
     try {
       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.none) {
@@ -334,7 +367,8 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
       } else if (store.state.cartState.selectedTimeSlot.isEmpty) {
         errorCallback("Please select a time slot");
         return;
-      } else if (store.state.cartState.restaurantMinimumOrder > store.state.cartState.cartTotal) {
+      } else if (store.state.cartState.restaurantMinimumOrder >
+          store.state.cartState.cartTotal) {
         errorCallback("Your order does not satisfy the minimum order amount");
         return;
       }
@@ -348,7 +382,8 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
                 "id": int.parse(e.menuItem.menuItemID),
                 "quantity": e.itemQuantity,
                 "options": e.selectedProductOptions.map(
-                  (key, value) => MapEntry<String, int>(key.toString(), value.optionID),
+                  (key, value) =>
+                      MapEntry<String, int>(key.toString(), value.optionID),
                 ),
               },
             )
@@ -358,7 +393,8 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
         "marketingOptIn": false,
         "discountCode": store.state.cartState.discountCode,
         "vendor": store.state.cartState.restaurantID,
-        "walletAddress": store.state.cartState.userWalletAddress ?? "0x846253e3ac22ad7910d6170db514789a322c09c5",
+        "walletAddress": store.state.cartState.userWalletAddress ??
+            "0x846253e3ac22ad7910d6170db514789a322c09c5",
       });
 
       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.delivery) {
@@ -366,7 +402,8 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
           errorCallback("Please select an address");
           return;
         }
-        DeliveryAddresses selectedAddress = store.state.cartState.selectedDeliveryAddress!;
+        DeliveryAddresses selectedAddress =
+            store.state.cartState.selectedDeliveryAddress!;
 
         orderObject.addAll(
           {
@@ -375,16 +412,22 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
               "phoneNumber": selectedAddress.phoneNumber ?? "",
               "email": "email@notprovided.com",
               "lineOne": selectedAddress.addressLine1,
-              "lineTwo": selectedAddress.addressLine2 + ", " + selectedAddress.townCity,
+              "lineTwo": selectedAddress.addressLine2 +
+                  ", " +
+                  selectedAddress.townCity,
               "postCode": selectedAddress.postalCode,
-              "deliveryInstructions": store.state.cartState.deliveryInstructions,
+              "deliveryInstructions":
+                  store.state.cartState.deliveryInstructions,
             },
             "fulfilmentMethod": 1,
-            "fulfilmentSlotFrom": formatDateForOrderObject(store.state.cartState.selectedTimeSlot.entries.first.value),
-            "fulfilmentSlotTo": formatDateForOrderObject(store.state.cartState.selectedTimeSlot.entries.last.value),
+            "fulfilmentSlotFrom": formatDateForOrderObject(
+                store.state.cartState.selectedTimeSlot.entries.first.value),
+            "fulfilmentSlotTo": formatDateForOrderObject(
+                store.state.cartState.selectedTimeSlot.entries.last.value),
           },
         );
-      } else if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.collection) {
+      } else if (store.state.cartState.fulfilmentMethod ==
+          FulfilmentMethod.collection) {
         orderObject.addAll(
           {
             "address": {
@@ -394,11 +437,14 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
               "lineOne": "10 Collection Street",
               "lineTwo": "",
               "postCode": "L7 0HG",
-              "deliveryInstructions": store.state.cartState.deliveryInstructions,
+              "deliveryInstructions":
+                  store.state.cartState.deliveryInstructions,
             },
             "fulfilmentMethod": 2,
-            "fulfilmentSlotFrom": formatDateForOrderObject(store.state.cartState.selectedTimeSlot.entries.first.value),
-            "fulfilmentSlotTo": formatDateForOrderObject(store.state.cartState.selectedTimeSlot.entries.last.value),
+            "fulfilmentSlotFrom": formatDateForOrderObject(
+                store.state.cartState.selectedTimeSlot.entries.first.value),
+            "fulfilmentSlotTo": formatDateForOrderObject(
+                store.state.cartState.selectedTimeSlot.entries.last.value),
           },
         );
       }
@@ -406,20 +452,25 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
       print("Order Object Created: ${json.encode(orderObject).toString()}");
 
       //Call create order API with prepared orderobject
-      Map result = await peeplEatsService.createOrder(orderObject).timeout(Duration(seconds: 10), onTimeout: () {
+      Map result = await peeplEatsService
+          .createOrder(orderObject)
+          .timeout(Duration(seconds: 10), onTimeout: () {
         return {}; //return empty map on timeout to trigger errorCallback
       });
 
       if (result.isNotEmpty) {
         store.dispatch(UpdatePaymentIntentID(result['paymentIntentID']));
         //Call Peepl Pay API to start checking the paymentIntentID
-        Map checkResult = await peeplPayService.startPaymentIntentCheck(result['paymentIntentID']);
+        Map checkResult = await peeplPayService
+            .startPaymentIntentCheck(result['paymentIntentID']);
 
         print("Order Result $result");
 
         //Crosscheck the PaymentIntentID with the amount calculcated on device.
-        if (checkResult['paymentIntent']['amount'] == store.state.cartState.cartTotal) {
-          store.dispatch(CreateOrder(result['orderID'].toString(), result['paymentIntentID']));
+        if (checkResult['paymentIntent']['amount'] ==
+            store.state.cartState.cartTotal) {
+          store.dispatch(CreateOrder(
+              result['orderID'].toString(), result['paymentIntentID']));
 
           //subscribe to firebase topic of orderID
 
@@ -445,7 +496,8 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback, V
   };
 }
 
-ThunkAction startCheckTimer(VoidCallback successCallback, VoidCallback errorCallback) {
+ThunkAction startCheckTimer(
+    VoidCallback successCallback, VoidCallback errorCallback) {
   return (Store store) async {
     try {
       print("start check timer");
@@ -496,7 +548,8 @@ ThunkAction setRestaurantDetails({
     try {
       //If cart has existing items -> clear cart, set new restaurant details, show snackbar if cart had items.
 
-      if (store.state.cartState.restaurantName.isNotEmpty && store.state.cartState.restaurantID.isNotEmpty) {
+      if (store.state.cartState.restaurantName.isNotEmpty &&
+          store.state.cartState.restaurantID.isNotEmpty) {
         sendSnackBar();
         store.dispatch(ClearCart());
         store.dispatch(
@@ -537,24 +590,30 @@ ThunkAction setRestaurantDetails({
 
 ThunkAction addNewDeliveryAddress(DeliveryAddresses newAddress) {
   return (Store store) {
-    List<DeliveryAddresses> listOfAddresses = List.from(store.state.cartState.listOfDeliveryAddresses);
+    List<DeliveryAddresses> listOfAddresses =
+        List.from(store.state.cartState.listOfDeliveryAddresses);
 
-    int index = listOfAddresses.indexWhere((element) => element.internalID == newAddress.internalID);
+    int index = listOfAddresses
+        .indexWhere((element) => element.internalID == newAddress.internalID);
 
     listOfAddresses.removeWhere((element) {
       return element.internalID == newAddress.internalID;
     });
 
-    index == -1 ? listOfAddresses.add(newAddress) : listOfAddresses.insert(index, newAddress);
+    index == -1
+        ? listOfAddresses.add(newAddress)
+        : listOfAddresses.insert(index, newAddress);
 
     store.dispatch(AddDeliveryAddress(listOfAddresses));
     store.dispatch(UpdateSelectedDeliveryAddress(newAddress));
   };
 }
 
-ThunkAction deleteExistingDeliveryAddress(DeliveryAddresses addressToBeDeleted) {
+ThunkAction deleteExistingDeliveryAddress(
+    DeliveryAddresses addressToBeDeleted) {
   return (Store store) {
-    List<DeliveryAddresses> listOfAddresses = List.from(store.state.cartState.listOfDeliveryAddresses);
+    List<DeliveryAddresses> listOfAddresses =
+        List.from(store.state.cartState.listOfDeliveryAddresses);
 
     int indexOfAddress = listOfAddresses.indexOf(addressToBeDeleted);
     listOfAddresses.removeAt(indexOfAddress);
@@ -563,7 +622,9 @@ ThunkAction deleteExistingDeliveryAddress(DeliveryAddresses addressToBeDeleted) 
     listOfAddresses.isEmpty
         ? store.dispatch(UpdateSelectedDeliveryAddress(null))
         : listOfAddresses.length - 1 == indexOfAddress
-            ? store.dispatch(UpdateSelectedDeliveryAddress(listOfAddresses[indexOfAddress]))
-            : store.dispatch(UpdateSelectedDeliveryAddress(listOfAddresses[indexOfAddress - 1]));
+            ? store.dispatch(
+                UpdateSelectedDeliveryAddress(listOfAddresses[indexOfAddress]))
+            : store.dispatch(UpdateSelectedDeliveryAddress(
+                listOfAddresses[indexOfAddress - 1]));
   };
 }
