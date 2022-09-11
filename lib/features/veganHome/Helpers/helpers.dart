@@ -21,7 +21,8 @@ String parseHtmlString(String htmlString) {
   return parsedString;
 }
 
-String mapPreviewImage({required double latitude, required double longitude, required Size size}) {
+String mapPreviewImage(
+    {required double latitude, required double longitude, required Size size}) {
   return 'https://maps.googleapis.com/maps/api/staticmap?center=&$latitude,$longitude&zoom=14&size=800x${(size.height * 0.3).toStringAsFixed(0)}&maptype=roadmap&markers=color:red%7Clabel:A%7C$latitude,$longitude&key=${dotenv.env['MAP_API_KEY']!}&style=feature:|element:|visibility:simplified';
 }
 
@@ -63,16 +64,22 @@ List<Map<String, dynamic>> sanitizeOrdersList(Map<String, dynamic> orderObj) {
 
     sanitizedOrderObject["orderID"] = singleOrder['id'];
     sanitizedOrderObject["total"] = cFPrice(singleOrder['total']);
-    sanitizedOrderObject["orderedDateTime"] =
-        formatDate(DateTime.fromMillisecondsSinceEpoch(singleOrder['orderedDateTime']).toLocal());
+    sanitizedOrderObject["orderedDateTime"] = formatDate(
+        DateTime.fromMillisecondsSinceEpoch(singleOrder['orderedDateTime'])
+            .toLocal());
     sanitizedOrderObject["deliveryName"] = singleOrder['deliveryName'];
     sanitizedOrderObject["deliveryEmail"] = singleOrder['deliveryEmail'];
-    sanitizedOrderObject["deliveryPhoneNumber"] = singleOrder['deliveryPhoneNumber'];
-    sanitizedOrderObject["deliveryAddressLineOne"] = singleOrder['deliveryAddressLineOne'];
-    sanitizedOrderObject["deliveryAddressLineTwo"] = singleOrder['deliveryAddressLineTwo'];
-    sanitizedOrderObject["deliveryAddressPostCode"] = singleOrder['deliveryAddressPostCode'];
+    sanitizedOrderObject["deliveryPhoneNumber"] =
+        singleOrder['deliveryPhoneNumber'];
+    sanitizedOrderObject["deliveryAddressLineOne"] =
+        singleOrder['deliveryAddressLineOne'];
+    sanitizedOrderObject["deliveryAddressLineTwo"] =
+        singleOrder['deliveryAddressLineTwo'];
+    sanitizedOrderObject["deliveryAddressPostCode"] =
+        singleOrder['deliveryAddressPostCode'];
     sanitizedOrderObject["paymentStatus"] =
-        singleOrder['paymentStatus'][0].toUpperCase() + singleOrder['paymentStatus'].substring(1);
+        singleOrder['paymentStatus'][0].toUpperCase() +
+            singleOrder['paymentStatus'].substring(1);
     sanitizedOrderObject['rewardsIssued'] = singleOrder['rewardsIssued'];
 
     List<Map<String, dynamic>> listOfProductsOrdered = [];
@@ -80,7 +87,8 @@ List<Map<String, dynamic>> sanitizeOrdersList(Map<String, dynamic> orderObj) {
     singleOrder['items'].forEach((productItem) {
       Map<String, dynamic> singleProductItem = {};
       singleProductItem['name'] = productItem['product']['name'];
-      singleProductItem['basePrice'] = cFPrice(productItem['product']['basePrice']);
+      singleProductItem['basePrice'] =
+          cFPrice(productItem['product']['basePrice']);
 
       //Options in Product
       if (productItem.containsKey("optionValues")) {
@@ -128,4 +136,25 @@ double getPPLValueFromPence(num penceAmount) {
 
 double getPPLRewardsFromPence(num penceAmount) {
   return getPPLValueFromPence((penceAmount * 5) / 100);
+}
+
+String getErrorMessageForOrder(String errorCode) {
+  switch (errorCode) {
+    case "invalidVendor":
+      return "This vendor is currently not delivering!";
+    case "invalidFulfilmentMethod":
+      return "This vendor is not currently accepting delivery/collection orders";
+    case "invalidProduct":
+      return "This product is not currently avaliable!";
+    case "invalidProductOption":
+      return "This option is not currently avaliable!";
+    case "invalidPostalDistrict":
+      return "The vendor does not delivery to this location, sorry!";
+    case "invalidSlot":
+      return "This slot is full. Please choose another slot!";
+    case "invalidDiscountCode":
+      return "The discount code entered is invalid, sorry!";
+    default:
+      return "Something went wrong!";
+  }
 }

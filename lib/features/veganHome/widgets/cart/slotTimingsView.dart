@@ -31,12 +31,15 @@ class _SlotTimingsViewState extends State<SlotTimingsView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                 child: Row(
                   children: [
                     Text(
-                      "Schedule Order",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                      "Schedule " +
+                          (viewmodel.isDelivery ? 'Delivery' : 'Collection'),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                     ),
                     Spacer(),
                     TextButton(
@@ -47,7 +50,7 @@ class _SlotTimingsViewState extends State<SlotTimingsView> {
                         lastDate: DateTime.now().add(const Duration(days: 14)),
                         builder: (_, child) {
                           return Theme(
-                            data: ThemeData.light().copyWith(
+                            data: flexColorSchemeLight.toTheme.copyWith(
                               colorScheme: ColorScheme.light(
                                 primary: Colors.grey[800]!,
                                 onPrimary: themeShade500,
@@ -89,80 +92,87 @@ class _SlotTimingsViewState extends State<SlotTimingsView> {
                     ? Center(
                         child: CircularProgressIndicator(color: themeShade300),
                       )
-                    : viewmodel.fulfilmentMethod == FulfilmentMethod.collection &&
-                            viewmodel
-                                .collectionSlots.isEmpty //if collectionSlots are empty, and chosen method is collection
-                        ? Center(
-                            child: Text("No Slots Avaliable Currently!"),
-                          )
-                        : viewmodel.fulfilmentMethod == FulfilmentMethod.none &&
+                    : viewmodel.fulfilmentMethod == FulfilmentMethod.collection
+                        ? viewmodel.collectionSlots.isEmpty
+                            ? Center(
+                                child: Text("No Slots Avaliable Currently!"),
+                              )
+                            : ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: viewmodel.collectionSlots.length,
+                                itemBuilder: (context, index) => Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: ChoiceChip(
+                                    selectedColor: themeShade100,
+                                    avatar: Icon(
+                                      Icons.timer,
+                                      size: 18,
+                                    ),
+                                    label: Text(
+                                      mapToString(
+                                        viewmodel.collectionSlots[index],
+                                      ),
+                                      style: TextStyle(color: Colors.grey[800]),
+                                    ),
+                                    selected: mapEquals(
+                                        viewmodel.selectedTimeSlot,
+                                        viewmodel.collectionSlots[index]),
+                                    onSelected: (bool selected) {
+                                      selected
+                                          ? viewmodel.updateSelectedTimeSlot(
+                                              viewmodel.collectionSlots[index])
+                                          : null;
+                                    },
+                                  ),
+                                ),
+                              )
+                        : (viewmodel.fulfilmentMethod ==
+                                        FulfilmentMethod.delivery ||
+                                    viewmodel.fulfilmentMethod ==
+                                        FulfilmentMethod.none) &&
                                 viewmodel.selectedDeliveryAddress == null
                             ? Center(
-                                child: Text("Please create an address to get slots"),
+                                child: Text(
+                                    "Please create an address to get slots"),
                               )
-                            : viewmodel.deliverySlots.isEmpty //else if delivery slots are empty
+                            : viewmodel.deliverySlots
+                                    .isEmpty //else if delivery slots are empty
                                 ? Center(
-                                    child: Text("No Slots Avaliable Currently!"),
+                                    child:
+                                        Text("No Slots Avaliable Currently!"),
                                   )
-                                : viewmodel.fulfilmentMethod == FulfilmentMethod.collection
-                                    ? ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: viewmodel.collectionSlots.length,
-                                        itemBuilder: (context, index) => Padding(
-                                          padding: const EdgeInsets.only(right: 10),
-                                          child: ChoiceChip(
-                                            selectedColor: themeShade100,
-                                            avatar: Icon(
-                                              Icons.timer,
-                                              size: 18,
-                                            ),
-                                            label: Text(
-                                              index == 0
-                                                  ? "ASAP"
-                                                  : mapToString(
-                                                      viewmodel.collectionSlots[index],
-                                                    ),
-                                              style: TextStyle(color: Colors.grey[800]),
-                                            ),
-                                            selected:
-                                                mapEquals(viewmodel.selectedTimeSlot, viewmodel.collectionSlots[index]),
-                                            onSelected: (bool selected) {
-                                              selected
-                                                  ? viewmodel.updateSelectedTimeSlot(viewmodel.collectionSlots[index])
-                                                  : null;
-                                            },
-                                          ),
+                                : ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: viewmodel.deliverySlots.length,
+                                    itemBuilder: (context, index) => Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: ChoiceChip(
+                                        selectedColor: themeShade100,
+                                        avatar: Icon(
+                                          Icons.timer,
+                                          size: 18,
                                         ),
-                                      )
-                                    : ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: viewmodel.deliverySlots.length,
-                                        itemBuilder: (context, index) => Padding(
-                                          padding: const EdgeInsets.only(right: 10),
-                                          child: ChoiceChip(
-                                            selectedColor: themeShade100,
-                                            avatar: Icon(
-                                              Icons.timer,
-                                              size: 18,
-                                            ),
-                                            label: Text(
-                                              index == 0
-                                                  ? "ASAP"
-                                                  : mapToString(
-                                                      viewmodel.deliverySlots[index],
-                                                    ),
-                                              style: TextStyle(color: Colors.grey[800]),
-                                            ),
-                                            selected:
-                                                mapEquals(viewmodel.selectedTimeSlot, viewmodel.deliverySlots[index]),
-                                            onSelected: (bool selected) {
-                                              selected
-                                                  ? viewmodel.updateSelectedTimeSlot(viewmodel.deliverySlots[index])
-                                                  : null;
-                                            },
+                                        label: Text(
+                                          mapToString(
+                                            viewmodel.deliverySlots[index],
                                           ),
+                                          style: TextStyle(
+                                              color: Colors.grey[800]),
                                         ),
+                                        selected: mapEquals(
+                                            viewmodel.selectedTimeSlot,
+                                            viewmodel.deliverySlots[index]),
+                                        onSelected: (bool selected) {
+                                          selected
+                                              ? viewmodel
+                                                  .updateSelectedTimeSlot(
+                                                      viewmodel
+                                                          .deliverySlots[index])
+                                              : null;
+                                        },
                                       ),
+                                    ),
+                                  ),
               )
             ],
           ),
