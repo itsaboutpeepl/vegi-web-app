@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:js/js_util.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -323,11 +324,13 @@ ThunkAction computeCartTotals() {
       int cartSubTotal = 0;
       int cartTax = 0;
       int cartTotal = 0;
-      int deliveryPrice = store.state.cartState.cartDeliveryCharge;
+      int deliveryFee = store.state.cartState.deliveryCharge;
+      int collectionFee = store.state.cartState.collectionCharge;
       int platformFee = store.state.cartState.restaurantPlatformFee;
       int cartDiscountPercent = store.state.cartState.cartDiscountPercent;
       int cartDiscountComputed = 0;
       int cartTip = store.state.cartState.selectedTipAmount * 100;
+      bool isDelivery = store.state.cartState.isDelivery;
 
       cartItems.forEach((element) {
         cartSubTotal += element.totalItemPrice;
@@ -340,9 +343,15 @@ ThunkAction computeCartTotals() {
 
       //cartTax = ((cartSubTotal - cartDiscountComputed) * 5) ~/ 100;
 
-      cartTotal =
-          (cartSubTotal + cartTax + cartTip + deliveryPrice + platformFee) -
-              cartDiscountComputed;
+      if (isDelivery) {
+        cartTotal =
+            (cartSubTotal + cartTax + cartTip + deliveryFee + platformFee) -
+                cartDiscountComputed;
+      } else {
+        cartTotal =
+            (cartSubTotal + cartTax + cartTip + collectionFee + platformFee) -
+                cartDiscountComputed;
+      }
 
       store.dispatch(UpdateComputedCartValues(
           cartSubTotal, cartTax, cartTotal, cartDiscountComputed));
@@ -360,6 +369,10 @@ ThunkAction computeCartTotals() {
 ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
     VoidCallback successCallback) {
   return (Store store) async {
+    int temp = ((store.state.cartState.cartSubTotal *
+            store.state.cartState.cartDiscountPercent) ~/
+        100);
+
     try {
       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.none) {
         errorCallback("Please select or create an address");
@@ -368,7 +381,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
         errorCallback("Please select a time slot");
         return;
       } else if (store.state.cartState.restaurantMinimumOrder >
-          store.state.cartState.cartTotal) {
+          store.state.cartState.cartSubTotal - temp) {
         errorCallback("Your order does not satisfy the minimum order amount");
         return;
       }
@@ -393,8 +406,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
         "marketingOptIn": false,
         "discountCode": store.state.cartState.discountCode,
         "vendor": store.state.cartState.restaurantID,
-        "walletAddress": store.state.cartState.userWalletAddress ??
-            "0x846253e3ac22ad7910d6170db514789a322c09c5",
+        "walletAddress": store.state.cartState.userWalletAddress
       });
 
       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.delivery) {
@@ -419,7 +431,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
               "deliveryInstructions":
                   store.state.cartState.deliveryInstructions,
             },
-            "fulfilmentMethod": 1,
+            "fulfilmentMethod": store.state.cartState.deliveryMethodId,
             "fulfilmentSlotFrom": formatDateForOrderObject(
                 store.state.cartState.selectedTimeSlot.entries.first.value),
             "fulfilmentSlotTo": formatDateForOrderObject(
@@ -431,16 +443,16 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
         orderObject.addAll(
           {
             "address": {
-              "name": "Collection Order",
-              "email": "order@collection.com",
-              "phoneNumber": "12345678910",
-              "lineOne": "10 Collection Street",
+              "name": store.state.cartState.userDisplayName,
+              "email": "email@notprovided.com",
+              "phoneNumber": "12345678",
+              "lineOne": "Collection Order",
               "lineTwo": "",
               "postCode": "L7 0HG",
               "deliveryInstructions":
                   store.state.cartState.deliveryInstructions,
             },
-            "fulfilmentMethod": 2,
+            "fulfilmentMethod": store.state.cartState.collectionMethodId,
             "fulfilmentSlotFrom": formatDateForOrderObject(
                 store.state.cartState.selectedTimeSlot.entries.first.value),
             "fulfilmentSlotTo": formatDateForOrderObject(
@@ -472,9 +484,7 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
           store.dispatch(CreateOrder(
               result['orderID'].toString(), result['paymentIntentID']));
 
-          //subscribe to firebase topic of orderID
-
-          //firebaseMessaging.subscribeToTopic('order-' + result['orderID'].toString());
+          //Payment Function that calls the actual app payment sheet
           paymentFunction(result['paymentIntentID']);
           successCallback();
         } else {
@@ -483,6 +493,12 @@ ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
         }
       } else {
         errorCallback("Our servers seem to be down");
+      }
+    } on DioError catch (e) {
+      if (e.response != null) {
+        print(e.response!.data);
+        errorCallback(
+            getErrorMessageForOrder(e.response!.data['cause']['code']));
       }
     } catch (e, s) {
       errorCallback("Something went wrong");
