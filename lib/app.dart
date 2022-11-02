@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
             child: MaterialApp.router(
               debugShowCheckedModeBanner: false,
               locale: _locale,
-              title: Strings.APP_NAME,
+              title: Strings.appName,
               themeMode: ThemeMode.system,
               routeInformationParser: rootRouter.defaultRouteParser(),
               theme: flexColorSchemeLight.toTheme,
