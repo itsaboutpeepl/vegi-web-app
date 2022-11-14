@@ -1,103 +1,169 @@
 import 'dart:async';
-import 'dart:convert';
+import 'dart:math';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:js/js_util.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:vegan_liverpool/constants/enums.dart';
+import 'package:vegan_liverpool/features/shared/widgets/snackbars.dart';
 import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
+import 'package:vegan_liverpool/models/app_state.dart';
+import 'package:vegan_liverpool/models/restaurant/cartItem.dart';
 import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
 import 'package:vegan_liverpool/models/restaurant/fullfilmentMethods.dart';
-import 'package:vegan_liverpool/models/restaurant/cartItem.dart';
-import 'package:vegan_liverpool/models/webViewHandlers.dart';
+import 'package:vegan_liverpool/models/restaurant/payment_methods.dart';
 import 'package:vegan_liverpool/services.dart';
 import 'package:vegan_liverpool/utils/log/log.dart';
-import 'package:redux/redux.dart';
-import 'package:intl/intl.dart';
 
 class UpdateCartItems {
-  final List<CartItem> cartItems;
   UpdateCartItems({required this.cartItems});
+  final List<CartItem> cartItems;
+
+  @override
+  String toString() {
+    return 'UpdateCartItems : $cartItems';
+  }
 }
 
 class UpdateComputedCartValues {
+  UpdateComputedCartValues(
+    this.cartSubTotal,
+    this.cartTax,
+    this.cartTotal,
+    this.cartDiscountComputed,
+  );
   final int cartSubTotal;
   final int cartTax;
   final int cartTotal;
   final int cartDiscountComputed;
 
-  UpdateComputedCartValues(this.cartSubTotal, this.cartTax, this.cartTotal,
-      this.cartDiscountComputed);
+  @override
+  String toString() {
+    return 'UpdateComputedCartValues : CartSubTotal: $cartSubTotal, '
+        'cartTax: $cartTax, cartTotal: $cartTotal, '
+        'cartDiscountComputed: $cartDiscountComputed';
+  }
 }
 
 class UpdateCartDiscount {
+  UpdateCartDiscount(this.cartDiscountPercent, this.discountCode);
   final int cartDiscountPercent;
   final String discountCode;
-  UpdateCartDiscount(this.cartDiscountPercent, this.discountCode);
+
+  @override
+  String toString() {
+    return 'UpdateCartDiscount : cartDiscountPercent: $cartDiscountPercent, '
+        'discountCode: $discountCode';
+  }
 }
 
 class ClearCart {
   ClearCart();
+
+  @override
+  String toString() {
+    return 'ClearCart';
+  }
 }
 
 class UpdateSlots {
+  UpdateSlots(this.deliverySlots, this.collectionSlots);
   final List<Map<String, String>> deliverySlots;
   final List<Map<String, String>> collectionSlots;
 
-  UpdateSlots(this.deliverySlots, this.collectionSlots);
+  @override
+  String toString() {
+    return 'UpdateSlots : deliverySlots: $deliverySlots, '
+        'collectionSlots: $collectionSlots';
+  }
 }
 
 class UpdateSelectedDeliveryAddress {
-  final DeliveryAddresses? selectedAddress;
   UpdateSelectedDeliveryAddress(this.selectedAddress);
+  final DeliveryAddresses? selectedAddress;
+
+  @override
+  String toString() {
+    return 'UpdateSelectedDeliveryAddress : selectedAddress: $selectedAddress';
+  }
 }
 
 class UpdateSelectedTimeSlot {
-  final Map<String, String> selectedTimeSlot;
   UpdateSelectedTimeSlot(this.selectedTimeSlot);
+  final Map<String, String> selectedTimeSlot;
+
+  @override
+  String toString() {
+    return 'UpdateSelectedTimeSlot : selectedTimeSlot: $selectedTimeSlot';
+  }
 }
 
 class UpdateTipAmount {
-  final int tipAmount;
   UpdateTipAmount(this.tipAmount);
+  final int tipAmount;
+
+  @override
+  String toString() {
+    return 'UpdateTipAmount : tipAmount: $tipAmount';
+  }
 }
 
 class CreateOrder {
+  CreateOrder(this.orderID, this.paymentIntentID);
   final String orderID;
   final String paymentIntentID;
-  CreateOrder(this.orderID, this.paymentIntentID);
+
+  @override
+  String toString() {
+    return 'CreateOrder : orderID: $orderID, paymentIntentID: $paymentIntentID';
+  }
 }
 
 class SetTransferringPayment {
+  SetTransferringPayment({required this.flag});
   bool flag;
-  SetTransferringPayment(this.flag);
+
+  @override
+  String toString() {
+    return 'SetTransferringPayment : flag: $flag';
+  }
 }
 
 class SetError {
+  SetError({required this.flag});
   bool flag;
-  SetError(this.flag);
+
+  @override
+  String toString() {
+    return 'SetError : flag: $flag';
+  }
 }
 
 class SetConfirmed {
+  SetConfirmed({required this.flag});
   bool flag;
-  SetConfirmed(this.flag);
+
+  @override
+  String toString() {
+    return 'SetConfirmed : flag: $flag';
+  }
 }
 
 class UpdateSelectedAmounts {
-  final double GBPxAmount;
-  final double PPLAmount;
-  UpdateSelectedAmounts(this.GBPxAmount, this.PPLAmount);
+  UpdateSelectedAmounts({required this.gbpxAmount, required this.pplAmount});
+  final double gbpxAmount;
+  final double pplAmount;
+
+  @override
+  String toString() {
+    return 'UpdateSelectedAmounts : GBPxAmount: $gbpxAmount,'
+        'PPLAmount:$pplAmount';
+  }
 }
 
 class SetRestaurantDetails {
-  final String restaurantID;
-  final String restaurantName;
-  final DeliveryAddresses restaurantAddress;
-  final String walletAddress;
-  final int minimumOrder;
-  final int platformFee;
-
   SetRestaurantDetails(
     this.restaurantID,
     this.restaurantName,
@@ -106,104 +172,151 @@ class SetRestaurantDetails {
     this.minimumOrder,
     this.platformFee,
   );
+  final String restaurantID;
+  final String restaurantName;
+  final DeliveryAddresses restaurantAddress;
+  final String walletAddress;
+  final int minimumOrder;
+  final int platformFee;
+
+  @override
+  String toString() {
+    return 'SetRestaurantDetails : restaurantID: $restaurantID, '
+        'restaurantName: $restaurantName, restaurantAddress:'
+        '$restaurantAddress, walletAddress:$walletAddress, '
+        'minimumOrder:$minimumOrder, platformFee:$platformFee';
+  }
 }
 
 class SetDeliveryCharge {
+  SetDeliveryCharge(this.deliveryCharge);
   final int deliveryCharge;
 
-  SetDeliveryCharge(this.deliveryCharge);
+  @override
+  String toString() {
+    return 'SetDeliveryCharge : deliveryCharge: $deliveryCharge';
+  }
 }
 
 class SetFulfilmentFees {
+  SetFulfilmentFees(this.deliveryCharge, this.collectionCharge);
   final int deliveryCharge;
   final int collectionCharge;
 
-  SetFulfilmentFees(this.deliveryCharge, this.collectionCharge);
-}
-
-class SetFulfilmentMethod {
-  final FulfilmentMethod fulfilmentMethod;
-  SetFulfilmentMethod(this.fulfilmentMethod);
-}
-
-class SetIsDelivery {
-  final bool isDelivery;
-  SetIsDelivery(this.isDelivery);
-}
-
-class AddDeliveryAddress {
-  final List<DeliveryAddresses> listOfAddresses;
-  AddDeliveryAddress(this.listOfAddresses);
-}
-
-class UpdateUserWalletAddress {
-  final String userWalletAddress;
-  UpdateUserWalletAddress(this.userWalletAddress);
-}
-
-class UpdateUserDisplayName {
-  final String userDisplayName;
-  UpdateUserDisplayName(this.userDisplayName);
-}
-
-class UpdatePaymentIntentID {
-  final String paymentIntentID;
-  UpdatePaymentIntentID(this.paymentIntentID);
-}
-
-class SetDeliveryInstructions {
-  final String deliveryInstructions;
-  SetDeliveryInstructions(this.deliveryInstructions);
+  @override
+  String toString() {
+    return 'SetFulfilmentFees : deliveryCharge: $deliveryCharge, '
+        'collectionCharge: $collectionCharge';
+  }
 }
 
 class SetFulfilmentMethodIds {
+  SetFulfilmentMethodIds(this.deliveryMethodId, this.collectionMethodId);
   final int deliveryMethodId;
   final int collectionMethodId;
 
-  SetFulfilmentMethodIds(this.deliveryMethodId, this.collectionMethodId);
+  @override
+  String toString() {
+    return 'SetFulfilmentMethodIds : deliveryMethodId: $deliveryMethodId, '
+        'collectionMethodId: $collectionMethodId';
+  }
 }
 
-ThunkAction getUserData() {
-  return (Store store) async {
-    store.dispatch(
-        UpdateUserWalletAddress(await promiseToFuture(getWalletAddress())));
-    store.dispatch(
-        UpdateUserDisplayName(await promiseToFuture(getDisplayName())));
-  };
+class SetFulfilmentMethod {
+  SetFulfilmentMethod(this.fulfilmentMethod);
+  final FulfilmentMethod fulfilmentMethod;
+
+  @override
+  String toString() {
+    return 'SetFulfilmentMethod : fulfilmentMethod: $fulfilmentMethod';
+  }
 }
 
-ThunkAction getFullfillmentMethods({DateTime? newDate}) {
-  return (Store store) async {
+class SetIsDelivery {
+  SetIsDelivery({required this.isDelivery});
+  final bool isDelivery;
+
+  @override
+  String toString() {
+    return 'SetIsDelivery : isDelivery: $isDelivery';
+  }
+}
+
+class SetDeliveryInstructions {
+  SetDeliveryInstructions(this.deliveryInstructions);
+  final String deliveryInstructions;
+
+  @override
+  String toString() {
+    return 'SetDeliveryInstructions : deliveryInstructions: '
+        '$deliveryInstructions';
+  }
+}
+
+class SetPaymentMethod {
+  SetPaymentMethod(this.paymentMethod);
+  final PaymentMethod paymentMethod;
+
+  @override
+  String toString() {
+    return 'SetPaymentMethod : paymentMethod: $paymentMethod';
+  }
+}
+
+class SetPaymentButtonFlag {
+  SetPaymentButtonFlag(this.flag);
+  final bool flag;
+
+  @override
+  String toString() {
+    return 'SetPaymentButtonFlag : flag: $flag';
+  }
+}
+
+ThunkAction<AppState> getFullfillmentMethods({DateTime? newDate}) {
+  return (Store<AppState> store) async {
     try {
-      DateFormat formatter = DateFormat('yyyy-MM-dd');
+      final DateFormat formatter = DateFormat('yyyy-MM-dd');
       FullfilmentMethods fullfilmentMethods;
 
-      if ([null, ""].contains(newDate)) {
+      if (newDate == null) {
         fullfilmentMethods = await peeplEatsService.getFulfilmentSlots(
-            vendorID: store.state.cartState.restaurantID,
-            dateRequired: formatter.format(DateTime.now()));
+          vendorID: store.state.cartState.restaurantID,
+          dateRequired: formatter.format(DateTime.now()),
+        );
       } else {
         fullfilmentMethods = await peeplEatsService.getFulfilmentSlots(
-            vendorID: store.state.cartState.restaurantID,
-            dateRequired: formatter.format(newDate!));
+          vendorID: store.state.cartState.restaurantID,
+          dateRequired: formatter.format(newDate),
+        );
       }
-      store.dispatch(UpdateSlots(fullfilmentMethods.deliverySlots,
-          fullfilmentMethods.collectionSlots));
-
-      store.dispatch(SetFulfilmentFees(
-        fullfilmentMethods.deliveryMethod == null
-            ? 0
-            : fullfilmentMethods.deliveryMethod!['priceModifier'] ?? 0,
-        fullfilmentMethods.collectionMethod == null
-            ? 0
-            : fullfilmentMethods.collectionMethod!['priceModifier'] ?? 0,
-      ));
-
-      store.dispatch(SetFulfilmentMethodIds(
-          fullfilmentMethods.deliveryMethod!['id'],
-          fullfilmentMethods.collectionMethod!['id']));
-
-      store.dispatch(computeCartTotals());
+      store
+        ..dispatch(
+          UpdateSlots(
+            fullfilmentMethods.deliverySlots,
+            fullfilmentMethods.collectionSlots,
+          ),
+        )
+        ..dispatch(
+          SetFulfilmentFees(
+            fullfilmentMethods.deliveryMethod == null
+                ? 0
+                : fullfilmentMethods.deliveryMethod!['priceModifier'] as int? ??
+                    0,
+            fullfilmentMethods.collectionMethod == null
+                ? 0
+                : fullfilmentMethods.collectionMethod!['priceModifier']
+                        as int? ??
+                    0,
+          ),
+        )
+        ..dispatch(
+          SetFulfilmentMethodIds(
+            fullfilmentMethods.deliveryMethod!['id'] as int,
+            fullfilmentMethods.collectionMethod!['id'] as int,
+          ),
+        )
+        ..dispatch(computeCartTotals());
     } catch (e, s) {
       log.error('ERROR - getFullfillmentMethods $e');
       await Sentry.captureException(
@@ -215,11 +328,12 @@ ThunkAction getFullfillmentMethods({DateTime? newDate}) {
   };
 }
 
-ThunkAction updateCartTip(int newTip) {
-  return (Store store) async {
+ThunkAction<AppState> updateCartTip(int newTip) {
+  return (Store<AppState> store) async {
     try {
-      store.dispatch(UpdateTipAmount(newTip));
-      store.dispatch(computeCartTotals());
+      store
+        ..dispatch(UpdateTipAmount(newTip))
+        ..dispatch(computeCartTotals());
     } catch (e, s) {
       log.error('ERROR - updateCartTip $e');
       await Sentry.captureException(
@@ -231,110 +345,149 @@ ThunkAction updateCartTip(int newTip) {
   };
 }
 
-ThunkAction updateCartDiscount(
-    String newDiscountCode, VoidCallback errorCallback) {
-  return (Store store) async {
+ThunkAction<AppState> updateCartDiscount({
+  required String newDiscountCode,
+  required void Function() successCallback,
+  required void Function() errorCallback,
+}) {
+  return (Store<AppState> store) async {
     try {
-      if (newDiscountCode == 'REMOVE') {
-        store.dispatch(UpdateCartDiscount(0, ""));
-        store.dispatch(computeCartTotals());
-      } else {
-        int discountPercent =
-            await peeplEatsService.checkDiscountCode(newDiscountCode).onError(
-          (error, stackTrace) {
-            errorCallback();
-            return 0;
-          },
-        );
+      final int discountPercent =
+          await peeplEatsService.checkDiscountCode(newDiscountCode).onError(
+        (error, stackTrace) {
+          errorCallback();
+          return 0;
+        },
+      );
 
-        if (discountPercent != 0) {
-          store.dispatch(UpdateCartDiscount(discountPercent, newDiscountCode));
-          store.dispatch(computeCartTotals());
-        }
+      if (discountPercent != 0) {
+        store
+          ..dispatch(UpdateCartDiscount(discountPercent, newDiscountCode))
+          ..dispatch(computeCartTotals());
+        successCallback();
       }
     } catch (e, s) {
-      log.error('ERROR - updateComputeUserCart $e');
+      log.error('ERROR - updateCartDiscount $e');
       errorCallback();
       await Sentry.captureException(
         e,
         stackTrace: s,
-        hint: 'ERROR - updateComputeUserCart $e',
+        hint: 'ERROR - updateCartDiscount $e',
       );
     }
   };
 }
 
-ThunkAction updateCartItems(List<CartItem> itemsToAdd) {
-  return (Store store) async {
+ThunkAction<AppState> removeCartDiscount() {
+  return (Store<AppState> store) async {
     try {
-      List<CartItem> cartItems = List.from(store.state.cartState.cartItems);
-
-      cartItems.addAll(itemsToAdd);
-
-      store.dispatch(UpdateCartItems(cartItems: cartItems));
-
-      store.dispatch(computeCartTotals());
+      store
+        ..dispatch(UpdateCartDiscount(0, ''))
+        ..dispatch(computeCartTotals());
     } catch (e, s) {
-      log.error('ERROR - updateComputeUserCart $e');
+      log.error('ERROR - removeCartDiscount $e');
       await Sentry.captureException(
         e,
         stackTrace: s,
-        hint: 'ERROR - updateComputeUserCart $e',
+        hint: 'ERROR - removeCartDiscount $e',
       );
     }
   };
 }
 
-ThunkAction updateCartItemQuantity(CartItem itemToAdd) {
-  return (Store store) async {
+ThunkAction<AppState> updateCartItems(List<CartItem> itemsToAdd) {
+  return (Store<AppState> store) async {
     try {
-      List<CartItem> cartItems = store.state.cartState.cartItems;
-      if (itemToAdd.itemQuantity == 0) {
-        cartItems.removeWhere(
-            (element) => element.internalID == itemToAdd.internalID);
-      } else {
-        int index = cartItems.indexWhere(
-            (element) => element.internalID == itemToAdd.internalID);
+      final List<CartItem> cartItems =
+          List.from(store.state.cartState.cartItems)..addAll(itemsToAdd);
 
-        cartItems.removeWhere(
-            (element) => element.internalID == itemToAdd.internalID);
+      store
+        ..dispatch(UpdateCartItems(cartItems: cartItems))
+        ..dispatch(computeCartTotals());
+    } catch (e, s) {
+      log.error('ERROR - updateCartItems $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - updateCartItems $e',
+      );
+    }
+  };
+}
 
-        cartItems.insert(index, itemToAdd);
+ThunkAction<AppState> addDuplicateCartItem(int itemId) {
+  return (Store<AppState> store) async {
+    try {
+      final cartItem = store.state.cartState.cartItems
+          .where((element) => element.internalID == itemId)
+          .first
+          .copyWith(
+            internalID: Random(
+              DateTime.now().millisecondsSinceEpoch,
+            ).nextInt(100000),
+          );
+
+      final List<CartItem> cartItems =
+          List.from(store.state.cartState.cartItems)..add(cartItem);
+
+      store
+        ..dispatch(UpdateCartItems(cartItems: cartItems))
+        ..dispatch(computeCartTotals());
+    } catch (e, s) {
+      log.error('ERROR - addDuplicateCartItem $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - addDuplicateCartItem $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> removeCartItem(int itemId) {
+  return (Store<AppState> store) async {
+    try {
+      final List<CartItem> cartItems =
+          List.from(store.state.cartState.cartItems)
+            ..removeWhere((element) => element.internalID == itemId);
+
+      store
+        ..dispatch(UpdateCartItems(cartItems: cartItems))
+        ..dispatch(computeCartTotals());
+
+      if (cartItems.isEmpty) {
+        rootRouter.navigateBack();
       }
-
-      store.dispatch(UpdateCartItems(cartItems: cartItems));
-
-      store.dispatch(computeCartTotals());
     } catch (e, s) {
-      log.error('ERROR - updateComputeUserCart $e');
+      log.error('ERROR - removeCartItem $e');
       await Sentry.captureException(
         e,
         stackTrace: s,
-        hint: 'ERROR - updateComputeUserCart $e',
+        hint: 'ERROR - removeCartItem $e',
       );
     }
   };
 }
 
-ThunkAction computeCartTotals() {
-  return (Store store) async {
+ThunkAction<AppState> computeCartTotals() {
+  return (Store<AppState> store) async {
     try {
-      List<CartItem> cartItems = store.state.cartState.cartItems;
+      final List<CartItem> cartItems = store.state.cartState.cartItems;
 
       int cartSubTotal = 0;
-      int cartTax = 0;
+      const int cartTax = 0;
       int cartTotal = 0;
-      int deliveryFee = store.state.cartState.deliveryCharge;
-      int collectionFee = store.state.cartState.collectionCharge;
-      int platformFee = store.state.cartState.restaurantPlatformFee;
-      int cartDiscountPercent = store.state.cartState.cartDiscountPercent;
+      final int deliveryFee = store.state.cartState.deliveryCharge;
+      final int collectionFee = store.state.cartState.collectionCharge;
+      final int platformFee = store.state.cartState.restaurantPlatformFee;
+      final int cartDiscountPercent = store.state.cartState.cartDiscountPercent;
       int cartDiscountComputed = 0;
-      int cartTip = store.state.cartState.selectedTipAmount * 100;
-      bool isDelivery = store.state.cartState.isDelivery;
+      final int cartTip = store.state.cartState.selectedTipAmount;
+      final bool isDelivery = store.state.cartState.isDelivery;
 
-      cartItems.forEach((element) {
+      for (final element in cartItems) {
         cartSubTotal += element.totalItemPrice;
-      });
+      }
 
       // add price of each order Item (which has options included)
 
@@ -353,160 +506,501 @@ ThunkAction computeCartTotals() {
                 cartDiscountComputed;
       }
 
-      store.dispatch(UpdateComputedCartValues(
-          cartSubTotal, cartTax, cartTotal, cartDiscountComputed));
+      if (cartItems.isEmpty) {
+        cartSubTotal = 0;
+        cartTotal = 0;
+        cartDiscountComputed = 0;
+      }
+
+      store.dispatch(
+        UpdateComputedCartValues(
+          cartSubTotal,
+          cartTax,
+          cartTotal,
+          cartDiscountComputed,
+        ),
+      );
     } catch (e, s) {
-      log.error('ERROR - updateComputeUserCart $e');
+      log.error('ERROR - computeCartTotals $e');
       await Sentry.captureException(
         e,
         stackTrace: s,
-        hint: 'ERROR - updateComputeUserCart $e',
+        hint: 'ERROR - computeCartTotals $e',
       );
     }
   };
 }
 
-ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
-    VoidCallback successCallback) {
-  return (Store store) async {
-    int temp = ((store.state.cartState.cartSubTotal *
-            store.state.cartState.cartDiscountPercent) ~/
-        100);
-
+ThunkAction<AppState> startOrderCreationProcess({
+  required BuildContext context,
+}) {
+  return (Store<AppState> store) async {
     try {
-      if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.none) {
-        errorCallback("Please select or create an address");
-        return;
-      } else if (store.state.cartState.selectedTimeSlot.isEmpty) {
-        errorCallback("Please select a time slot");
-        return;
-      } else if (store.state.cartState.restaurantMinimumOrder >
-          store.state.cartState.cartSubTotal - temp) {
-        errorCallback("Your order does not satisfy the minimum order amount");
+      final cartState = store.state.cartState;
+      if (cartState.selectedTimeSlot.isEmpty) {
+        showErrorSnack(context: context, title: 'Please select a time slot');
         return;
       }
-
-      Map<String, dynamic> orderObject = {};
-
-      orderObject.addAll({
-        "items": store.state.cartState.cartItems
-            .map(
-              (e) => {
-                "id": int.parse(e.menuItem.menuItemID),
-                "quantity": e.itemQuantity,
-                "options": e.selectedProductOptions.map(
-                  (key, value) =>
-                      MapEntry<String, int>(key.toString(), value.optionID),
-                ),
-              },
-            )
-            .toList(),
-        "total": store.state.cartState.cartTotal,
-        "tipAmount": store.state.cartState.selectedTipAmount * 100,
-        "marketingOptIn": false,
-        "discountCode": store.state.cartState.discountCode,
-        "vendor": store.state.cartState.restaurantID,
-        "walletAddress": store.state.cartState.userWalletAddress
-      });
-
-      if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.delivery) {
-        if (store.state.cartState.selectedDeliveryAddress == null) {
-          errorCallback("Please select an address");
-          return;
-        }
-        DeliveryAddresses selectedAddress =
-            store.state.cartState.selectedDeliveryAddress!;
-
-        orderObject.addAll(
-          {
-            "address": {
-              "name": store.state.cartState.userDisplayName,
-              "phoneNumber": selectedAddress.phoneNumber ?? "",
-              "email": "email@notprovided.com",
-              "lineOne": selectedAddress.addressLine1,
-              "lineTwo": selectedAddress.addressLine2 +
-                  ", " +
-                  selectedAddress.townCity,
-              "postCode": selectedAddress.postalCode,
-              "deliveryInstructions":
-                  store.state.cartState.deliveryInstructions,
-            },
-            "fulfilmentMethod": store.state.cartState.deliveryMethodId,
-            "fulfilmentSlotFrom": formatDateForOrderObject(
-                store.state.cartState.selectedTimeSlot.entries.first.value),
-            "fulfilmentSlotTo": formatDateForOrderObject(
-                store.state.cartState.selectedTimeSlot.entries.last.value),
-          },
+      if (cartState.selectedDeliveryAddress == null && cartState.isDelivery) {
+        showErrorSnack(
+          context: context,
+          title: 'Please select a delivery address',
         );
-      } else if (store.state.cartState.fulfilmentMethod ==
-          FulfilmentMethod.collection) {
-        orderObject.addAll(
-          {
-            "address": {
-              "name": store.state.cartState.userDisplayName,
-              "email": "email@notprovided.com",
-              "phoneNumber": "12345678",
-              "lineOne": "Collection Order",
-              "lineTwo": "",
-              "postCode": "L7 0HG",
-              "deliveryInstructions":
-                  store.state.cartState.deliveryInstructions,
-            },
-            "fulfilmentMethod": store.state.cartState.collectionMethodId,
-            "fulfilmentSlotFrom": formatDateForOrderObject(
-                store.state.cartState.selectedTimeSlot.entries.first.value),
-            "fulfilmentSlotTo": formatDateForOrderObject(
-                store.state.cartState.selectedTimeSlot.entries.last.value),
-          },
-        );
+        return;
       }
-
-      print("Order Object Created: ${json.encode(orderObject).toString()}");
-
-      //Call create order API with prepared orderobject
-      Map result = await peeplEatsService
-          .createOrder(orderObject)
-          .timeout(Duration(seconds: 10), onTimeout: () {
-        return {}; //return empty map on timeout to trigger errorCallback
-      });
-
-      if (result.isNotEmpty) {
-        store.dispatch(UpdatePaymentIntentID(result['paymentIntentID']));
-        //Call Peepl Pay API to start checking the paymentIntentID
-        Map checkResult = await peeplPayService
-            .startPaymentIntentCheck(result['paymentIntentID']);
-
-        print("Order Result $result");
-
-        //Crosscheck the PaymentIntentID with the amount calculcated on device.
-        if (checkResult['paymentIntent']['amount'] ==
-            store.state.cartState.cartTotal) {
-          store.dispatch(CreateOrder(
-              result['orderID'].toString(), result['paymentIntentID']));
-
-          //Payment Function that calls the actual app payment sheet
-          paymentFunction(result['paymentIntentID']);
-          successCallback();
-        } else {
-          //check if it is better to just update the total value with the api returned or return an error
-          errorCallback("Order totals aren't matching");
-        }
+      if (cartState.restaurantMinimumOrder > cartState.cartSubTotal) {
+        showErrorSnack(
+          context: context,
+          title: 'This restaurant is not accepting orders below'
+              '${cartState.restaurantMinimumOrder.formattedPrice}',
+        );
       } else {
-        errorCallback("Our servers seem to be down");
-      }
-    } on DioError catch (e) {
-      if (e.response != null) {
-        print(e.response!.data);
-        errorCallback(
-            getErrorMessageForOrder(e.response!.data['cause']['code']));
+        if (cartState.isDelivery) {
+          store.dispatch(
+            prepareOrderObjectForDelivery(context: context),
+          );
+        } else {
+          store.dispatch(
+            prepareOrderObjectForCollection(context: context),
+          );
+        }
       }
     } catch (e, s) {
-      errorCallback("Something went wrong");
-      log.error('ERROR - prepareAndSendOrder $e');
+      log.error('ERROR - checkCartForErrors $e');
       await Sentry.captureException(
         e,
         stackTrace: s,
-        hint: 'ERROR - prepareAndSendOrder $e',
+        hint: 'ERROR - checkCartForErrors $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> prepareOrderObjectForDelivery({
+  required BuildContext context,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      final DeliveryAddresses selectedAddress =
+          store.state.cartState.selectedDeliveryAddress!;
+      final Map<String, dynamic> orderObject = {}
+        ..addAll({
+          'items': store.state.cartState.cartItems
+              .map(
+                (e) => {
+                  'id': int.parse(e.menuItem.menuItemID),
+                  'quantity': e.itemQuantity,
+                  'options': e.selectedProductOptions.map(
+                    (key, value) =>
+                        MapEntry<String, int>(key.toString(), value.optionID),
+                  ),
+                },
+              )
+              .toList(),
+          'total': store.state.cartState.cartTotal,
+          'tipAmount': store.state.cartState.selectedTipAmount,
+          'marketingOptIn': false,
+          'discountCode': store.state.cartState.discountCode,
+          'vendor': store.state.cartState.restaurantID,
+          'walletAddress': store.state.userState.walletAddress,
+        })
+        ..addAll(
+          {
+            'address': {
+              'name': store.state.userState.displayName,
+              'phoneNumber': store.state.userState.phoneNumber,
+              'email': store.state.userState.email.isEmpty
+                  ? 'email@notprovided.com'
+                  : store.state.userState.email,
+              'lineOne': selectedAddress.addressLine1,
+              'lineTwo': '${selectedAddress.addressLine2}, '
+                  '${selectedAddress.townCity}',
+              'postCode': selectedAddress.postalCode,
+              'deliveryInstructions':
+                  store.state.cartState.deliveryInstructions,
+            },
+            'fulfilmentMethod': store.state.cartState.deliveryMethodId,
+            'fulfilmentSlotFrom': formatDateForOrderObject(
+              store.state.cartState.selectedTimeSlot.entries.first.value,
+            ),
+            'fulfilmentSlotTo': formatDateForOrderObject(
+              store.state.cartState.selectedTimeSlot.entries.last.value,
+            ),
+          },
+        );
+
+      log.info(orderObject);
+
+      store.dispatch(
+        sendOrderObject(
+          orderObject: orderObject,
+          context: context,
+        ),
+      );
+    } catch (e, s) {
+      log.error('ERROR - prepareOrderObjectForDelivery $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - prepareOrderObjectForDelivery $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> prepareOrderObjectForCollection({
+  required BuildContext context,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      final Map<String, dynamic> orderObject = {}
+        ..addAll({
+          'items': store.state.cartState.cartItems
+              .map(
+                (e) => {
+                  'id': int.parse(e.menuItem.menuItemID),
+                  'quantity': e.itemQuantity,
+                  'options': e.selectedProductOptions.map(
+                    (key, value) =>
+                        MapEntry<String, int>(key.toString(), value.optionID),
+                  ),
+                },
+              )
+              .toList(),
+          'total': store.state.cartState.cartTotal,
+          'tipAmount': store.state.cartState.selectedTipAmount,
+          'marketingOptIn': false,
+          'discountCode': store.state.cartState.discountCode,
+          'vendor': store.state.cartState.restaurantID,
+          'walletAddress': store.state.userState.walletAddress,
+        })
+        ..addAll(
+          {
+            'address': {
+              'name': store.state.userState.displayName,
+              'email': store.state.userState.email == ''
+                  ? 'email@notprovided.com'
+                  : store.state.userState.email,
+              'phoneNumber': store.state.userState.phoneNumber,
+              'lineOne': 'Collection Order',
+              'lineTwo': store.state.cartState.restaurantAddress!.shortAddress,
+              'postCode': store.state.cartState.restaurantAddress!.postalCode,
+              'deliveryInstructions':
+                  store.state.cartState.deliveryInstructions,
+            },
+            'fulfilmentMethod': store.state.cartState.collectionMethodId,
+            'fulfilmentSlotFrom': formatDateForOrderObject(
+              store.state.cartState.selectedTimeSlot.entries.first.value,
+            ),
+            'fulfilmentSlotTo': formatDateForOrderObject(
+              store.state.cartState.selectedTimeSlot.entries.last.value,
+            ),
+          },
+        );
+
+      log.info(orderObject);
+      store.dispatch(
+        sendOrderObject(orderObject: orderObject, context: context),
+      );
+    } catch (e, s) {
+      log.error('ERROR - prepareOrderObjectForCollection $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - prepareOrderObjectForCollection $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> sendOrderObject({
+  required Map<String, dynamic> orderObject,
+  required BuildContext context,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      store.dispatch(SetPaymentButtonFlag(true));
+      final Map<String, dynamic> result =
+          await peeplEatsService.createOrder(orderObject).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          return {};
+        },
+      );
+
+      if (result.isEmpty) {
+        showErrorSnack(context: context, title: 'The operation has timed out');
+      } else {
+        log.info('Order Result $result');
+        final Map<String, dynamic> checkResult = await peeplPayService
+            .checkOrderValidity(result['paymentIntentID'] as String);
+
+        final Map<String, dynamic> paymentIntent =
+            checkResult['paymentIntent'] as Map<String, dynamic>;
+
+        if (paymentIntent['amount'] != store.state.cartState.cartTotal) {
+          showErrorSnack(
+            context: context,
+            title: "Order totals aren't matching",
+          );
+        } else {
+          store
+            ..dispatch(
+              CreateOrder(
+                result['orderID'].toString(),
+                result['paymentIntentID'] as String,
+              ),
+            )
+            ..dispatch(startPaymentProcess(context: context));
+        }
+      }
+    } on DioError catch (e) {
+      store.dispatch(SetPaymentButtonFlag(false));
+      if (e.response != null) {
+        log.error(e.response!.data);
+        await Sentry.captureException(
+          e,
+          hint: 'DioError - sendOrderObject - '
+              "${e.response!.data['cause']['code']}",
+        );
+        showErrorSnack(
+          context: context,
+          title: getErrorMessageForOrder(
+            e.response!.data['cause']['code'] as String,
+          ),
+        );
+      }
+    } catch (e, s) {
+      store.dispatch(SetPaymentButtonFlag(false));
+      log.error('ERROR - sendOrderObject $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - sendOrderObject $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> startPaymentProcess({
+  required BuildContext context,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      //TODO: start payment process on the guide here
+      // if (store.state.cartState.selectedPaymentMethod == PaymentMethod.stripe) {
+      //   await stripeService
+      //       .handleStripe(
+      //     walletAddress: store.state.userState.walletAddress,
+      //     amount: store.state.cartState.cartTotal,
+      //     context: context,
+      //     shouldPushToHome: false,
+      //   )
+      //       .then(
+      //     (value) {
+      //       if (!value) {
+      //         store.dispatch(SetTransferringPayment(flag: value));
+      //         return;
+      //       }
+      //       store
+      //         ..dispatch(
+      //           UpdateSelectedAmounts(
+      //             gbpxAmount: (store.state.cartState.cartTotal) / 100,
+      //             pplAmount: 0,
+      //           ),
+      //         )
+      //         ..dispatch(
+      //           startTokenPaymentToRestaurant(
+      //             context: context,
+      //           ),
+      //         );
+      //     },
+      //   );
+      // } else if (store.state.cartState.selectedPaymentMethod ==
+      //     PaymentMethod.peeplPay) {
+      //   //show the peepl pay sheet
+      //   //user selects to pay with peepl rewards or GBPx
+      //   //if gbpx is not enough -> stripe payment until GBPx gets added.
+      //   //transfer tokens
+      //   //show loading popup
+      //   //show order confirmed
+
+      //   await showModalBottomSheet<Widget>(
+      //     isScrollControlled: true,
+      //     backgroundColor: Colors.grey[900],
+      //     shape: const RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.vertical(
+      //         top: Radius.circular(20),
+      //       ),
+      //     ),
+      //     elevation: 5,
+      //     context: context,
+      //     builder: (context) => const PaymentSheet(),
+      //   );
+      // }
+    } catch (e, s) {
+      store.dispatch(SetPaymentButtonFlag(false));
+      log.error('ERROR - sendOrderObject $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - sendOrderObject $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> startPaymentConfirmationCheck() {
+  return (Store<AppState> store) async {
+    int counter = 0;
+    Timer.periodic(
+      const Duration(seconds: 4),
+      (timer) async {
+        try {
+          final Future<Map<dynamic, dynamic>> checkOrderResponse =
+              peeplEatsService.checkOrderStatus(store.state.cartState.orderID);
+
+          await checkOrderResponse.then(
+            (completedValue) {
+              counter++;
+              log.info(
+                'PaymentStatus: ${completedValue["paymentStatus"]}, '
+                'counter: $counter',
+              );
+              if (completedValue['paymentStatus'] == 'paid') {
+                store
+                  ..dispatch(SetTransferringPayment(flag: false))
+                  ..dispatch(SetConfirmed(flag: true));
+                timer.cancel();
+              }
+            },
+          );
+
+          if (counter > 10) {
+            timer.cancel();
+            throw Exception('Payment checks exceeded time limit: '
+                'orderID: ${store.state.cartState.orderID}');
+          }
+        } catch (e, s) {
+          store.dispatch(SetError(flag: true));
+          log.error('ERROR - startPaymentConfirmationCheck $e');
+          await Sentry.captureException(
+            e,
+            stackTrace: s,
+            hint: 'ERROR - startPaymentConfirmationCheck $e',
+          );
+        }
+      },
+    );
+  };
+}
+
+ThunkAction<AppState> setRestaurantDetails({
+  required String restaurantID,
+  required String restaurantName,
+  required DeliveryAddresses restaurantAddress,
+  required String walletAddress,
+  required int minimumOrder,
+  required int platformFee,
+  required VoidCallback sendSnackBar,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      //If cart has existing items -> clear cart, set new restaurant details,
+      // show snackbar if cart had items.
+
+      if (store.state.cartState.restaurantName.isNotEmpty &&
+          store.state.cartState.restaurantID.isNotEmpty) {
+        sendSnackBar();
+        store
+          ..dispatch(ClearCart())
+          ..dispatch(
+            SetRestaurantDetails(
+              restaurantID,
+              restaurantName,
+              restaurantAddress,
+              walletAddress,
+              minimumOrder,
+              platformFee,
+            ),
+          );
+      } else {
+        store.dispatch(
+          SetRestaurantDetails(
+            restaurantID,
+            restaurantName,
+            restaurantAddress,
+            walletAddress,
+            minimumOrder,
+            platformFee,
+          ),
+        );
+      }
+      // If cart does not have existing items -> set new restaurant details
+
+    } catch (e, s) {
+      store.dispatch(SetError(flag: true));
+      log.error('ERROR - setRestaurantDetails $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - setRestaurantDetails $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> updateInstructions({
+  required String instructions,
+  required void Function() successCallback,
+  required void Function() errorCallback,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      store.dispatch(SetDeliveryInstructions(instructions));
+      successCallback();
+    } catch (e, s) {
+      log.error('ERROR - updateInstructions $e');
+      errorCallback();
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - updateInstructions $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> removeInstructions() {
+  return (Store<AppState> store) async {
+    try {
+      store.dispatch(SetDeliveryInstructions(''));
+    } catch (e, s) {
+      log.error('ERROR - removeInstructions $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - removeInstructions $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> setDeliveryAddress({
+  required int id,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      final address = store.state.userState.listOfDeliveryAddresses
+          .where((element) => element.internalID == id)
+          .first;
+      store.dispatch(UpdateSelectedDeliveryAddress(address));
+    } catch (e, s) {
+      log.error('ERROR - setDeliveryAddress $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - setDeliveryAddress $e',
       );
     }
   };
@@ -530,8 +1024,8 @@ ThunkAction startCheckTimer(
               print("after .then");
               if (completedValue['paymentStatus'] == "paid") {
                 print("inside paid");
-                store.dispatch(SetTransferringPayment(false));
-                store.dispatch(SetConfirmed(true));
+                store.dispatch(SetTransferringPayment(flag: false));
+                store.dispatch(SetConfirmed(flag: true));
                 successCallback();
                 timer.cancel();
               }
@@ -540,7 +1034,7 @@ ThunkAction startCheckTimer(
         },
       );
     } catch (e, s) {
-      store.dispatch(SetError(true));
+      store.dispatch(SetError(flag: true));
       log.error('ERROR - sendTokenPayment $e');
       await Sentry.captureException(
         e,
@@ -551,96 +1045,148 @@ ThunkAction startCheckTimer(
   };
 }
 
-ThunkAction setRestaurantDetails({
-  required String restaurantID,
-  required String restaurantName,
-  required DeliveryAddresses restaurantAddress,
-  required String walletAddress,
-  required int minimumOrder,
-  required int platformFee,
-  required VoidCallback sendSnackBar,
-}) {
-  return (Store store) async {
-    try {
-      //If cart has existing items -> clear cart, set new restaurant details, show snackbar if cart had items.
+// ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
+//     VoidCallback successCallback) {
+//   return (Store store) async {
+//     int temp = ((store.state.cartState.cartSubTotal *
+//             store.state.cartState.cartDiscountPercent) ~/
+//         100);
 
-      if (store.state.cartState.restaurantName.isNotEmpty &&
-          store.state.cartState.restaurantID.isNotEmpty) {
-        sendSnackBar();
-        store.dispatch(ClearCart());
-        store.dispatch(
-          SetRestaurantDetails(
-            restaurantID,
-            restaurantName,
-            restaurantAddress,
-            walletAddress,
-            minimumOrder,
-            platformFee,
-          ),
-        );
-      } else {
-        store.dispatch(
-          SetRestaurantDetails(
-            restaurantID,
-            restaurantName,
-            restaurantAddress,
-            walletAddress,
-            minimumOrder,
-            platformFee,
-          ),
-        );
-      }
-      // If cart does not have existing items -> set new restaurant details
+//     try {
+//       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.none) {
+//         errorCallback("Please select or create an address");
+//         return;
+//       } else if (store.state.cartState.selectedTimeSlot.isEmpty) {
+//         errorCallback("Please select a time slot");
+//         return;
+//       } else if (store.state.cartState.restaurantMinimumOrder >
+//           store.state.cartState.cartSubTotal - temp) {
+//         errorCallback("Your order does not satisfy the minimum order amount");
+//         return;
+//       }
 
-    } catch (e, s) {
-      store.dispatch(SetError(true));
-      log.error('ERROR - setRestaurantDetails $e');
-      await Sentry.captureException(
-        e,
-        stackTrace: s,
-        hint: 'ERROR - setRestaurantDetails $e',
-      );
-    }
-  };
-}
+//       Map<String, dynamic> orderObject = {};
 
-ThunkAction addNewDeliveryAddress(DeliveryAddresses newAddress) {
-  return (Store store) {
-    List<DeliveryAddresses> listOfAddresses =
-        List.from(store.state.cartState.listOfDeliveryAddresses);
+//       orderObject.addAll({
+//         "items": store.state.cartState.cartItems
+//             .map(
+//               (e) => {
+//                 "id": int.parse(e.menuItem.menuItemID),
+//                 "quantity": e.itemQuantity,
+//                 "options": e.selectedProductOptions.map(
+//                   (key, value) =>
+//                       MapEntry<String, int>(key.toString(), value.optionID),
+//                 ),
+//               },
+//             )
+//             .toList(),
+//         "total": store.state.cartState.cartTotal,
+//         "tipAmount": store.state.cartState.selectedTipAmount * 100,
+//         "marketingOptIn": false,
+//         "discountCode": store.state.cartState.discountCode,
+//         "vendor": store.state.cartState.restaurantID,
+//         "walletAddress": store.state.cartState.userWalletAddress
+//       });
 
-    int index = listOfAddresses
-        .indexWhere((element) => element.internalID == newAddress.internalID);
+//       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.delivery) {
+//         if (store.state.cartState.selectedDeliveryAddress == null) {
+//           errorCallback("Please select an address");
+//           return;
+//         }
+//         DeliveryAddresses selectedAddress =
+//             store.state.cartState.selectedDeliveryAddress!;
 
-    listOfAddresses.removeWhere((element) {
-      return element.internalID == newAddress.internalID;
-    });
+//         orderObject.addAll(
+//           {
+//             "address": {
+//               "name": store.state.cartState.userDisplayName,
+//               "phoneNumber": selectedAddress.phoneNumber ?? "",
+//               "email": "email@notprovided.com",
+//               "lineOne": selectedAddress.addressLine1,
+//               "lineTwo": selectedAddress.addressLine2 +
+//                   ", " +
+//                   selectedAddress.townCity,
+//               "postCode": selectedAddress.postalCode,
+//               "deliveryInstructions":
+//                   store.state.cartState.deliveryInstructions,
+//             },
+//             "fulfilmentMethod": store.state.cartState.deliveryMethodId,
+//             "fulfilmentSlotFrom": formatDateForOrderObject(
+//                 store.state.cartState.selectedTimeSlot.entries.first.value),
+//             "fulfilmentSlotTo": formatDateForOrderObject(
+//                 store.state.cartState.selectedTimeSlot.entries.last.value),
+//           },
+//         );
+//       } else if (store.state.cartState.fulfilmentMethod ==
+//           FulfilmentMethod.collection) {
+//         orderObject.addAll(
+//           {
+//             "address": {
+//               "name": store.state.cartState.userDisplayName,
+//               "email": "email@notprovided.com",
+//               "phoneNumber": "12345678",
+//               "lineOne": "Collection Order",
+//               "lineTwo": "",
+//               "postCode": "L7 0HG",
+//               "deliveryInstructions":
+//                   store.state.cartState.deliveryInstructions,
+//             },
+//             "fulfilmentMethod": store.state.cartState.collectionMethodId,
+//             "fulfilmentSlotFrom": formatDateForOrderObject(
+//                 store.state.cartState.selectedTimeSlot.entries.first.value),
+//             "fulfilmentSlotTo": formatDateForOrderObject(
+//                 store.state.cartState.selectedTimeSlot.entries.last.value),
+//           },
+//         );
+//       }
 
-    index == -1
-        ? listOfAddresses.add(newAddress)
-        : listOfAddresses.insert(index, newAddress);
+//       print("Order Object Created: ${json.encode(orderObject).toString()}");
 
-    store.dispatch(AddDeliveryAddress(listOfAddresses));
-    store.dispatch(UpdateSelectedDeliveryAddress(newAddress));
-  };
-}
+//       //Call create order API with prepared orderobject
+//       Map result = await peeplEatsService
+//           .createOrder(orderObject)
+//           .timeout(Duration(seconds: 10), onTimeout: () {
+//         return {}; //return empty map on timeout to trigger errorCallback
+//       });
 
-ThunkAction deleteExistingDeliveryAddress(
-    DeliveryAddresses addressToBeDeleted) {
-  return (Store store) {
-    List<DeliveryAddresses> listOfAddresses =
-        List.from(store.state.cartState.listOfDeliveryAddresses);
+//       if (result.isNotEmpty) {
+//         store.dispatch(UpdatePaymentIntentID(result['paymentIntentID']));
+//         //Call Peepl Pay API to start checking the paymentIntentID
+//         Map checkResult = await peeplPayService
+//             .startPaymentIntentCheck(result['paymentIntentID']);
 
-    int indexOfAddress = listOfAddresses.indexOf(addressToBeDeleted);
-    listOfAddresses.removeAt(indexOfAddress);
+//         print("Order Result $result");
 
-    store.dispatch(AddDeliveryAddress(listOfAddresses));
-    listOfAddresses.isEmpty
-        ? store.dispatch(UpdateSelectedDeliveryAddress(null))
-        : listOfAddresses.length - 1 == indexOfAddress
-            ? store.dispatch(
-                UpdateSelectedDeliveryAddress(listOfAddresses[indexOfAddress]))
-            : store.dispatch(UpdateSelectedDeliveryAddress(
-                listOfAddresses[indexOfAddress - 1]));
-  };
-}
+//         //Crosscheck the PaymentIntentID with the amount calculcated on device.
+//         if (checkResult['paymentIntent']['amount'] ==
+//             store.state.cartState.cartTotal) {
+//           store.dispatch(CreateOrder(
+//               result['orderID'].toString(), result['paymentIntentID']));
+
+//           //Payment Function that calls the actual app payment sheet
+//           paymentFunction(result['paymentIntentID']);
+//           successCallback();
+//         } else {
+//           //check if it is better to just update the total value with the api returned or return an error
+//           errorCallback("Order totals aren't matching");
+//         }
+//       } else {
+//         errorCallback("Our servers seem to be down");
+//       }
+//     } on DioError catch (e) {
+//       if (e.response != null) {
+//         print(e.response!.data);
+//         errorCallback(
+//             getErrorMessageForOrder(e.response!.data['cause']['code']));
+//       }
+//     } catch (e, s) {
+//       errorCallback("Something went wrong");
+//       log.error('ERROR - prepareAndSendOrder $e');
+//       await Sentry.captureException(
+//         e,
+//         stackTrace: s,
+//         hint: 'ERROR - prepareAndSendOrder $e',
+//       );
+//     }
+//   };
+// }

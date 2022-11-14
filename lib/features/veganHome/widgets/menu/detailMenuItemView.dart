@@ -11,29 +11,40 @@ import 'package:vegan_liverpool/redux/viewsmodels/detailMenuItem.dart';
 class DetailMenuItemView extends StatefulWidget {
   const DetailMenuItemView({Key? key}) : super(key: key);
   @override
-  _DetailMenuItemViewState createState() => _DetailMenuItemViewState();
+  State<DetailMenuItemView> createState() => _DetailMenuItemViewState();
 }
 
 class _DetailMenuItemViewState extends State<DetailMenuItemView> {
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return StoreConnector<AppState, DetailMenuItem>(
       converter: DetailMenuItem.fromStore,
+      distinct: true,
       onInit: (store) {
-        store.dispatch(fetchProductOptions(store.state.menuItemState.menuItem!.menuItemID));
+        if (store.state.menuItemState.menuItem != null) {
+          store.dispatch(
+            fetchProductOptions(
+              store.state.menuItemState.menuItem!.menuItemID,
+            ),
+          );
+        }
       },
       builder: (_, viewmodel) {
+        if (viewmodel.menuItem == null) {
+          return const SizedBox.shrink();
+        }
         return Stack(
           children: [
-            Scaffold(
-              body: ListView(
-                physics: ClampingScrollPhysics(),
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Stack(
                     children: [
-                      Container(
+                      SizedBox(
                         width: double.infinity,
-                        height: 350.0,
+                        height: 350,
                         child: CachedNetworkImage(
                           imageUrl: viewmodel.menuItem!.imageURL,
                           fit: BoxFit.cover,
@@ -46,48 +57,64 @@ class _DetailMenuItemViewState extends State<DetailMenuItemView> {
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey[800]!,
-                                offset: Offset(0, -5),
+                                offset: const Offset(0, -5),
                                 blurRadius: 10,
                               )
                             ],
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(100)),
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(100),
+                            ),
                             color: Colors.white,
                           ),
-                          width: MediaQuery.of(context).size.width,
+                          width: size.width,
                           height: 30,
                         ),
                       ),
                     ],
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           viewmodel.menuItem!.name,
-                          style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w900),
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
                           cFPrice(viewmodel.totalPrice),
-                          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w900),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Text(
                           parseHtmlString(viewmodel.menuItem!.description),
-                          style: TextStyle(fontSize: 18.0),
+                          style: const TextStyle(fontSize: 18),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 25,
                         ),
-                        ProductOptionsView(),
+                        if (viewmodel.loadingProductOptions)
+                          const SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        else
+                          const ProductOptionsView(),
                         SizedBox(
-                          height: 100,
+                          height: size.height * 0.2,
                         ),
                       ],
                     ),
@@ -95,7 +122,7 @@ class _DetailMenuItemViewState extends State<DetailMenuItemView> {
                 ],
               ),
             ),
-            DetailMenuViewFloatingBar(),
+            const DetailMenuViewFloatingBar(),
           ],
         );
       },

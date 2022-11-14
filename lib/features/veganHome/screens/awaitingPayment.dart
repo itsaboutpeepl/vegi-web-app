@@ -13,8 +13,8 @@ class AwaitingPaymentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, CheckoutViewModel>(
-      converter: CheckoutViewModel.fromStore,
+    return StoreConnector<AppState, void>(
+      converter: (store) {},
       onInit: (store) {
         store.dispatch(startCheckTimer(
             () => context.router.push(OrderConfirmedScreen()),

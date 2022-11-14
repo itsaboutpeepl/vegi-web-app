@@ -30,6 +30,8 @@ mixin _$MenuItemState {
   Map<int, ProductOptions> get selectedProductOptionsForCategory =>
       throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
+  bool get loadingProductOptions => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
   int get quantity => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,6 +55,8 @@ abstract class $MenuItemStateCopyWith<$Res> {
       @JsonKey(ignore: true)
           Map<int, ProductOptions> selectedProductOptionsForCategory,
       @JsonKey(ignore: true)
+          bool loadingProductOptions,
+      @JsonKey(ignore: true)
           int quantity});
 
   $RestaurantMenuItemCopyWith<$Res>? get menuItem;
@@ -73,6 +77,7 @@ class _$MenuItemStateCopyWithImpl<$Res>
     Object? totalPrice = freezed,
     Object? itemReward = freezed,
     Object? selectedProductOptionsForCategory = freezed,
+    Object? loadingProductOptions = freezed,
     Object? quantity = freezed,
   }) {
     return _then(_value.copyWith(
@@ -93,6 +98,10 @@ class _$MenuItemStateCopyWithImpl<$Res>
           ? _value.selectedProductOptionsForCategory
           : selectedProductOptionsForCategory // ignore: cast_nullable_to_non_nullable
               as Map<int, ProductOptions>,
+      loadingProductOptions: loadingProductOptions == freezed
+          ? _value.loadingProductOptions
+          : loadingProductOptions // ignore: cast_nullable_to_non_nullable
+              as bool,
       quantity: quantity == freezed
           ? _value.quantity
           : quantity // ignore: cast_nullable_to_non_nullable
@@ -129,6 +138,8 @@ abstract class _$$_MenuItemStateCopyWith<$Res>
       @JsonKey(ignore: true)
           Map<int, ProductOptions> selectedProductOptionsForCategory,
       @JsonKey(ignore: true)
+          bool loadingProductOptions,
+      @JsonKey(ignore: true)
           int quantity});
 
   @override
@@ -152,6 +163,7 @@ class __$$_MenuItemStateCopyWithImpl<$Res>
     Object? totalPrice = freezed,
     Object? itemReward = freezed,
     Object? selectedProductOptionsForCategory = freezed,
+    Object? loadingProductOptions = freezed,
     Object? quantity = freezed,
   }) {
     return _then(_$_MenuItemState(
@@ -172,6 +184,10 @@ class __$$_MenuItemStateCopyWithImpl<$Res>
           ? _value.selectedProductOptionsForCategory
           : selectedProductOptionsForCategory // ignore: cast_nullable_to_non_nullable
               as Map<int, ProductOptions>,
+      loadingProductOptions: loadingProductOptions == freezed
+          ? _value.loadingProductOptions
+          : loadingProductOptions // ignore: cast_nullable_to_non_nullable
+              as bool,
       quantity: quantity == freezed
           ? _value.quantity
           : quantity // ignore: cast_nullable_to_non_nullable
@@ -189,6 +205,7 @@ class _$_MenuItemState extends _MenuItemState {
       @JsonKey(ignore: true) this.totalPrice = 0,
       @JsonKey(ignore: true) this.itemReward = 0,
       @JsonKey(ignore: true) this.selectedProductOptionsForCategory = const {},
+      @JsonKey(ignore: true) this.loadingProductOptions = false,
       @JsonKey(ignore: true) this.quantity = 0})
       : super._();
 
@@ -209,11 +226,14 @@ class _$_MenuItemState extends _MenuItemState {
   final Map<int, ProductOptions> selectedProductOptionsForCategory;
   @override
   @JsonKey(ignore: true)
+  final bool loadingProductOptions;
+  @override
+  @JsonKey(ignore: true)
   final int quantity;
 
   @override
   String toString() {
-    return 'MenuItemState(menuItem: $menuItem, totalPrice: $totalPrice, itemReward: $itemReward, selectedProductOptionsForCategory: $selectedProductOptionsForCategory, quantity: $quantity)';
+    return 'MenuItemState(menuItem: $menuItem, totalPrice: $totalPrice, itemReward: $itemReward, selectedProductOptionsForCategory: $selectedProductOptionsForCategory, loadingProductOptions: $loadingProductOptions, quantity: $quantity)';
   }
 
   @override
@@ -229,6 +249,8 @@ class _$_MenuItemState extends _MenuItemState {
             const DeepCollectionEquality().equals(
                 other.selectedProductOptionsForCategory,
                 selectedProductOptionsForCategory) &&
+            const DeepCollectionEquality()
+                .equals(other.loadingProductOptions, loadingProductOptions) &&
             const DeepCollectionEquality().equals(other.quantity, quantity));
   }
 
@@ -240,6 +262,7 @@ class _$_MenuItemState extends _MenuItemState {
       const DeepCollectionEquality().hash(totalPrice),
       const DeepCollectionEquality().hash(itemReward),
       const DeepCollectionEquality().hash(selectedProductOptionsForCategory),
+      const DeepCollectionEquality().hash(loadingProductOptions),
       const DeepCollectionEquality().hash(quantity));
 
   @JsonKey(ignore: true)
@@ -266,6 +289,8 @@ abstract class _MenuItemState extends MenuItemState {
       @JsonKey(ignore: true)
           final Map<int, ProductOptions> selectedProductOptionsForCategory,
       @JsonKey(ignore: true)
+          final bool loadingProductOptions,
+      @JsonKey(ignore: true)
           final int quantity}) = _$_MenuItemState;
   _MenuItemState._() : super._();
 
@@ -284,6 +309,9 @@ abstract class _MenuItemState extends MenuItemState {
   @override
   @JsonKey(ignore: true)
   Map<int, ProductOptions> get selectedProductOptionsForCategory;
+  @override
+  @JsonKey(ignore: true)
+  bool get loadingProductOptions;
   @override
   @JsonKey(ignore: true)
   int get quantity;

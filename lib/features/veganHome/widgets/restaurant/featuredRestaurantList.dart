@@ -6,14 +6,9 @@ import 'package:vegan_liverpool/features/veganHome/widgets/shared/emptyStatePage
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/featuredRestaurantsVM.dart';
 
-class FeaturedRestaurantList extends StatefulWidget {
+class FeaturedRestaurantList extends StatelessWidget {
   const FeaturedRestaurantList({Key? key}) : super(key: key);
 
-  @override
-  _FeaturedRestaurantListState createState() => _FeaturedRestaurantListState();
-}
-
-class _FeaturedRestaurantListState extends State<FeaturedRestaurantList> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, FeaturedRestaurantsVM>(
@@ -21,26 +16,31 @@ class _FeaturedRestaurantListState extends State<FeaturedRestaurantList> {
       distinct: true,
       builder: (_, viewmodel) {
         return viewmodel.isLoadingHomePage
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(color: themeShade400),
               )
             : viewmodel.featuredRestaurants.isEmpty
-                ? EmptyStatePage(
-                    emoji: "😐",
+                ? const EmptyStatePage(
+                    emoji: '😐',
                     title: "Pretty empty here, isn't it?",
                     subtitle:
-                        "We aren't currently delivering to your area, but we will in the future, so check back later!",
+                        "We aren't currently delivering to your area, but "
+                        'we will in the future, so check back later!',
                   )
                 : ListView.separated(
-                    scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 50),
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      top: 20,
+                      bottom: 50,
+                    ),
                     itemCount: viewmodel.featuredRestaurants.length,
                     itemBuilder: (context, index) => SingleRestaurantItem(
                       restaurantItem: viewmodel.featuredRestaurants[index],
                     ),
-                    separatorBuilder: (_, __) => Padding(
+                    separatorBuilder: (_, __) => const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                     ),
                   );

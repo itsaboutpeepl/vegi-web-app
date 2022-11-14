@@ -1,20 +1,20 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:http/http.dart';
 
 class Place {
-  String streetNumber;
-  String street;
-  String city;
-  String zipCode;
-
   Place({
     required this.streetNumber,
     required this.street,
     required this.city,
     required this.zipCode,
   });
+  String streetNumber;
+  String street;
+  String city;
+  String zipCode;
 
   @override
   String toString() {
@@ -23,10 +23,9 @@ class Place {
 }
 
 class Suggestion {
+  Suggestion(this.placeId, this.description);
   final String placeId;
   final String description;
-
-  Suggestion(this.placeId, this.description);
 
   @override
   String toString() {
@@ -35,9 +34,8 @@ class Suggestion {
 }
 
 class PlaceApiProvider {
-  final Client client = Client();
-
   PlaceApiProvider(this.sessionToken);
+  final Client client = Client();
 
   final sessionToken;
   final apiKey = dotenv.env['MAP_API_KEY'] ?? "";
@@ -57,16 +55,25 @@ class PlaceApiProvider {
         'sessionToken': sessionToken
       },
     );
-
-    String temp = "https:/cors.itsaboutpeepl.com/" + request.toString(); //TODO: change for proxy
-
-    final response = await client.get(Uri.parse(temp), headers: await headers);
+    final response = await client.get(request, headers: await headers);
 
     if (response.statusCode == 200) {
-      final result = json.decode(response.body);
+      final Map<String, dynamic> result =
+          json.decode(response.body) as Map<String, dynamic>;
       if (result['status'] == 'OK') {
         // compose suggestions in a list
-        return result['predictions'].map<Suggestion>((p) => Suggestion(p['place_id'], p['description'])).toList();
+
+        final List<Map<String, dynamic>> data =
+            List.from(result['predictions'] as Iterable<dynamic>);
+
+        return data
+            .map(
+              (Map<String, dynamic> element) => Suggestion(
+                element['place_id'] as String? ?? '',
+                element['description'] as String? ?? '',
+              ),
+            )
+            .toList();
       }
       if (result['status'] == 'ZERO_RESULTS') {
         return [];
@@ -93,26 +100,30 @@ class PlaceApiProvider {
     final response = await client.get(request, headers: await headers);
 
     if (response.statusCode == 200) {
-      final result = json.decode(response.body);
+      final Map<String, dynamic> result =
+          json.decode(response.body) as Map<String, dynamic>;
       if (result['status'] == 'OK') {
-        final components = result['result']['address_components'] as List<dynamic>;
+        final components = List<Map<String, dynamic>>.from(
+          result['result']['address_components'] as Iterable<dynamic>,
+        );
         // build result
-        final place = Place(street: '', streetNumber: '', city: '', zipCode: '');
-        components.forEach((c) {
-          final List type = c['types'];
+        final place =
+            Place(street: '', streetNumber: '', city: '', zipCode: '');
+        for (final c in components) {
+          final List<String> type = List.from(c['types'] as Iterable<dynamic>);
           if (type.contains('street_number')) {
-            place.streetNumber = c['long_name'];
+            place.streetNumber = c['long_name'] as String? ?? '';
           }
           if (type.contains('route')) {
-            place.street = c['long_name'];
+            place.street = c['long_name'] as String? ?? '';
           }
           if (type.contains('locality') || type.contains('postal_town')) {
-            place.city = c['long_name'];
+            place.city = c['long_name'] as String? ?? '';
           }
           if (type.contains('postal_code')) {
-            place.zipCode = c['long_name'];
+            place.zipCode = c['long_name'] as String? ?? '';
           }
-        });
+        }
         return place;
       }
       throw Exception(result['error_message']);

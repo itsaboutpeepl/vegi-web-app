@@ -26,6 +26,8 @@ mixin _$AppState {
   UserCartState get cartState => throw _privateConstructorUsedError;
   @MenuItemStateConverter()
   MenuItemState get menuItemState => throw _privateConstructorUsedError;
+  @UserStateConverter()
+  UserState get userState => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -40,11 +42,13 @@ abstract class $AppStateCopyWith<$Res> {
   $Res call(
       {@HomePageStateConverter() HomePageState homePageState,
       @UserCartStateConverter() UserCartState cartState,
-      @MenuItemStateConverter() MenuItemState menuItemState});
+      @MenuItemStateConverter() MenuItemState menuItemState,
+      @UserStateConverter() UserState userState});
 
   $HomePageStateCopyWith<$Res> get homePageState;
   $UserCartStateCopyWith<$Res> get cartState;
   $MenuItemStateCopyWith<$Res> get menuItemState;
+  $UserStateCopyWith<$Res> get userState;
 }
 
 /// @nodoc
@@ -60,6 +64,7 @@ class _$AppStateCopyWithImpl<$Res> implements $AppStateCopyWith<$Res> {
     Object? homePageState = freezed,
     Object? cartState = freezed,
     Object? menuItemState = freezed,
+    Object? userState = freezed,
   }) {
     return _then(_value.copyWith(
       homePageState: homePageState == freezed
@@ -74,6 +79,10 @@ class _$AppStateCopyWithImpl<$Res> implements $AppStateCopyWith<$Res> {
           ? _value.menuItemState
           : menuItemState // ignore: cast_nullable_to_non_nullable
               as MenuItemState,
+      userState: userState == freezed
+          ? _value.userState
+          : userState // ignore: cast_nullable_to_non_nullable
+              as UserState,
     ));
   }
 
@@ -97,6 +106,13 @@ class _$AppStateCopyWithImpl<$Res> implements $AppStateCopyWith<$Res> {
       return _then(_value.copyWith(menuItemState: value));
     });
   }
+
+  @override
+  $UserStateCopyWith<$Res> get userState {
+    return $UserStateCopyWith<$Res>(_value.userState, (value) {
+      return _then(_value.copyWith(userState: value));
+    });
+  }
 }
 
 /// @nodoc
@@ -108,7 +124,8 @@ abstract class _$$_AppStateCopyWith<$Res> implements $AppStateCopyWith<$Res> {
   $Res call(
       {@HomePageStateConverter() HomePageState homePageState,
       @UserCartStateConverter() UserCartState cartState,
-      @MenuItemStateConverter() MenuItemState menuItemState});
+      @MenuItemStateConverter() MenuItemState menuItemState,
+      @UserStateConverter() UserState userState});
 
   @override
   $HomePageStateCopyWith<$Res> get homePageState;
@@ -116,6 +133,8 @@ abstract class _$$_AppStateCopyWith<$Res> implements $AppStateCopyWith<$Res> {
   $UserCartStateCopyWith<$Res> get cartState;
   @override
   $MenuItemStateCopyWith<$Res> get menuItemState;
+  @override
+  $UserStateCopyWith<$Res> get userState;
 }
 
 /// @nodoc
@@ -133,6 +152,7 @@ class __$$_AppStateCopyWithImpl<$Res> extends _$AppStateCopyWithImpl<$Res>
     Object? homePageState = freezed,
     Object? cartState = freezed,
     Object? menuItemState = freezed,
+    Object? userState = freezed,
   }) {
     return _then(_$_AppState(
       homePageState: homePageState == freezed
@@ -147,6 +167,10 @@ class __$$_AppStateCopyWithImpl<$Res> extends _$AppStateCopyWithImpl<$Res>
           ? _value.menuItemState
           : menuItemState // ignore: cast_nullable_to_non_nullable
               as MenuItemState,
+      userState: userState == freezed
+          ? _value.userState
+          : userState // ignore: cast_nullable_to_non_nullable
+              as UserState,
     ));
   }
 }
@@ -154,11 +178,12 @@ class __$$_AppStateCopyWithImpl<$Res> extends _$AppStateCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_AppState extends _AppState with DiagnosticableTreeMixin {
+class _$_AppState extends _AppState {
   _$_AppState(
       {@HomePageStateConverter() required this.homePageState,
       @UserCartStateConverter() required this.cartState,
-      @MenuItemStateConverter() required this.menuItemState})
+      @MenuItemStateConverter() required this.menuItemState,
+      @UserStateConverter() required this.userState})
       : super._();
 
   factory _$_AppState.fromJson(Map<String, dynamic> json) =>
@@ -173,20 +198,13 @@ class _$_AppState extends _AppState with DiagnosticableTreeMixin {
   @override
   @MenuItemStateConverter()
   final MenuItemState menuItemState;
+  @override
+  @UserStateConverter()
+  final UserState userState;
 
   @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'AppState(homePageState: $homePageState, cartState: $cartState, menuItemState: $menuItemState)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'AppState'))
-      ..add(DiagnosticsProperty('homePageState', homePageState))
-      ..add(DiagnosticsProperty('cartState', cartState))
-      ..add(DiagnosticsProperty('menuItemState', menuItemState));
+  String toString() {
+    return 'AppState(homePageState: $homePageState, cartState: $cartState, menuItemState: $menuItemState, userState: $userState)';
   }
 
   @override
@@ -198,7 +216,8 @@ class _$_AppState extends _AppState with DiagnosticableTreeMixin {
                 .equals(other.homePageState, homePageState) &&
             const DeepCollectionEquality().equals(other.cartState, cartState) &&
             const DeepCollectionEquality()
-                .equals(other.menuItemState, menuItemState));
+                .equals(other.menuItemState, menuItemState) &&
+            const DeepCollectionEquality().equals(other.userState, userState));
   }
 
   @JsonKey(ignore: true)
@@ -207,7 +226,8 @@ class _$_AppState extends _AppState with DiagnosticableTreeMixin {
       runtimeType,
       const DeepCollectionEquality().hash(homePageState),
       const DeepCollectionEquality().hash(cartState),
-      const DeepCollectionEquality().hash(menuItemState));
+      const DeepCollectionEquality().hash(menuItemState),
+      const DeepCollectionEquality().hash(userState));
 
   @JsonKey(ignore: true)
   @override
@@ -224,12 +244,10 @@ class _$_AppState extends _AppState with DiagnosticableTreeMixin {
 
 abstract class _AppState extends AppState {
   factory _AppState(
-      {@HomePageStateConverter()
-          required final HomePageState homePageState,
-      @UserCartStateConverter()
-          required final UserCartState cartState,
-      @MenuItemStateConverter()
-          required final MenuItemState menuItemState}) = _$_AppState;
+      {@HomePageStateConverter() required final HomePageState homePageState,
+      @UserCartStateConverter() required final UserCartState cartState,
+      @MenuItemStateConverter() required final MenuItemState menuItemState,
+      @UserStateConverter() required final UserState userState}) = _$_AppState;
   _AppState._() : super._();
 
   factory _AppState.fromJson(Map<String, dynamic> json) = _$_AppState.fromJson;
@@ -243,6 +261,9 @@ abstract class _AppState extends AppState {
   @override
   @MenuItemStateConverter()
   MenuItemState get menuItemState;
+  @override
+  @UserStateConverter()
+  UserState get userState;
   @override
   @JsonKey(ignore: true)
   _$$_AppStateCopyWith<_$_AppState> get copyWith =>

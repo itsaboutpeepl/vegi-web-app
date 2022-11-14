@@ -11,11 +11,11 @@ class VeganSliverAppBar extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _VeganSliverAppBarState createState() => _VeganSliverAppBarState();
+  State<VeganSliverAppBar> createState() => _VeganSliverAppBarState();
 }
 
 class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
-  String _dropdownValue = "L1";
+  String _dropdownValue = 'L1';
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +27,10 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
           systemOverlayStyle: SystemUiOverlayStyle.dark,
           automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
-          floating: false,
-          pinned: false,
-          snap: false,
           centerTitle: false,
           expandedHeight: MediaQuery.of(context).size.height * 0.1,
           flexibleSpace: FlexibleSpaceBar(
-            background: Container(
+            background: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: colorToWhiteGradient,
@@ -42,7 +39,7 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -53,60 +50,72 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
                         Row(
                           children: [
                             Text(
-                              viewmodel.isDelivery ? "Delivering To " : "Collection",
-                              style: TextStyle(
+                              viewmodel.isDelivery
+                                  ? 'Delivering To '
+                                  : 'Collection',
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            viewmodel.isDelivery
-                                ? Padding(
-                                    padding: const EdgeInsets.only(bottom: 1.5),
-                                    child: DropdownButton<String>(
-                                      menuMaxHeight: MediaQuery.of(context).size.height * 0.3,
-                                      alignment: Alignment.centerLeft,
-                                      isDense: true,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.black,
-                                        fontFamily: "Europa",
-                                      ),
-                                      value: _dropdownValue,
-                                      borderRadius: BorderRadius.circular(10),
-                                      underline: SizedBox.shrink(),
-                                      items: viewmodel.postalCodes
-                                          .map(
-                                            (value) => DropdownMenuItem<String>(
-                                              child: Text(
-                                                value,
-                                                style: TextStyle(fontSize: 20),
-                                              ),
-                                              value: value,
-                                            ),
-                                          )
-                                          .toList(),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          _dropdownValue = value!;
-                                          viewmodel.changeOutCode(value);
-                                        });
-                                      },
-                                    ),
-                                  )
-                                : SizedBox.shrink(),
+                            if (viewmodel.isDelivery)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 1.5),
+                                child: DropdownButton<String>(
+                                  menuMaxHeight:
+                                      MediaQuery.of(context).size.height * 0.3,
+                                  alignment: Alignment.centerLeft,
+                                  isDense: true,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black,
+                                    fontFamily: 'Europa',
+                                  ),
+                                  value: _dropdownValue,
+                                  borderRadius: BorderRadius.circular(10),
+                                  underline: const SizedBox.shrink(),
+                                  items: viewmodel.postalCodes
+                                      .map(
+                                        (value) => DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(
+                                            value,
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _dropdownValue = value!;
+                                      viewmodel.changeOutCode(value);
+                                    });
+                                  },
+                                ),
+                              )
+                            else
+                              const SizedBox.shrink(),
                           ],
                         ),
                         GestureDetector(
                           onTap: () {
                             viewmodel.setIsDelivery(!viewmodel.isDelivery);
                           },
-                          child: Text(
-                            viewmodel.isDelivery ? "Switch to Collection" : "Switch to Delivery",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
+                          child: DecoratedBox(
+                            decoration: const BoxDecoration(
+                              border: Border(bottom: BorderSide()),
+                            ),
+                            child: Text(
+                              viewmodel.isDelivery
+                                  ? 'Switch to collection'
+                                  : 'Switch to delivery',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         )
@@ -117,7 +126,6 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
               ),
             ),
             centerTitle: true,
-            collapseMode: CollapseMode.parallax,
           ),
         );
       },

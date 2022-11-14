@@ -13,6 +13,8 @@ _$_AppState _$$_AppStateFromJson(Map<String, dynamic> json) => _$_AppState(
           .fromJson(json['cartState'] as Map<String, dynamic>?),
       menuItemState: const MenuItemStateConverter()
           .fromJson(json['menuItemState'] as Map<String, dynamic>?),
+      userState: const UserStateConverter()
+          .fromJson(json['userState'] as Map<String, dynamic>?),
     );
 
 Map<String, dynamic> _$$_AppStateToJson(_$_AppState instance) =>
@@ -22,4 +24,5 @@ Map<String, dynamic> _$$_AppStateToJson(_$_AppState instance) =>
       'cartState': const UserCartStateConverter().toJson(instance.cartState),
       'menuItemState':
           const MenuItemStateConverter().toJson(instance.menuItemState),
+      'userState': const UserStateConverter().toJson(instance.userState),
     };
