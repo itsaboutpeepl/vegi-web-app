@@ -13,6 +13,7 @@ import 'package:vegan_liverpool/features/veganHome/widgets/checkout/other_cards/
 import 'package:vegan_liverpool/features/veganHome/widgets/checkout/other_cards/your_details_card.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/checkout/payment_bar/payment_bar.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
+import 'package:vegan_liverpool/redux/actions/cart_actions.dart';
 
 class CheckoutScreen extends StatelessWidget {
   const CheckoutScreen({Key? key}) : super(key: key);
@@ -31,6 +32,9 @@ class CheckoutScreen extends StatelessWidget {
           )
         ],
         body: StoreConnector<AppState, bool>(
+          onInit: (store) {
+            store.dispatch(getNextAvaliableSlot());
+          },
           converter: (store) => store.state.cartState.isDelivery,
           builder: (context, isDelivery) {
             return Stack(
@@ -45,7 +49,7 @@ class CheckoutScreen extends StatelessWidget {
                     const BillSummaryCard(),
                     if (isDelivery) const TipSelectionCard(),
                     const YourDetailsCard(),
-                    const SaveTheOceansCard(),
+                    //const SaveTheOceansCard(),
                     const SizedBox(
                       height: 200,
                     )

@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 import 'package:vegan_liverpool/constants/enums.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:vegan_liverpool/features/shared/widgets/primary_button.dart';
-import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
+import 'package:vegan_liverpool/features/veganHome/Helpers/extensions.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/checkout/delivery_address_vm.dart';
@@ -285,7 +285,9 @@ class _AddressViewState extends State<AddressView> {
           formValue['addressLine1'] as String,
       addressLine2: formValue['addressLine2'] as String? ?? '',
       townCity: formValue['townCity'] as String,
-      postalCode: formValue['postalCode'] as String,
+      postalCode: (formValue['postalCode'] as String).toUpperCase(),
+      latitude: 0,
+      longitude: 0,
     );
   }
 }

@@ -26,6 +26,12 @@ mixin _$DeliveryAddresses {
   String get townCity => throw _privateConstructorUsedError;
   String get postalCode => throw _privateConstructorUsedError;
   DeliveryAddressLabel get label => throw _privateConstructorUsedError;
+  double get latitude => throw _privateConstructorUsedError;
+  double get longitude => throw _privateConstructorUsedError;
+  String? get phoneNumber => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
+  String? get email => throw _privateConstructorUsedError;
+  String? get instructions => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -44,7 +50,13 @@ abstract class $DeliveryAddressesCopyWith<$Res> {
       String addressLine2,
       String townCity,
       String postalCode,
-      DeliveryAddressLabel label});
+      DeliveryAddressLabel label,
+      double latitude,
+      double longitude,
+      String? phoneNumber,
+      String? name,
+      String? email,
+      String? instructions});
 }
 
 /// @nodoc
@@ -64,6 +76,12 @@ class _$DeliveryAddressesCopyWithImpl<$Res>
     Object? townCity = freezed,
     Object? postalCode = freezed,
     Object? label = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
+    Object? phoneNumber = freezed,
+    Object? name = freezed,
+    Object? email = freezed,
+    Object? instructions = freezed,
   }) {
     return _then(_value.copyWith(
       internalID: internalID == freezed
@@ -90,6 +108,30 @@ class _$DeliveryAddressesCopyWithImpl<$Res>
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as DeliveryAddressLabel,
+      latitude: latitude == freezed
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: longitude == freezed
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      phoneNumber: phoneNumber == freezed
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: name == freezed
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
+      email: email == freezed
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String?,
+      instructions: instructions == freezed
+          ? _value.instructions
+          : instructions // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -107,7 +149,13 @@ abstract class _$$_DeliveryAddressesCopyWith<$Res>
       String addressLine2,
       String townCity,
       String postalCode,
-      DeliveryAddressLabel label});
+      DeliveryAddressLabel label,
+      double latitude,
+      double longitude,
+      String? phoneNumber,
+      String? name,
+      String? email,
+      String? instructions});
 }
 
 /// @nodoc
@@ -129,6 +177,12 @@ class __$$_DeliveryAddressesCopyWithImpl<$Res>
     Object? townCity = freezed,
     Object? postalCode = freezed,
     Object? label = freezed,
+    Object? latitude = freezed,
+    Object? longitude = freezed,
+    Object? phoneNumber = freezed,
+    Object? name = freezed,
+    Object? email = freezed,
+    Object? instructions = freezed,
   }) {
     return _then(_$_DeliveryAddresses(
       internalID: internalID == freezed
@@ -155,6 +209,30 @@ class __$$_DeliveryAddressesCopyWithImpl<$Res>
           ? _value.label
           : label // ignore: cast_nullable_to_non_nullable
               as DeliveryAddressLabel,
+      latitude: latitude == freezed
+          ? _value.latitude
+          : latitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      longitude: longitude == freezed
+          ? _value.longitude
+          : longitude // ignore: cast_nullable_to_non_nullable
+              as double,
+      phoneNumber: phoneNumber == freezed
+          ? _value.phoneNumber
+          : phoneNumber // ignore: cast_nullable_to_non_nullable
+              as String?,
+      name: name == freezed
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String?,
+      email: email == freezed
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String?,
+      instructions: instructions == freezed
+          ? _value.instructions
+          : instructions // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -169,7 +247,13 @@ class _$_DeliveryAddresses extends _DeliveryAddresses {
       required this.addressLine2,
       required this.townCity,
       required this.postalCode,
-      required this.label})
+      required this.label,
+      required this.latitude,
+      required this.longitude,
+      this.phoneNumber,
+      this.name,
+      this.email,
+      this.instructions})
       : super._();
 
   factory _$_DeliveryAddresses.fromJson(Map<String, dynamic> json) =>
@@ -187,10 +271,22 @@ class _$_DeliveryAddresses extends _DeliveryAddresses {
   final String postalCode;
   @override
   final DeliveryAddressLabel label;
+  @override
+  final double latitude;
+  @override
+  final double longitude;
+  @override
+  final String? phoneNumber;
+  @override
+  final String? name;
+  @override
+  final String? email;
+  @override
+  final String? instructions;
 
   @override
   String toString() {
-    return 'DeliveryAddresses(internalID: $internalID, addressLine1: $addressLine1, addressLine2: $addressLine2, townCity: $townCity, postalCode: $postalCode, label: $label)';
+    return 'DeliveryAddresses(internalID: $internalID, addressLine1: $addressLine1, addressLine2: $addressLine2, townCity: $townCity, postalCode: $postalCode, label: $label, latitude: $latitude, longitude: $longitude, phoneNumber: $phoneNumber, name: $name, email: $email, instructions: $instructions)';
   }
 
   @override
@@ -207,7 +303,15 @@ class _$_DeliveryAddresses extends _DeliveryAddresses {
             const DeepCollectionEquality().equals(other.townCity, townCity) &&
             const DeepCollectionEquality()
                 .equals(other.postalCode, postalCode) &&
-            const DeepCollectionEquality().equals(other.label, label));
+            const DeepCollectionEquality().equals(other.label, label) &&
+            const DeepCollectionEquality().equals(other.latitude, latitude) &&
+            const DeepCollectionEquality().equals(other.longitude, longitude) &&
+            const DeepCollectionEquality()
+                .equals(other.phoneNumber, phoneNumber) &&
+            const DeepCollectionEquality().equals(other.name, name) &&
+            const DeepCollectionEquality().equals(other.email, email) &&
+            const DeepCollectionEquality()
+                .equals(other.instructions, instructions));
   }
 
   @JsonKey(ignore: true)
@@ -219,7 +323,13 @@ class _$_DeliveryAddresses extends _DeliveryAddresses {
       const DeepCollectionEquality().hash(addressLine2),
       const DeepCollectionEquality().hash(townCity),
       const DeepCollectionEquality().hash(postalCode),
-      const DeepCollectionEquality().hash(label));
+      const DeepCollectionEquality().hash(label),
+      const DeepCollectionEquality().hash(latitude),
+      const DeepCollectionEquality().hash(longitude),
+      const DeepCollectionEquality().hash(phoneNumber),
+      const DeepCollectionEquality().hash(name),
+      const DeepCollectionEquality().hash(email),
+      const DeepCollectionEquality().hash(instructions));
 
   @JsonKey(ignore: true)
   @override
@@ -242,7 +352,13 @@ abstract class _DeliveryAddresses extends DeliveryAddresses {
       required final String addressLine2,
       required final String townCity,
       required final String postalCode,
-      required final DeliveryAddressLabel label}) = _$_DeliveryAddresses;
+      required final DeliveryAddressLabel label,
+      required final double latitude,
+      required final double longitude,
+      final String? phoneNumber,
+      final String? name,
+      final String? email,
+      final String? instructions}) = _$_DeliveryAddresses;
   _DeliveryAddresses._() : super._();
 
   factory _DeliveryAddresses.fromJson(Map<String, dynamic> json) =
@@ -260,6 +376,18 @@ abstract class _DeliveryAddresses extends DeliveryAddresses {
   String get postalCode;
   @override
   DeliveryAddressLabel get label;
+  @override
+  double get latitude;
+  @override
+  double get longitude;
+  @override
+  String? get phoneNumber;
+  @override
+  String? get name;
+  @override
+  String? get email;
+  @override
+  String? get instructions;
   @override
   @JsonKey(ignore: true)
   _$$_DeliveryAddressesCopyWith<_$_DeliveryAddresses> get copyWith =>

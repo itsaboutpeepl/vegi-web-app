@@ -44,6 +44,7 @@ dependencies:
   expandable_sliver_list: ^4.1.1
   shimmer: ^2.0.0
   font_awesome_flutter: ^10.2.1
+  firebase_analytics: ^10.0.5
 dev_dependencies:
   auto_route_generator: ^4.0.0
   build_runner: ^2.1.8
@@ -58,7 +59,7 @@ dev_dependencies:
     sdk: flutter
 flutter:
   assets:
-    - environment/env
+    - environment/.env
     - environment/.env_qa
     - assets/
     - assets/images/

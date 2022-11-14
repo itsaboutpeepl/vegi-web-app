@@ -3,6 +3,8 @@ import 'package:redux_thunk/redux_thunk.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
+import 'package:vegan_liverpool/models/user_state.dart';
+import 'package:vegan_liverpool/utils/analytics.dart';
 import 'package:vegan_liverpool/utils/log/log.dart';
 
 class SetDisplayName {
@@ -108,5 +110,25 @@ ThunkAction<AppState> updateDeliveryAddress({
         hint: 'ERROR - updateDeliveryAddress',
       );
     }
+  };
+}
+
+ThunkAction<AppState> identifyCall({String? wallet}) {
+  return (Store<AppState> store) async {
+    //TODO: make call to the guide and get information from webview here
+    //TODO: add call to splash screen
+    final UserState userState = store.state.userState;
+    final String displayName = userState.displayName;
+
+    final String phoneNumber = userState.phoneNumber;
+    final String walletAddress = wallet ?? userState.walletAddress;
+
+    final Map<String, dynamic> properties = {
+      'phoneNumber': phoneNumber,
+      'walletAddress': walletAddress,
+      'displayName': displayName,
+    };
+    await Analytics.setUserInformation(properties);
+    await Analytics.setUserId(phoneNumber);
   };
 }

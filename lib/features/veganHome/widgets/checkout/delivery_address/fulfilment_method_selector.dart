@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:vegan_liverpool/constants/analytics_events.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/redux/actions/cart_actions.dart';
+import 'package:vegan_liverpool/utils/analytics.dart';
 
 class FulfilmentMethodSelector extends StatefulWidget {
   const FulfilmentMethodSelector({Key? key}) : super(key: key);
@@ -35,12 +37,28 @@ class _FulfilmentMethodSelectorState extends State<FulfilmentMethodSelector>
         _tabController.addListener(
           () {
             if (_tabController.indexIsChanging) {
-              store
-                ..dispatch(
-                  SetIsDelivery(isDelivery: _tabController.index == 0),
-                )
-                ..dispatch(computeCartTotals())
-                ..dispatch(UpdateSelectedTimeSlot({}));
+              store.dispatch(
+                SetIsDelivery(isDelivery: _tabController.index == 0),
+              );
+              if (_tabController.index == 0) {
+                store.dispatch(
+                  updateSelectedTimeSlot(
+                    selectedTimeSlot: store.state.cartState.nextDeliverySlot,
+                  ),
+                );
+              } else {
+                store.dispatch(
+                  updateSelectedTimeSlot(
+                    selectedTimeSlot: store.state.cartState.nextCollectionSlot,
+                  ),
+                );
+              }
+              Analytics.track(
+                eventName: AnalyticsEvents.switchFulfilmentMethod,
+                properties: {
+                  'screen': 'checkout',
+                },
+              );
             }
           },
         );

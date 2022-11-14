@@ -1,40 +1,65 @@
-import 'package:vegan_liverpool/models/restaurant/restaurantCategory.dart';
-import 'package:vegan_liverpool/models/restaurant/restaurantItem.dart';
-import 'package:vegan_liverpool/services.dart';
-import 'package:vegan_liverpool/utils/log/log.dart';
+import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:redux/redux.dart';
+import 'package:vegan_liverpool/models/app_state.dart';
+import 'package:vegan_liverpool/models/restaurant/restaurantCategory.dart';
+import 'package:vegan_liverpool/models/restaurant/restaurantItem.dart';
+import 'package:vegan_liverpool/redux/actions/user_actions.dart';
+import 'package:vegan_liverpool/services.dart';
+import 'package:vegan_liverpool/utils/log/log.dart';
 
 class UpdateRestaurantCategories {
-  final List<RestaurantCategory> listOfRestaurantCategories;
   UpdateRestaurantCategories({required this.listOfRestaurantCategories});
+  final List<RestaurantCategory> listOfRestaurantCategories;
+
+  @override
+  String toString() {
+    return 'UpdateRestaurantCategories : $listOfRestaurantCategories';
+  }
 }
 
 class UpdateFeaturedRestaurants {
-  final List<RestaurantItem> listOfFeaturedRestaurants;
   UpdateFeaturedRestaurants({required this.listOfFeaturedRestaurants});
+  final List<RestaurantItem> listOfFeaturedRestaurants;
+
+  @override
+  String toString() {
+    return 'UpdateFeaturedRestaurants : $listOfFeaturedRestaurants';
+  }
 }
 
 class SetIsLoadingHomePage {
+  SetIsLoadingHomePage({required this.isLoading});
   final bool isLoading;
-  SetIsLoadingHomePage(this.isLoading);
+
+  @override
+  String toString() {
+    return 'SetIsLoadingHomePage : $isLoading';
+  }
 }
 
 class UpdatePostalCodes {
-  final List<String> postalCodes;
   UpdatePostalCodes(this.postalCodes);
+  final List<String> postalCodes;
+
+  @override
+  String toString() {
+    return 'UpdatePostalCodes : $postalCodes';
+  }
 }
 
-ThunkAction fetchFeaturedRestaurants({String outCode = "L1"}) {
-  return (Store store) async {
+ThunkAction<AppState> fetchFeaturedRestaurants({String outCode = 'L1'}) {
+  return (Store<AppState> store) async {
     try {
-      store.dispatch(SetIsLoadingHomePage(true));
-      List<RestaurantItem> restaurants = await peeplEatsService.featuredRestaurants(outCode);
+      store.dispatch(SetIsLoadingHomePage(isLoading: true));
+      final List<RestaurantItem> restaurants =
+          await peeplEatsService.featuredRestaurants(outCode);
 
-      store.dispatch(UpdateFeaturedRestaurants(listOfFeaturedRestaurants: restaurants));
-      store.dispatch(fetchMenuItemsForRestaurant());
-      store.dispatch(SetIsLoadingHomePage(false));
+      store
+        ..dispatch(
+          UpdateFeaturedRestaurants(listOfFeaturedRestaurants: restaurants),
+        )
+        ..dispatch(fetchMenuItemsForRestaurant());
     } catch (e, s) {
       log.error('ERROR - fetchFeaturedRestaurants $e');
       await Sentry.captureException(
@@ -46,10 +71,11 @@ ThunkAction fetchFeaturedRestaurants({String outCode = "L1"}) {
   };
 }
 
-ThunkAction fetchMenuItemsForRestaurant() {
-  return (Store store) async {
+ThunkAction<AppState> fetchMenuItemsForRestaurant() {
+  return (Store<AppState> store) async {
     try {
-      List<RestaurantItem> currentList = store.state.homePageState.featuredRestaurants;
+      final List<RestaurantItem> currentList =
+          store.state.homePageState.featuredRestaurants;
 
       await Future.forEach(
         currentList,
@@ -60,7 +86,11 @@ ThunkAction fetchMenuItemsForRestaurant() {
         },
       );
 
-      store.dispatch(UpdateFeaturedRestaurants(listOfFeaturedRestaurants: currentList));
+      store
+        ..dispatch(
+          UpdateFeaturedRestaurants(listOfFeaturedRestaurants: currentList),
+        )
+        ..dispatch(SetIsLoadingHomePage(isLoading: false));
     } catch (e, s) {
       log.error('ERROR - fetchMenuItemsForRestaurant $e');
       await Sentry.captureException(
@@ -72,10 +102,10 @@ ThunkAction fetchMenuItemsForRestaurant() {
   };
 }
 
-ThunkAction fetchPostalCodes() {
-  return (Store store) async {
+ThunkAction<AppState> fetchPostalCodes() {
+  return (Store<AppState> store) async {
     try {
-      List<String> postalCodes = await peeplEatsService.getPostalCodes();
+      final List<String> postalCodes = await peeplEatsService.getPostalCodes();
 
       store.dispatch(UpdatePostalCodes(postalCodes));
     } catch (e, s) {
@@ -89,12 +119,12 @@ ThunkAction fetchPostalCodes() {
   };
 }
 
-ThunkAction fetchHomePageData() {
-  return (Store store) async {
+ThunkAction<AppState> fetchHomePageData() {
+  return (Store<AppState> store) async {
     try {
-      //store.dispatch(fetchRestaurantCategories());
-      store.dispatch(fetchFeaturedRestaurants());
-      store.dispatch(fetchPostalCodes());
+      store
+        ..dispatch(fetchFeaturedRestaurants())
+        ..dispatch(fetchPostalCodes());
     } catch (e, s) {
       log.error('ERROR - fetchHomePageData $e');
       await Sentry.captureException(

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:vegan_liverpool/constants/analytics_events.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
-import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
-import 'package:vegan_liverpool/features/veganHome/widgets/checkout/delivery_address/adress_view.dart';
+import 'package:vegan_liverpool/features/veganHome/Helpers/extensions.dart';
+import 'package:vegan_liverpool/features/veganHome/widgets/checkout/delivery_address/address_view.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/checkout/delivery_address/saved_address_list.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/checkout/delivery_address_vm.dart';
+import 'package:vegan_liverpool/utils/analytics.dart';
 
 class DeliveryAddressSelector extends StatelessWidget {
   const DeliveryAddressSelector({Key? key}) : super(key: key);
@@ -13,41 +15,49 @@ class DeliveryAddressSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    return Positioned(
-      bottom: 100,
-      child: InkWell(
-        highlightColor: themeShade200,
-        splashColor: themeShade200,
-        onTap: () => showModalBottomSheet<Widget>(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(20),
-            ),
-          ),
-          context: context,
-          builder: (_) => const DeliveryAddressModalSheet(),
-        ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: themeShade300,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.shade800,
-                offset: const Offset(0, -2),
-                blurRadius: 5,
-              )
-            ],
-          ),
-          child: SizedBox(
-            width: width,
-            height: 60,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: StoreConnector<AppState, DeliveryAddressViewModel>(
-                converter: DeliveryAddressViewModel.fromStore,
-                builder: (context, viewmodel) {
-                  return Row(
+    return StoreConnector<AppState, DeliveryAddressViewModel>(
+      converter: DeliveryAddressViewModel.fromStore,
+      builder: (context, viewmodel) {
+        return Positioned(
+          bottom: 100,
+          child: InkWell(
+            highlightColor: themeShade200,
+            splashColor: themeShade200,
+            onTap: () {
+              if (viewmodel.isDelivery) {
+                Analytics.track(
+                  eventName: AnalyticsEvents.changeAddress,
+                );
+                showModalBottomSheet<Widget>(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
+                  ),
+                  context: context,
+                  builder: (_) => const DeliveryAddressModalSheet(),
+                );
+              }
+            },
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: themeShade300,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(10)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.shade800,
+                    offset: const Offset(0, -2),
+                    blurRadius: 5,
+                  )
+                ],
+              ),
+              child: SizedBox(
+                width: width,
+                height: 60,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
                     children: [
                       const Icon(
                         Icons.place,
@@ -97,13 +107,13 @@ class DeliveryAddressSelector extends StatelessWidget {
                           ),
                         ),
                     ],
-                  );
-                },
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -139,16 +149,21 @@ class DeliveryAddressModalSheet extends StatelessWidget {
               'Add a new address',
               style: TextStyle(color: themeShade400),
             ),
-            onTap: () => showModalBottomSheet<Widget>(
-              isScrollControlled: true,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(20),
+            onTap: () {
+              Analytics.track(
+                eventName: AnalyticsEvents.addAddress,
+              );
+              showModalBottomSheet<Widget>(
+                isScrollControlled: true,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
                 ),
-              ),
-              context: context,
-              builder: (_) => const AddressView(),
-            ),
+                context: context,
+                builder: (_) => const AddressView(),
+              );
+            },
           ),
           const Divider(
             height: 0,

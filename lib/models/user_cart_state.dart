@@ -3,6 +3,7 @@ import 'package:vegan_liverpool/constants/enums.dart';
 import 'package:vegan_liverpool/models/restaurant/cartItem.dart';
 import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
 import 'package:vegan_liverpool/models/restaurant/payment_methods.dart';
+import 'package:vegan_liverpool/models/restaurant/time_slot.dart';
 
 part 'user_cart_state.freezed.dart';
 part 'user_cart_state.g.dart';
@@ -17,11 +18,10 @@ class UserCartState with _$UserCartState {
     @Default(0) int cartTotal,
     @Default(0) int cartDiscountPercent,
     @Default(0) int cartDiscountComputed,
-    @Default(0) int cartDeliveryCharge,
-    @Default([]) List<Map<String, String>> deliverySlots,
-    @Default([]) List<Map<String, String>> collectionSlots,
+    @Default([]) List<TimeSlot> deliverySlots,
+    @Default([]) List<TimeSlot> collectionSlots,
     @Default(null) DeliveryAddresses? selectedDeliveryAddress,
-    @Default({}) Map<String, String> selectedTimeSlot,
+    @Default(null) TimeSlot? selectedTimeSlot,
     @Default(0) int selectedTipAmount,
     @Default('') String discountCode,
     @Default('') String paymentIntentID,
@@ -43,9 +43,11 @@ class UserCartState with _$UserCartState {
     @Default(0) int restaurantMinimumOrder,
     @Default(0) int restaurantPlatformFee,
     @Default('') String deliveryInstructions,
-    @Default(0) int deliveryMethodId,
-    @Default(0) int collectionMethodId,
     @Default(null) PaymentMethod? selectedPaymentMethod,
+    @Default([]) List<String> fulfilmentPostalDistricts,
+    @Default([]) List<DateTime> eligibleOrderDates,
+    @Default(null) TimeSlot? nextCollectionSlot,
+    @Default(null) TimeSlot? nextDeliverySlot,
   }) = _UserCartState;
 
   const UserCartState._();
@@ -57,7 +59,6 @@ class UserCartState with _$UserCartState {
         cartTotal: 0,
         cartDiscountPercent: 0,
         cartDiscountComputed: 0,
-        cartDeliveryCharge: 0,
         deliverySlots: [],
         collectionSlots: [],
         selectedTipAmount: 0,
@@ -75,11 +76,8 @@ class UserCartState with _$UserCartState {
         restaurantWalletAddress: '',
         deliveryCharge: 0,
         collectionCharge: 0,
-        selectedTimeSlot: {},
         fulfilmentMethod: FulfilmentMethod.delivery,
         isDelivery: false,
-        deliveryMethodId: 0,
-        collectionMethodId: 0,
       );
 
   factory UserCartState.fromJson(Map<String, dynamic> json) =>

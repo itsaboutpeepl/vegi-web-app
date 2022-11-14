@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:vegan_liverpool/constants/analytics_events.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/featuredRestaurantsVM.dart';
+import 'package:vegan_liverpool/utils/analytics.dart';
 
 class VeganSliverAppBar extends StatefulWidget {
   const VeganSliverAppBar({
@@ -91,6 +93,11 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
                                     setState(() {
                                       _dropdownValue = value!;
                                       viewmodel.changeOutCode(value);
+                                      Analytics.track(
+                                        eventName:
+                                            AnalyticsEvents.changeOutcode,
+                                        properties: {'screen': 'home'},
+                                      );
                                     });
                                   },
                                 ),
@@ -101,6 +108,10 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
                         ),
                         GestureDetector(
                           onTap: () {
+                            Analytics.track(
+                              eventName: AnalyticsEvents.switchFulfilmentMethod,
+                              properties: {'screen': 'home'},
+                            );
                             viewmodel.setIsDelivery(!viewmodel.isDelivery);
                           },
                           child: DecoratedBox(

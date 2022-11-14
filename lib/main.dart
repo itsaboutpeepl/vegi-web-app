@@ -36,7 +36,7 @@ void main() async {
 
   //choose a dev environment and load that file from .env folder
   // final envFile = env == 'prod' ? '.env' : '.env_qa';
-  await dotenv.load(fileName: 'environment/env');
+  await dotenv.load(fileName: 'environment/.env');
 
   await configureDependencies();
 
@@ -58,7 +58,7 @@ void main() async {
 
 // If the app is built in Debug mode, you want to add a logger which prints
   if (kDebugMode) {
-    wms.add(LoggingMiddleware.printer());
+    wms.add(LoggingMiddleware<AppState>.printer());
   }
 
 // Initialize the Redux Store with the initial state from the user device (if it exists)

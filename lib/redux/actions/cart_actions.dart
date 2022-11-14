@@ -6,15 +6,22 @@ import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:vegan_liverpool/constants/analytics_events.dart';
 import 'package:vegan_liverpool/constants/enums.dart';
 import 'package:vegan_liverpool/features/shared/widgets/snackbars.dart';
+import 'package:vegan_liverpool/features/veganHome/Helpers/extensions.dart';
 import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
+import 'package:vegan_liverpool/models/cart/createOrderForCollection.dart';
+import 'package:vegan_liverpool/models/cart/createOrderForDelivery.dart';
+import 'package:vegan_liverpool/models/cart/createOrderForFulfilment.dart';
 import 'package:vegan_liverpool/models/restaurant/cartItem.dart';
 import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
-import 'package:vegan_liverpool/models/restaurant/fullfilmentMethods.dart';
 import 'package:vegan_liverpool/models/restaurant/payment_methods.dart';
+import 'package:vegan_liverpool/models/restaurant/restaurantItem.dart';
+import 'package:vegan_liverpool/models/restaurant/time_slot.dart';
 import 'package:vegan_liverpool/services.dart';
+import 'package:vegan_liverpool/utils/analytics.dart';
 import 'package:vegan_liverpool/utils/log/log.dart';
 
 class UpdateCartItems {
@@ -69,9 +76,9 @@ class ClearCart {
 }
 
 class UpdateSlots {
-  UpdateSlots(this.deliverySlots, this.collectionSlots);
-  final List<Map<String, String>> deliverySlots;
-  final List<Map<String, String>> collectionSlots;
+  UpdateSlots({required this.deliverySlots, required this.collectionSlots});
+  final List<TimeSlot> deliverySlots;
+  final List<TimeSlot> collectionSlots;
 
   @override
   String toString() {
@@ -92,7 +99,7 @@ class UpdateSelectedDeliveryAddress {
 
 class UpdateSelectedTimeSlot {
   UpdateSelectedTimeSlot(this.selectedTimeSlot);
-  final Map<String, String> selectedTimeSlot;
+  final TimeSlot? selectedTimeSlot;
 
   @override
   String toString() {
@@ -171,6 +178,7 @@ class SetRestaurantDetails {
     this.walletAddress,
     this.minimumOrder,
     this.platformFee,
+    this.fulfilmentPostalDistricts,
   );
   final String restaurantID;
   final String restaurantName;
@@ -178,13 +186,15 @@ class SetRestaurantDetails {
   final String walletAddress;
   final int minimumOrder;
   final int platformFee;
+  final List<String> fulfilmentPostalDistricts;
 
   @override
   String toString() {
     return 'SetRestaurantDetails : restaurantID: $restaurantID, '
         'restaurantName: $restaurantName, restaurantAddress:'
         '$restaurantAddress, walletAddress:$walletAddress, '
-        'minimumOrder:$minimumOrder, platformFee:$platformFee';
+        'minimumOrder:$minimumOrder, platformFee:$platformFee, '
+        'fulfilmentPostalDistricts: $fulfilmentPostalDistricts';
   }
 }
 
@@ -273,56 +283,141 @@ class SetPaymentButtonFlag {
   }
 }
 
-ThunkAction<AppState> getFullfillmentMethods({DateTime? newDate}) {
+class UpdateNextAvaliableTimeSlots {
+  UpdateNextAvaliableTimeSlots({
+    required this.collectionSlot,
+    required this.deliverySlot,
+  });
+  final TimeSlot? collectionSlot;
+  final TimeSlot? deliverySlot;
+  @override
+  String toString() {
+    return 'UpdateNextAvaliableTimeSlots : collectionSlot: '
+        '$collectionSlot, deliverySlot: $deliverySlot';
+  }
+}
+
+class UpdateEligibleOrderDates {
+  UpdateEligibleOrderDates(this.eligibleOrderDates);
+  final List<DateTime> eligibleOrderDates;
+
+  @override
+  String toString() {
+    return 'UpdateEligibleOrderDates : eligibleOrderDates: $eligibleOrderDates';
+  }
+}
+
+ThunkAction<AppState> getTimeSlots({required DateTime newDate}) {
   return (Store<AppState> store) async {
     try {
       final DateFormat formatter = DateFormat('yyyy-MM-dd');
-      FullfilmentMethods fullfilmentMethods;
+      final Map<String, List<TimeSlot>> timeSlots =
+          await peeplEatsService.getFulfilmentSlots(
+        vendorID: store.state.cartState.restaurantID,
+        dateRequired: formatter.format(newDate),
+      );
 
-      if (newDate == null) {
-        fullfilmentMethods = await peeplEatsService.getFulfilmentSlots(
-          vendorID: store.state.cartState.restaurantID,
-          dateRequired: formatter.format(DateTime.now()),
-        );
-      } else {
-        fullfilmentMethods = await peeplEatsService.getFulfilmentSlots(
-          vendorID: store.state.cartState.restaurantID,
-          dateRequired: formatter.format(newDate),
-        );
-      }
-      store
-        ..dispatch(
-          UpdateSlots(
-            fullfilmentMethods.deliverySlots,
-            fullfilmentMethods.collectionSlots,
-          ),
-        )
-        ..dispatch(
-          SetFulfilmentFees(
-            fullfilmentMethods.deliveryMethod == null
-                ? 0
-                : fullfilmentMethods.deliveryMethod!['priceModifier'] as int? ??
-                    0,
-            fullfilmentMethods.collectionMethod == null
-                ? 0
-                : fullfilmentMethods.collectionMethod!['priceModifier']
-                        as int? ??
-                    0,
-          ),
-        )
-        ..dispatch(
-          SetFulfilmentMethodIds(
-            fullfilmentMethods.deliveryMethod!['id'] as int,
-            fullfilmentMethods.collectionMethod!['id'] as int,
-          ),
-        )
-        ..dispatch(computeCartTotals());
+      store.dispatch(
+        UpdateSlots(
+          deliverySlots: timeSlots['deliverySlots']!,
+          collectionSlots: timeSlots['collectionSlots']!,
+        ),
+      );
     } catch (e, s) {
       log.error('ERROR - getFullfillmentMethods $e');
       await Sentry.captureException(
         e,
         stackTrace: s,
         hint: 'ERROR - getFullfillmentMethods $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> getNextAvaliableSlot() {
+  return (Store<AppState> store) async {
+    try {
+      final Map<String, TimeSlot?> nextAvaliableSlots =
+          await peeplEatsService.getNextAvaliableSlot(
+        vendorID: store.state.cartState.restaurantID,
+      );
+
+      store.dispatch(
+        UpdateNextAvaliableTimeSlots(
+          collectionSlot: nextAvaliableSlots['collectionSlot'],
+          deliverySlot: nextAvaliableSlots['deliverySlot'],
+        ),
+      );
+
+      if (store.state.cartState.isDelivery) {
+        store.dispatch(
+          updateSelectedTimeSlot(
+            selectedTimeSlot: nextAvaliableSlots['deliverySlot'],
+          ),
+        );
+      } else {
+        store.dispatch(
+          updateSelectedTimeSlot(
+            selectedTimeSlot: nextAvaliableSlots['collectionSlot'],
+          ),
+        );
+      }
+    } catch (e, s) {
+      log.error('ERROR - getNextAvaliableSlot $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - getNextAvaliableSlot $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> getEligibleOrderDates() {
+  return (Store<AppState> store) async {
+    try {
+      final List<String> eligibleDatesString =
+          await peeplEatsService.getAvaliableDates(
+        vendorID: store.state.cartState.restaurantID,
+        isDelivery: store.state.cartState.isDelivery,
+      );
+
+      final List<DateTime> eligibleDates = [];
+
+      for (final date in eligibleDatesString) {
+        eligibleDates.add(DateTime.parse(date));
+      }
+
+      eligibleDates.sort((first, next) => first.compareTo(next));
+
+      store.dispatch(UpdateEligibleOrderDates(eligibleDates));
+    } catch (e, s) {
+      log.error('ERROR - getEligibleOrderDates $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - getEligibleOrderDates $e',
+      );
+    }
+  };
+}
+
+ThunkAction<AppState> updateSelectedTimeSlot({
+  required TimeSlot? selectedTimeSlot,
+}) {
+  return (Store<AppState> store) async {
+    try {
+      store
+        ..dispatch(
+          UpdateSelectedTimeSlot(selectedTimeSlot),
+        )
+        ..dispatch(computeCartTotals());
+    } catch (e, s) {
+      log.error('ERROR - updateCartDiscount $e');
+      await Sentry.captureException(
+        e,
+        stackTrace: s,
+        hint: 'ERROR - updateCartDiscount $e',
       );
     }
   };
@@ -537,7 +632,7 @@ ThunkAction<AppState> startOrderCreationProcess({
   return (Store<AppState> store) async {
     try {
       final cartState = store.state.cartState;
-      if (cartState.selectedTimeSlot.isEmpty) {
+      if (cartState.selectedTimeSlot == null) {
         showErrorSnack(context: context, title: 'Please select a time slot');
         return;
       }
@@ -581,55 +676,9 @@ ThunkAction<AppState> prepareOrderObjectForDelivery({
 }) {
   return (Store<AppState> store) async {
     try {
-      final DeliveryAddresses selectedAddress =
-          store.state.cartState.selectedDeliveryAddress!;
-      final Map<String, dynamic> orderObject = {}
-        ..addAll({
-          'items': store.state.cartState.cartItems
-              .map(
-                (e) => {
-                  'id': int.parse(e.menuItem.menuItemID),
-                  'quantity': e.itemQuantity,
-                  'options': e.selectedProductOptions.map(
-                    (key, value) =>
-                        MapEntry<String, int>(key.toString(), value.optionID),
-                  ),
-                },
-              )
-              .toList(),
-          'total': store.state.cartState.cartTotal,
-          'tipAmount': store.state.cartState.selectedTipAmount,
-          'marketingOptIn': false,
-          'discountCode': store.state.cartState.discountCode,
-          'vendor': store.state.cartState.restaurantID,
-          'walletAddress': store.state.userState.walletAddress,
-        })
-        ..addAll(
-          {
-            'address': {
-              'name': store.state.userState.displayName,
-              'phoneNumber': store.state.userState.phoneNumber,
-              'email': store.state.userState.email.isEmpty
-                  ? 'email@notprovided.com'
-                  : store.state.userState.email,
-              'lineOne': selectedAddress.addressLine1,
-              'lineTwo': '${selectedAddress.addressLine2}, '
-                  '${selectedAddress.townCity}',
-              'postCode': selectedAddress.postalCode,
-              'deliveryInstructions':
-                  store.state.cartState.deliveryInstructions,
-            },
-            'fulfilmentMethod': store.state.cartState.deliveryMethodId,
-            'fulfilmentSlotFrom': formatDateForOrderObject(
-              store.state.cartState.selectedTimeSlot.entries.first.value,
-            ),
-            'fulfilmentSlotTo': formatDateForOrderObject(
-              store.state.cartState.selectedTimeSlot.entries.last.value,
-            ),
-          },
-        );
+      final orderObject = CreateOrderForDelivery.fromStore(store);
 
-      log.info(orderObject);
+      log.info(orderObject.toJson());
 
       store.dispatch(
         sendOrderObject(
@@ -653,52 +702,9 @@ ThunkAction<AppState> prepareOrderObjectForCollection({
 }) {
   return (Store<AppState> store) async {
     try {
-      final Map<String, dynamic> orderObject = {}
-        ..addAll({
-          'items': store.state.cartState.cartItems
-              .map(
-                (e) => {
-                  'id': int.parse(e.menuItem.menuItemID),
-                  'quantity': e.itemQuantity,
-                  'options': e.selectedProductOptions.map(
-                    (key, value) =>
-                        MapEntry<String, int>(key.toString(), value.optionID),
-                  ),
-                },
-              )
-              .toList(),
-          'total': store.state.cartState.cartTotal,
-          'tipAmount': store.state.cartState.selectedTipAmount,
-          'marketingOptIn': false,
-          'discountCode': store.state.cartState.discountCode,
-          'vendor': store.state.cartState.restaurantID,
-          'walletAddress': store.state.userState.walletAddress,
-        })
-        ..addAll(
-          {
-            'address': {
-              'name': store.state.userState.displayName,
-              'email': store.state.userState.email == ''
-                  ? 'email@notprovided.com'
-                  : store.state.userState.email,
-              'phoneNumber': store.state.userState.phoneNumber,
-              'lineOne': 'Collection Order',
-              'lineTwo': store.state.cartState.restaurantAddress!.shortAddress,
-              'postCode': store.state.cartState.restaurantAddress!.postalCode,
-              'deliveryInstructions':
-                  store.state.cartState.deliveryInstructions,
-            },
-            'fulfilmentMethod': store.state.cartState.collectionMethodId,
-            'fulfilmentSlotFrom': formatDateForOrderObject(
-              store.state.cartState.selectedTimeSlot.entries.first.value,
-            ),
-            'fulfilmentSlotTo': formatDateForOrderObject(
-              store.state.cartState.selectedTimeSlot.entries.last.value,
-            ),
-          },
-        );
+      final orderObject = CreateOrderForCollection.fromStore(store);
 
-      log.info(orderObject);
+      log.info(orderObject.toJson());
       store.dispatch(
         sendOrderObject(orderObject: orderObject, context: context),
       );
@@ -713,8 +719,8 @@ ThunkAction<AppState> prepareOrderObjectForCollection({
   };
 }
 
-ThunkAction<AppState> sendOrderObject({
-  required Map<String, dynamic> orderObject,
+ThunkAction<AppState> sendOrderObject<T extends CreateOrderForFulfilment>({
+  required T orderObject,
   required BuildContext context,
 }) {
   return (Store<AppState> store) async {
@@ -747,16 +753,49 @@ ThunkAction<AppState> sendOrderObject({
           store
             ..dispatch(
               CreateOrder(
-                result['orderID'].toString(),
+                result['orderId'].toString(),
                 result['paymentIntentID'] as String,
               ),
             )
             ..dispatch(startPaymentProcess(context: context));
+          // unawaited(
+          //   firebaseMessaging.subscribeToTopic('order-${result['orderId']}'),
+          // );
+          unawaited(
+            Analytics.track(
+              eventName: AnalyticsEvents.orderGen,
+              properties: {
+                'status': 'success',
+                'orderId': result['orderId'].toString(),
+                'orderTotal': store.state.cartState.cartTotal,
+                'paymentIntentID': result['paymentIntentID'] as String,
+              },
+            ),
+          );
         }
       }
     } on DioError catch (e) {
+      unawaited(
+        Analytics.track(
+          eventName: AnalyticsEvents.orderGen,
+          properties: {
+            'status': 'failure',
+          },
+        ),
+      );
       store.dispatch(SetPaymentButtonFlag(false));
       if (e.response != null) {
+        if (e.response == 'Interal Server Error') {
+          await Sentry.captureException(
+            e,
+            hint: 'DioError - sendOrderObject - '
+                "Internal Server Error",
+          );
+          showErrorSnack(
+            context: context,
+            title: 'Our servers seem to be down',
+          );
+        }
         log.error(e.response!.data);
         await Sentry.captureException(
           e,
@@ -771,6 +810,14 @@ ThunkAction<AppState> sendOrderObject({
         );
       }
     } catch (e, s) {
+      unawaited(
+        Analytics.track(
+          eventName: AnalyticsEvents.orderGen,
+          properties: {
+            'status': 'failure',
+          },
+        ),
+      );
       store.dispatch(SetPaymentButtonFlag(false));
       log.error('ERROR - sendOrderObject $e');
       await Sentry.captureException(
@@ -787,57 +834,77 @@ ThunkAction<AppState> startPaymentProcess({
 }) {
   return (Store<AppState> store) async {
     try {
-      //TODO: start payment process on the guide here
-      // if (store.state.cartState.selectedPaymentMethod == PaymentMethod.stripe) {
-      //   await stripeService
-      //       .handleStripe(
-      //     walletAddress: store.state.userState.walletAddress,
-      //     amount: store.state.cartState.cartTotal,
-      //     context: context,
-      //     shouldPushToHome: false,
-      //   )
-      //       .then(
-      //     (value) {
-      //       if (!value) {
-      //         store.dispatch(SetTransferringPayment(flag: value));
-      //         return;
-      //       }
-      //       store
-      //         ..dispatch(
-      //           UpdateSelectedAmounts(
-      //             gbpxAmount: (store.state.cartState.cartTotal) / 100,
-      //             pplAmount: 0,
-      //           ),
-      //         )
-      //         ..dispatch(
-      //           startTokenPaymentToRestaurant(
-      //             context: context,
-      //           ),
-      //         );
-      //     },
-      //   );
-      // } else if (store.state.cartState.selectedPaymentMethod ==
-      //     PaymentMethod.peeplPay) {
-      //   //show the peepl pay sheet
-      //   //user selects to pay with peepl rewards or GBPx
-      //   //if gbpx is not enough -> stripe payment until GBPx gets added.
-      //   //transfer tokens
-      //   //show loading popup
-      //   //show order confirmed
+      //TODO: start guide payment process here
+      if (store.state.cartState.selectedPaymentMethod == PaymentMethod.stripe) {
+        unawaited(
+          Analytics.track(
+            eventName: AnalyticsEvents.payStripe,
+          ),
+        );
+        // await stripeService
+        //     .handleStripe(
+        //   walletAddress: store.state.userState.walletAddress,
+        //   amount: store.state.cartState.cartTotal,
+        //   context: context,
+        //   shouldPushToHome: false,
+        // )
+        //     .then(
+        //   (value) {
+        //     if (!value) {
+        //       store
+        //         ..dispatch(SetPaymentButtonFlag(false))
+        //         ..dispatch(SetTransferringPayment(flag: value));
+        //       return;
+        //     }
+        //     unawaited(
+        //       Analytics.track(
+        //         eventName: AnalyticsEvents.mint,
+        //         properties: {
+        //           'status': 'success',
+        //         },
+        //       ),
+        //     );
+        //     store
+        //       ..dispatch(
+        //         UpdateSelectedAmounts(
+        //           gbpxAmount: (store.state.cartState.cartTotal) / 100,
+        //           pplAmount: 0,
+        //         ),
+        //       )
+        //       ..dispatch(
+        //         startTokenPaymentToRestaurant(
+        //           context: context,
+        //         ),
+        //       );
+        //   },
+        // );
+      } else if (store.state.cartState.selectedPaymentMethod ==
+          PaymentMethod.peeplPay) {
+        unawaited(
+          Analytics.track(
+            eventName: AnalyticsEvents.payPeepl,
+          ),
+        );
+        //show the peepl pay sheet
+        //user selects to pay with peepl rewards or GBPx
+        //if gbpx is not enough -> stripe payment until GBPx gets added.
+        //transfer tokens
+        //show loading popup
+        //show order confirmed
 
-      //   await showModalBottomSheet<Widget>(
-      //     isScrollControlled: true,
-      //     backgroundColor: Colors.grey[900],
-      //     shape: const RoundedRectangleBorder(
-      //       borderRadius: BorderRadius.vertical(
-      //         top: Radius.circular(20),
-      //       ),
-      //     ),
-      //     elevation: 5,
-      //     context: context,
-      //     builder: (context) => const PaymentSheet(),
-      //   );
-      // }
+        // await showModalBottomSheet<Widget>(
+        //   isScrollControlled: true,
+        //   backgroundColor: Colors.grey[900],
+        //   shape: const RoundedRectangleBorder(
+        //     borderRadius: BorderRadius.vertical(
+        //       top: Radius.circular(20),
+        //     ),
+        //   ),
+        //   elevation: 5,
+        //   context: context,
+        //   builder: (context) => const PaymentSheet(),
+        // );
+      }
     } catch (e, s) {
       store.dispatch(SetPaymentButtonFlag(false));
       log.error('ERROR - sendOrderObject $e');
@@ -872,16 +939,41 @@ ThunkAction<AppState> startPaymentConfirmationCheck() {
                   ..dispatch(SetTransferringPayment(flag: false))
                   ..dispatch(SetConfirmed(flag: true));
                 timer.cancel();
+                unawaited(
+                  Analytics.track(
+                    eventName: AnalyticsEvents.payment,
+                    properties: {
+                      'status': 'success',
+                    },
+                  ),
+                );
               }
             },
           );
 
-          if (counter > 10) {
+          if (counter > 15) {
             timer.cancel();
+            unawaited(
+              Analytics.track(
+                eventName: AnalyticsEvents.payment,
+                properties: {
+                  'status': 'failure',
+                },
+              ),
+            );
             throw Exception('Payment checks exceeded time limit: '
                 'orderID: ${store.state.cartState.orderID}');
           }
         } catch (e, s) {
+          timer.cancel();
+          unawaited(
+            Analytics.track(
+              eventName: AnalyticsEvents.payment,
+              properties: {
+                'status': 'failure',
+              },
+            ),
+          );
           store.dispatch(SetError(flag: true));
           log.error('ERROR - startPaymentConfirmationCheck $e');
           await Sentry.captureException(
@@ -896,48 +988,25 @@ ThunkAction<AppState> startPaymentConfirmationCheck() {
 }
 
 ThunkAction<AppState> setRestaurantDetails({
-  required String restaurantID,
-  required String restaurantName,
-  required DeliveryAddresses restaurantAddress,
-  required String walletAddress,
-  required int minimumOrder,
-  required int platformFee,
-  required VoidCallback sendSnackBar,
+  required RestaurantItem restaurantItem,
+  required bool clearCart,
 }) {
   return (Store<AppState> store) async {
     try {
-      //If cart has existing items -> clear cart, set new restaurant details,
-      // show snackbar if cart had items.
-
-      if (store.state.cartState.restaurantName.isNotEmpty &&
-          store.state.cartState.restaurantID.isNotEmpty) {
-        sendSnackBar();
-        store
-          ..dispatch(ClearCart())
-          ..dispatch(
-            SetRestaurantDetails(
-              restaurantID,
-              restaurantName,
-              restaurantAddress,
-              walletAddress,
-              minimumOrder,
-              platformFee,
-            ),
-          );
-      } else {
-        store.dispatch(
-          SetRestaurantDetails(
-            restaurantID,
-            restaurantName,
-            restaurantAddress,
-            walletAddress,
-            minimumOrder,
-            platformFee,
-          ),
-        );
+      if (clearCart) {
+        store.dispatch(ClearCart());
       }
-      // If cart does not have existing items -> set new restaurant details
-
+      store.dispatch(
+        SetRestaurantDetails(
+          restaurantItem.restaurantID,
+          restaurantItem.name,
+          restaurantItem.address,
+          restaurantItem.walletAddress,
+          restaurantItem.minimumOrderAmount,
+          restaurantItem.platformFee,
+          restaurantItem.deliveryRestrictionDetails,
+        ),
+      );
     } catch (e, s) {
       store.dispatch(SetError(flag: true));
       log.error('ERROR - setRestaurantDetails $e');

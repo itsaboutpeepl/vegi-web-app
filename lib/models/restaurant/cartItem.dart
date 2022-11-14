@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:vegan_liverpool/features/veganHome/Helpers/extensions.dart';
 import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
 import 'package:vegan_liverpool/models/restaurant/restaurantMenuItem.dart';
 import 'package:vegan_liverpool/models/restaurant/productOptions.dart';
@@ -22,11 +23,7 @@ class CartItem with _$CartItem {
   factory CartItem.fromJson(dynamic json) => _$CartItemFromJson(json);
 
   String get formattedPrice {
-    if (menuItem.price != 0) {
-      return cFPrice(menuItem.price);
-    } else {
-      return cFPrice(totalItemPrice);
-    }
+    return cFPrice(totalItemPrice);
   }
 
   List<String> get selectedProductOptionsString {

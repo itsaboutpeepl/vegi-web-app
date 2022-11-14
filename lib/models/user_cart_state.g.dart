@@ -17,24 +17,21 @@ _$_UserCartState _$$_UserCartStateFromJson(Map<String, dynamic> json) =>
       cartTotal: json['cartTotal'] as int? ?? 0,
       cartDiscountPercent: json['cartDiscountPercent'] as int? ?? 0,
       cartDiscountComputed: json['cartDiscountComputed'] as int? ?? 0,
-      cartDeliveryCharge: json['cartDeliveryCharge'] as int? ?? 0,
       deliverySlots: (json['deliverySlots'] as List<dynamic>?)
-              ?.map((e) => Map<String, String>.from(e as Map))
+              ?.map((e) => TimeSlot.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       collectionSlots: (json['collectionSlots'] as List<dynamic>?)
-              ?.map((e) => Map<String, String>.from(e as Map))
+              ?.map((e) => TimeSlot.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
       selectedDeliveryAddress: json['selectedDeliveryAddress'] == null
           ? null
           : DeliveryAddresses.fromJson(
               json['selectedDeliveryAddress'] as Map<String, dynamic>),
-      selectedTimeSlot:
-          (json['selectedTimeSlot'] as Map<String, dynamic>?)?.map(
-                (k, e) => MapEntry(k, e as String),
-              ) ??
-              const {},
+      selectedTimeSlot: json['selectedTimeSlot'] == null
+          ? null
+          : TimeSlot.fromJson(json['selectedTimeSlot'] as Map<String, dynamic>),
       selectedTipAmount: json['selectedTipAmount'] as int? ?? 0,
       discountCode: json['discountCode'] as String? ?? '',
       paymentIntentID: json['paymentIntentID'] as String? ?? '',
@@ -62,11 +59,25 @@ _$_UserCartState _$$_UserCartStateFromJson(Map<String, dynamic> json) =>
       restaurantMinimumOrder: json['restaurantMinimumOrder'] as int? ?? 0,
       restaurantPlatformFee: json['restaurantPlatformFee'] as int? ?? 0,
       deliveryInstructions: json['deliveryInstructions'] as String? ?? '',
-      deliveryMethodId: json['deliveryMethodId'] as int? ?? 0,
-      collectionMethodId: json['collectionMethodId'] as int? ?? 0,
       selectedPaymentMethod: $enumDecodeNullable(
               _$PaymentMethodEnumMap, json['selectedPaymentMethod']) ??
           null,
+      fulfilmentPostalDistricts:
+          (json['fulfilmentPostalDistricts'] as List<dynamic>?)
+                  ?.map((e) => e as String)
+                  .toList() ??
+              const [],
+      eligibleOrderDates: (json['eligibleOrderDates'] as List<dynamic>?)
+              ?.map((e) => DateTime.parse(e as String))
+              .toList() ??
+          const [],
+      nextCollectionSlot: json['nextCollectionSlot'] == null
+          ? null
+          : TimeSlot.fromJson(
+              json['nextCollectionSlot'] as Map<String, dynamic>),
+      nextDeliverySlot: json['nextDeliverySlot'] == null
+          ? null
+          : TimeSlot.fromJson(json['nextDeliverySlot'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$_UserCartStateToJson(_$_UserCartState instance) =>
@@ -77,11 +88,11 @@ Map<String, dynamic> _$$_UserCartStateToJson(_$_UserCartState instance) =>
       'cartTotal': instance.cartTotal,
       'cartDiscountPercent': instance.cartDiscountPercent,
       'cartDiscountComputed': instance.cartDiscountComputed,
-      'cartDeliveryCharge': instance.cartDeliveryCharge,
-      'deliverySlots': instance.deliverySlots,
-      'collectionSlots': instance.collectionSlots,
+      'deliverySlots': instance.deliverySlots.map((e) => e.toJson()).toList(),
+      'collectionSlots':
+          instance.collectionSlots.map((e) => e.toJson()).toList(),
       'selectedDeliveryAddress': instance.selectedDeliveryAddress?.toJson(),
-      'selectedTimeSlot': instance.selectedTimeSlot,
+      'selectedTimeSlot': instance.selectedTimeSlot?.toJson(),
       'selectedTipAmount': instance.selectedTipAmount,
       'discountCode': instance.discountCode,
       'paymentIntentID': instance.paymentIntentID,
@@ -103,10 +114,13 @@ Map<String, dynamic> _$$_UserCartStateToJson(_$_UserCartState instance) =>
       'restaurantMinimumOrder': instance.restaurantMinimumOrder,
       'restaurantPlatformFee': instance.restaurantPlatformFee,
       'deliveryInstructions': instance.deliveryInstructions,
-      'deliveryMethodId': instance.deliveryMethodId,
-      'collectionMethodId': instance.collectionMethodId,
       'selectedPaymentMethod':
           _$PaymentMethodEnumMap[instance.selectedPaymentMethod],
+      'fulfilmentPostalDistricts': instance.fulfilmentPostalDistricts,
+      'eligibleOrderDates':
+          instance.eligibleOrderDates.map((e) => e.toIso8601String()).toList(),
+      'nextCollectionSlot': instance.nextCollectionSlot?.toJson(),
+      'nextDeliverySlot': instance.nextDeliverySlot?.toJson(),
     };
 
 const _$FulfilmentMethodEnumMap = {
