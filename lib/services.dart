@@ -10,4 +10,4 @@ final PeeplEatsService peeplEatsService = getIt<PeeplEatsService>();
 
 final StripePayService stripePayService = getIt<StripePayService>();
 
-final PeeplPaySerivce peeplPayService = getIt<PeeplPaySerivce>();
+final PeeplPayService peeplPayService = getIt<PeeplPayService>();

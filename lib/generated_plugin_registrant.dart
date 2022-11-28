@@ -9,7 +9,6 @@
 import 'package:flutter_keyboard_visibility_web/flutter_keyboard_visibility_web.dart';
 import 'package:flutter_native_splash/flutter_native_splash_web.dart';
 import 'package:flutter_secure_storage_web/flutter_secure_storage_web.dart';
-import 'package:package_info_plus_web/package_info_plus_web.dart';
 import 'package:sentry_flutter/sentry_flutter_web.dart';
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -19,7 +18,6 @@ void registerPlugins(Registrar registrar) {
   FlutterKeyboardVisibilityPlugin.registerWith(registrar);
   FlutterNativeSplashWeb.registerWith(registrar);
   FlutterSecureStorageWeb.registerWith(registrar);
-  PackageInfoPlugin.registerWith(registrar);
   SentryFlutterWeb.registerWith(registrar);
   registrar.registerMessageHandler();
 }
