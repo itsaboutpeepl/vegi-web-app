@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 import 'package:vegan_liverpool/constants/enums.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:vegan_liverpool/features/shared/widgets/primary_button.dart';
+import 'package:vegan_liverpool/features/veganHome/Helpers/helpers.dart';
 import 'package:vegan_liverpool/features/veganHome/Helpers/extensions.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
@@ -29,6 +30,7 @@ class _AddressViewState extends State<AddressView> {
   late PlaceApiProvider _placeApiProvider;
   late GlobalKey<FormBuilderState> _addressFormKey;
   final TextEditingController _typeAheadController = TextEditingController();
+  Coordinates? addressCoordinates;
 
   @override
   void initState() {
@@ -68,15 +70,15 @@ class _AddressViewState extends State<AddressView> {
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
-                        5,
+                        10,
                       ),
                       side: const BorderSide(),
                     ),
                     backgroundColor: Colors.white,
                     decoration: const InputDecoration(
                       fillColor: Colors.white,
-                      contentPadding: EdgeInsets.only(
-                          left: 12, top: 12, right: 12, bottom: 20),
+                      contentPadding:
+                          EdgeInsets.only(left: 12, top: 12, right: 12),
                       labelText: 'Address Label',
                       border: InputBorder.none,
                     ),
@@ -109,8 +111,6 @@ class _AddressViewState extends State<AddressView> {
                     name: 'addressLine1',
                     hideOnEmpty: true,
                     decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 12, top: 12, right: 12, bottom: 20),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
@@ -170,8 +170,6 @@ class _AddressViewState extends State<AddressView> {
                         : null,
                     name: 'addressLine2',
                     decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(
-                          left: 12, top: 12, right: 12, bottom: 20),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
@@ -196,8 +194,6 @@ class _AddressViewState extends State<AddressView> {
                               : null,
                           name: 'townCity',
                           decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.only(
-                                left: 12, top: 12, right: 12, bottom: 20),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.grey),
@@ -218,13 +214,12 @@ class _AddressViewState extends State<AddressView> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.4,
                         child: FormBuilderTextField(
+                          textCapitalization: TextCapitalization.characters,
                           initialValue: _isExistingAddress
                               ? widget.existingAddress!.postalCode
                               : null,
                           name: 'postalCode',
                           decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.only(
-                                left: 12, top: 12, right: 12, bottom: 20),
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.grey),
@@ -248,8 +243,9 @@ class _AddressViewState extends State<AddressView> {
                     height: 40,
                   ),
                   PrimaryButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_addressFormKey.currentState!.saveAndValidate()) {
+                        await validateAddressService();
                         final address = saveDeliveryAddress();
                         if (_isExistingAddress) {
                           viewmodel.editAddress(
@@ -258,6 +254,11 @@ class _AddressViewState extends State<AddressView> {
                           );
                         } else {
                           viewmodel.addAddress(newAddress: address);
+                        }
+                        if (address
+                            .deliversTo(viewmodel.fulfilmentPostalDistricts)) {
+                          viewmodel.setDeliveryAddress(id: address.internalID);
+                          Navigator.pop(context);
                         }
                         Navigator.pop(context);
                       }
@@ -273,6 +274,31 @@ class _AddressViewState extends State<AddressView> {
     );
   }
 
+  Future<bool> validateAddressService() async {
+    final Map<String, dynamic> formValue = _addressFormKey.currentState!.value;
+    //todo: consider adding address validation api: https://developers.google.com/maps/documentation/address-validation
+    final locations = await _placeApiProvider.fetchLocationByAddress(
+      addressLineOne: (formValue['addressLine1Internal'] as String?) ??
+          formValue['addressLine1'] as String,
+      addressLineTwo: formValue['addressLine2'] as String? ?? '',
+      addressTownCity: formValue['townCity'] as String,
+      addressPostCode: (formValue['postalCode'] as String).toUpperCase(),
+      addressCountryCode: 'UK',
+    );
+    if (locations.isEmpty) {
+      addressCoordinates = null;
+      return false;
+    } else if (locations.length == 1) {
+      final location = locations[0];
+      addressCoordinates = location.coordinates;
+    } else {
+      // Default to first or ask user?
+      final location = locations[0];
+      addressCoordinates = location.coordinates;
+    }
+    return true;
+  }
+
   DeliveryAddresses saveDeliveryAddress() {
     final Map<String, dynamic> formValue = _addressFormKey.currentState!.value;
 
@@ -286,8 +312,8 @@ class _AddressViewState extends State<AddressView> {
       addressLine2: formValue['addressLine2'] as String? ?? '',
       townCity: formValue['townCity'] as String,
       postalCode: (formValue['postalCode'] as String).toUpperCase(),
-      latitude: 0,
-      longitude: 0,
+      latitude: addressCoordinates?.lat ?? 0.0,
+      longitude: addressCoordinates?.lng ?? 0.0,
     );
   }
 }
