@@ -19,15 +19,20 @@ class BillSummaryViewModel extends Equatable {
   });
 
   factory BillSummaryViewModel.fromStore(Store<AppState> store) {
+    final bool hasSelectedSlot = store.state.cartState.selectedTimeSlot != null;
+
     return BillSummaryViewModel(
-      hasDeliveryCharge: store.state.cartState.deliveryCharge != 0 &&
-          store.state.cartState.isDelivery,
-      hasCollectionCharge: store.state.cartState.collectionCharge != 0 &&
-          (!store.state.cartState.isDelivery),
+      hasDeliveryCharge: hasSelectedSlot && store.state.cartState.isDelivery,
+      hasCollectionCharge:
+          hasSelectedSlot && (!store.state.cartState.isDelivery),
       hasDiscount: store.state.cartState.discountCode.isNotEmpty,
       hasTip: store.state.cartState.selectedTipAmount != 0,
-      deliveryCharge: store.state.cartState.deliveryCharge.formattedPrice,
-      collectionCharge: store.state.cartState.collectionCharge.formattedPrice,
+      deliveryCharge: hasSelectedSlot
+          ? store.state.cartState.selectedTimeSlot!.priceModifier.formattedPrice
+          : 0.formattedPrice,
+      collectionCharge: hasSelectedSlot
+          ? store.state.cartState.selectedTimeSlot!.priceModifier.formattedPrice
+          : 0.formattedPrice,
       grandTotal: store.state.cartState.cartTotal.formattedPrice,
       itemTotal: store.state.cartState.cartSubTotal.formattedPrice,
       serviceCharge: store.state.cartState.restaurantPlatformFee.formattedPrice,
@@ -49,5 +54,9 @@ class BillSummaryViewModel extends Equatable {
   final String tipAmount;
 
   @override
-  List<Object?> get props => [grandTotal];
+  List<Object?> get props => [
+        grandTotal,
+        hasDeliveryCharge,
+        hasCollectionCharge,
+      ];
 }

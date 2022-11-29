@@ -1,8 +1,6 @@
 import 'package:auto_route/src/router/auto_router_x.dart';
-import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:js/js_util.dart';
 import 'package:vegan_liverpool/common/router/routes.gr.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/order_confirmed/address_card.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/order_confirmed/bill_invoice_card.dart';
@@ -10,7 +8,7 @@ import 'package:vegan_liverpool/features/veganHome/widgets/order_confirmed/order
 import 'package:vegan_liverpool/features/veganHome/widgets/order_confirmed/thanks_card.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/shared/shimmer_button.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
-import 'package:vegan_liverpool/models/webViewHandlers.dart';
+import 'package:vegan_liverpool/redux/actions/cart_actions.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/order_confirmed.dart';
 
 class OrderConfirmedScreen extends StatelessWidget {
@@ -20,6 +18,9 @@ class OrderConfirmedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, OrderConfirmedViewModel>(
       converter: OrderConfirmedViewModel.fromStore,
+      onInit: (store) {
+        store.dispatch(getPaymentAmountsFromDevice());
+      },
       builder: (_, viewmodel) {
         return Scaffold(
           body: SingleChildScrollView(

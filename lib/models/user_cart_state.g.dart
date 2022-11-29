@@ -50,8 +50,6 @@ _$_UserCartState _$$_UserCartStateFromJson(Map<String, dynamic> json) =>
           : DeliveryAddresses.fromJson(
               json['restaurantAddress'] as Map<String, dynamic>),
       restaurantWalletAddress: json['restaurantWalletAddress'] as String? ?? '',
-      deliveryCharge: json['deliveryCharge'] as int? ?? 0,
-      collectionCharge: json['collectionCharge'] as int? ?? 0,
       fulfilmentMethod: $enumDecodeNullable(
               _$FulfilmentMethodEnumMap, json['fulfilmentMethod']) ??
           FulfilmentMethod.delivery,
@@ -107,8 +105,6 @@ Map<String, dynamic> _$$_UserCartStateToJson(_$_UserCartState instance) =>
       'restaurantID': instance.restaurantID,
       'restaurantAddress': instance.restaurantAddress?.toJson(),
       'restaurantWalletAddress': instance.restaurantWalletAddress,
-      'deliveryCharge': instance.deliveryCharge,
-      'collectionCharge': instance.collectionCharge,
       'fulfilmentMethod': _$FulfilmentMethodEnumMap[instance.fulfilmentMethod]!,
       'isDelivery': instance.isDelivery,
       'restaurantMinimumOrder': instance.restaurantMinimumOrder,

@@ -1,9 +1,10 @@
+import 'package:js/js_util.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
-import 'package:vegan_liverpool/models/user_state.dart';
+import 'package:vegan_liverpool/models/webViewHandlers.dart';
 import 'package:vegan_liverpool/utils/analytics.dart';
 import 'package:vegan_liverpool/utils/log/log.dart';
 
@@ -21,6 +22,30 @@ class SetEmail {
 
   @override
   String toString() => 'SetEmail : email: $email';
+}
+
+class SetUserInformation {
+  SetUserInformation({
+    required this.displayName,
+    required this.email,
+    required this.gbpBalance,
+    required this.phoneNumber,
+    required this.postcode,
+    required this.pplBalance,
+    required this.walletAddress,
+  });
+  String displayName;
+  String email;
+  String phoneNumber;
+  String postcode;
+  String walletAddress;
+  num gbpBalance;
+  num pplBalance;
+
+  @override
+  String toString() => 'SetUserInformation : displayName: $displayName, '
+      'email: $email, gbpBalance: $gbpBalance, phoneNumber: $phoneNumber, '
+      'postcode: $postcode, pplBalance: $pplBalance, walletAddress: $walletAddress';
 }
 
 class UpdateListOfDeliveryAddresses {
@@ -113,22 +138,33 @@ ThunkAction<AppState> updateDeliveryAddress({
   };
 }
 
-ThunkAction<AppState> identifyCall({String? wallet}) {
+ThunkAction<AppState> identifyCall() {
   return (Store<AppState> store) async {
-    //TODO: make call to the guide and get information from webview here
-    //TODO: add call to splash screen
-    final UserState userState = store.state.userState;
-    final String displayName = userState.displayName;
+    final dynamic userInformation =
+        dartify(await promiseToFuture(getUserInformation()));
 
-    final String phoneNumber = userState.phoneNumber;
-    final String walletAddress = wallet ?? userState.walletAddress;
+    print(userInformation.runtimeType);
+    print(userInformation);
+    log.info('User Information: $userInformation');
+
+    store.dispatch(
+      SetUserInformation(
+        displayName: userInformation['displayName'] as String? ?? '',
+        email: userInformation['email'] as String? ?? '',
+        gbpBalance: userInformation['gbpBalance'] as num? ?? 0,
+        phoneNumber: userInformation['phoneNumber'] as String? ?? '',
+        postcode: userInformation['postcode'] as String? ?? '',
+        pplBalance: userInformation['pplBalance'] as num? ?? 0,
+        walletAddress: userInformation['walletAddress'] as String? ?? '',
+      ),
+    );
 
     final Map<String, dynamic> properties = {
-      'phoneNumber': phoneNumber,
-      'walletAddress': walletAddress,
-      'displayName': displayName,
+      'phoneNumber': userInformation['phoneNumber'] as String? ?? '',
+      'walletAddress': userInformation['walletAddress'] as String? ?? '',
+      'displayName': userInformation['displayName'] as String? ?? '',
     };
     await Analytics.setUserInformation(properties);
-    await Analytics.setUserId(phoneNumber);
+    await Analytics.setUserId(userInformation['phoneNumber'] as String? ?? '');
   };
 }

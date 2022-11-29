@@ -4,6 +4,7 @@ import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/models/restaurant/restaurantItem.dart';
 import 'package:vegan_liverpool/redux/actions/cart_actions.dart';
 import 'package:vegan_liverpool/redux/actions/home_page_actions.dart';
+import 'package:vegan_liverpool/redux/actions/user_actions.dart';
 
 class FeaturedRestaurantsVM extends Equatable {
   const FeaturedRestaurantsVM({

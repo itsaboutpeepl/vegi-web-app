@@ -13,10 +13,13 @@ _$_UserState _$$_UserStateFromJson(Map<String, dynamic> json) => _$_UserState(
                   (e) => DeliveryAddresses.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      walletAddress: json['walletAddress'] as String? ?? "",
-      displayName: json['displayName'] as String? ?? "",
-      phoneNumber: json['phoneNumber'] as String? ?? "",
-      email: json['email'] as String? ?? "",
+      walletAddress: json['walletAddress'] as String? ?? '',
+      displayName: json['displayName'] as String? ?? '',
+      phoneNumber: json['phoneNumber'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      postcode: json['postcode'] as String? ?? '',
+      gbpBalance: json['gbpBalance'] as num? ?? 0,
+      pplBalance: json['pplBalance'] as num? ?? 0,
     );
 
 Map<String, dynamic> _$$_UserStateToJson(_$_UserState instance) =>
@@ -27,4 +30,7 @@ Map<String, dynamic> _$$_UserStateToJson(_$_UserState instance) =>
       'displayName': instance.displayName,
       'phoneNumber': instance.phoneNumber,
       'email': instance.email,
+      'postcode': instance.postcode,
+      'gbpBalance': instance.gbpBalance,
+      'pplBalance': instance.pplBalance,
     };

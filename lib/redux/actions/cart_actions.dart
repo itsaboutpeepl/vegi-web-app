@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:js/js_util.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:vegan_liverpool/common/router/routes.dart';
 import 'package:vegan_liverpool/constants/analytics_events.dart';
 import 'package:vegan_liverpool/constants/enums.dart';
 import 'package:vegan_liverpool/features/shared/widgets/snackbars.dart';
@@ -20,6 +22,7 @@ import 'package:vegan_liverpool/models/restaurant/deliveryAddresses.dart';
 import 'package:vegan_liverpool/models/restaurant/payment_methods.dart';
 import 'package:vegan_liverpool/models/restaurant/restaurantItem.dart';
 import 'package:vegan_liverpool/models/restaurant/time_slot.dart';
+import 'package:vegan_liverpool/models/webViewHandlers.dart';
 import 'package:vegan_liverpool/services.dart';
 import 'package:vegan_liverpool/utils/analytics.dart';
 import 'package:vegan_liverpool/utils/log/log.dart';
@@ -576,34 +579,25 @@ ThunkAction<AppState> computeCartTotals() {
       int cartSubTotal = 0;
       const int cartTax = 0;
       int cartTotal = 0;
-      final int deliveryFee = store.state.cartState.deliveryCharge;
-      final int collectionFee = store.state.cartState.collectionCharge;
+      final int fulfilmentCharge =
+          store.state.cartState.selectedTimeSlot != null
+              ? store.state.cartState.selectedTimeSlot!.priceModifier
+              : 0;
       final int platformFee = store.state.cartState.restaurantPlatformFee;
       final int cartDiscountPercent = store.state.cartState.cartDiscountPercent;
       int cartDiscountComputed = 0;
       final int cartTip = store.state.cartState.selectedTipAmount;
-      final bool isDelivery = store.state.cartState.isDelivery;
 
       for (final element in cartItems) {
         cartSubTotal += element.totalItemPrice;
       }
 
-      // add price of each order Item (which has options included)
-
       cartDiscountComputed =
           (cartSubTotal * cartDiscountPercent) ~/ 100; // subtotal * discount
 
-      //cartTax = ((cartSubTotal - cartDiscountComputed) * 5) ~/ 100;
-
-      if (isDelivery) {
-        cartTotal =
-            (cartSubTotal + cartTax + cartTip + deliveryFee + platformFee) -
-                cartDiscountComputed;
-      } else {
-        cartTotal =
-            (cartSubTotal + cartTax + cartTip + collectionFee + platformFee) -
-                cartDiscountComputed;
-      }
+      cartTotal =
+          (cartSubTotal + cartTax + cartTip + fulfilmentCharge + platformFee) -
+              cartDiscountComputed;
 
       if (cartItems.isEmpty) {
         cartSubTotal = 0;
@@ -845,43 +839,11 @@ ThunkAction<AppState> startPaymentProcess({
             eventName: AnalyticsEvents.payStripe,
           ),
         );
-        // await stripeService
-        //     .handleStripe(
-        //   walletAddress: store.state.userState.walletAddress,
-        //   amount: store.state.cartState.cartTotal,
-        //   context: context,
-        //   shouldPushToHome: false,
-        // )
-        //     .then(
-        //   (value) {
-        //     if (!value) {
-        //       store
-        //         ..dispatch(SetPaymentButtonFlag(false))
-        //         ..dispatch(SetTransferringPayment(flag: value));
-        //       return;
-        //     }
-        //     unawaited(
-        //       Analytics.track(
-        //         eventName: AnalyticsEvents.mint,
-        //         properties: {
-        //           'status': 'success',
-        //         },
-        //       ),
-        //     );
-        //     store
-        //       ..dispatch(
-        //         UpdateSelectedAmounts(
-        //           gbpxAmount: (store.state.cartState.cartTotal) / 100,
-        //           pplAmount: 0,
-        //         ),
-        //       )
-        //       ..dispatch(
-        //         startTokenPaymentToRestaurant(
-        //           context: context,
-        //         ),
-        //       );
-        //   },
-        // );
+        log.info('inside stripe - start payment process');
+        callPaymentHandlerOnDevice(
+          store.state.cartState.paymentIntentID,
+          PaymentMethod.stripe.name,
+        );
       } else if (store.state.cartState.selectedPaymentMethod ==
           PaymentMethod.peeplPay) {
         unawaited(
@@ -889,26 +851,12 @@ ThunkAction<AppState> startPaymentProcess({
             eventName: AnalyticsEvents.payPeepl,
           ),
         );
-        //show the peepl pay sheet
-        //user selects to pay with peepl rewards or GBPx
-        //if gbpx is not enough -> stripe payment until GBPx gets added.
-        //transfer tokens
-        //show loading popup
-        //show order confirmed
-
-        // await showModalBottomSheet<Widget>(
-        //   isScrollControlled: true,
-        //   backgroundColor: Colors.grey[900],
-        //   shape: const RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.vertical(
-        //       top: Radius.circular(20),
-        //     ),
-        //   ),
-        //   elevation: 5,
-        //   context: context,
-        //   builder: (context) => const PaymentSheet(),
-        // );
+        callPaymentHandlerOnDevice(
+          store.state.cartState.paymentIntentID,
+          PaymentMethod.peeplPay.name,
+        );
       }
+      rootRouter.push(AwaitingPaymentPage());
     } catch (e, s) {
       store.dispatch(SetPaymentButtonFlag(false));
       log.error('ERROR - sendOrderObject $e');
@@ -1079,187 +1027,102 @@ ThunkAction<AppState> setDeliveryAddress({
   };
 }
 
-ThunkAction startCheckTimer(
-    VoidCallback successCallback, VoidCallback errorCallback) {
-  return (Store store) async {
-    try {
-      print("start check timer");
-      //Set loading to true
-      Timer.periodic(
-        const Duration(seconds: 4),
-        (timer) async {
-          print("inside timer");
+ThunkAction<AppState> startCheckTimer({
+  required void Function() successCallback,
+  required void Function(String error) errorCallback,
+}) {
+  return (Store<AppState> store) async {
+    int counter = 0;
+    Timer.periodic(
+      const Duration(seconds: 4),
+      (timer) async {
+        try {
           final Future<Map<dynamic, dynamic>> checkOrderResponse =
               peeplEatsService.checkOrderStatus(store.state.cartState.orderID);
-          print("after api call");
-          checkOrderResponse.then(
+
+          await checkOrderResponse.then(
             (completedValue) {
-              print("after .then");
-              if (completedValue['paymentStatus'] == "paid") {
-                print("inside paid");
-                store.dispatch(SetTransferringPayment(flag: false));
-                store.dispatch(SetConfirmed(flag: true));
-                successCallback();
+              counter++;
+              log.info(
+                'PaymentStatus: ${completedValue["paymentStatus"]}, '
+                'counter: $counter',
+              );
+              if (completedValue['paymentStatus'] == 'paid') {
+                store
+                  ..dispatch(SetTransferringPayment(flag: false))
+                  ..dispatch(SetConfirmed(flag: true));
                 timer.cancel();
+                unawaited(
+                  Analytics.track(
+                    eventName: AnalyticsEvents.payment,
+                    properties: {
+                      'status': 'success',
+                    },
+                  ),
+                );
+                successCallback();
               }
             },
           );
-        },
+
+          if (counter > 15) {
+            timer.cancel();
+            unawaited(
+              Analytics.track(
+                eventName: AnalyticsEvents.payment,
+                properties: {
+                  'status': 'failure',
+                },
+              ),
+            );
+            throw Exception('Payment checks exceeded time limit: '
+                'orderID: ${store.state.cartState.orderID}');
+          }
+        } catch (e, s) {
+          timer.cancel();
+          errorCallback(e.toString());
+          unawaited(
+            Analytics.track(
+              eventName: AnalyticsEvents.payment,
+              properties: {
+                'status': 'failure',
+              },
+            ),
+          );
+          store.dispatch(SetError(flag: true));
+          log.error('ERROR - startPaymentConfirmationCheck $e');
+          await Sentry.captureException(
+            e,
+            stackTrace: s,
+            hint: 'ERROR - startPaymentConfirmationCheck $e',
+          );
+        }
+      },
+    );
+  };
+}
+
+ThunkAction<AppState> getPaymentAmountsFromDevice() {
+  return (Store<AppState> store) async {
+    try {
+      final dynamic selectedPaymentAmounts =
+          dartify(await promiseToFuture(getSelectedPaymentAmounts()));
+
+      log.info('selectedPaymentAmounts: $selectedPaymentAmounts');
+
+      store.dispatch(
+        UpdateSelectedAmounts(
+          gbpxAmount: selectedPaymentAmounts['gbpAmount'],
+          pplAmount: selectedPaymentAmounts['pplAmount'],
+        ),
       );
     } catch (e, s) {
-      store.dispatch(SetError(flag: true));
-      log.error('ERROR - sendTokenPayment $e');
+      log.error('ERROR - getPaymentAmountsFromDevice $e');
       await Sentry.captureException(
         e,
         stackTrace: s,
-        hint: 'ERROR - sendTokenPayment $e',
+        hint: 'ERROR - getPaymentAmountsFromDevice $e',
       );
     }
   };
 }
-
-// ThunkAction prepareAndSendOrder(void Function(String errorText) errorCallback,
-//     VoidCallback successCallback) {
-//   return (Store store) async {
-//     int temp = ((store.state.cartState.cartSubTotal *
-//             store.state.cartState.cartDiscountPercent) ~/
-//         100);
-
-//     try {
-//       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.none) {
-//         errorCallback("Please select or create an address");
-//         return;
-//       } else if (store.state.cartState.selectedTimeSlot.isEmpty) {
-//         errorCallback("Please select a time slot");
-//         return;
-//       } else if (store.state.cartState.restaurantMinimumOrder >
-//           store.state.cartState.cartSubTotal - temp) {
-//         errorCallback("Your order does not satisfy the minimum order amount");
-//         return;
-//       }
-
-//       Map<String, dynamic> orderObject = {};
-
-//       orderObject.addAll({
-//         "items": store.state.cartState.cartItems
-//             .map(
-//               (e) => {
-//                 "id": int.parse(e.menuItem.menuItemID),
-//                 "quantity": e.itemQuantity,
-//                 "options": e.selectedProductOptions.map(
-//                   (key, value) =>
-//                       MapEntry<String, int>(key.toString(), value.optionID),
-//                 ),
-//               },
-//             )
-//             .toList(),
-//         "total": store.state.cartState.cartTotal,
-//         "tipAmount": store.state.cartState.selectedTipAmount * 100,
-//         "marketingOptIn": false,
-//         "discountCode": store.state.cartState.discountCode,
-//         "vendor": store.state.cartState.restaurantID,
-//         "walletAddress": store.state.cartState.userWalletAddress
-//       });
-
-//       if (store.state.cartState.fulfilmentMethod == FulfilmentMethod.delivery) {
-//         if (store.state.cartState.selectedDeliveryAddress == null) {
-//           errorCallback("Please select an address");
-//           return;
-//         }
-//         DeliveryAddresses selectedAddress =
-//             store.state.cartState.selectedDeliveryAddress!;
-
-//         orderObject.addAll(
-//           {
-//             "address": {
-//               "name": store.state.cartState.userDisplayName,
-//               "phoneNumber": selectedAddress.phoneNumber ?? "",
-//               "email": "email@notprovided.com",
-//               "lineOne": selectedAddress.addressLine1,
-//               "lineTwo": selectedAddress.addressLine2 +
-//                   ", " +
-//                   selectedAddress.townCity,
-//               "postCode": selectedAddress.postalCode,
-//               "deliveryInstructions":
-//                   store.state.cartState.deliveryInstructions,
-//             },
-//             "fulfilmentMethod": store.state.cartState.deliveryMethodId,
-//             "fulfilmentSlotFrom": formatDateForOrderObject(
-//                 store.state.cartState.selectedTimeSlot.entries.first.value),
-//             "fulfilmentSlotTo": formatDateForOrderObject(
-//                 store.state.cartState.selectedTimeSlot.entries.last.value),
-//           },
-//         );
-//       } else if (store.state.cartState.fulfilmentMethod ==
-//           FulfilmentMethod.collection) {
-//         orderObject.addAll(
-//           {
-//             "address": {
-//               "name": store.state.cartState.userDisplayName,
-//               "email": "email@notprovided.com",
-//               "phoneNumber": "12345678",
-//               "lineOne": "Collection Order",
-//               "lineTwo": "",
-//               "postCode": "L7 0HG",
-//               "deliveryInstructions":
-//                   store.state.cartState.deliveryInstructions,
-//             },
-//             "fulfilmentMethod": store.state.cartState.collectionMethodId,
-//             "fulfilmentSlotFrom": formatDateForOrderObject(
-//                 store.state.cartState.selectedTimeSlot.entries.first.value),
-//             "fulfilmentSlotTo": formatDateForOrderObject(
-//                 store.state.cartState.selectedTimeSlot.entries.last.value),
-//           },
-//         );
-//       }
-
-//       print("Order Object Created: ${json.encode(orderObject).toString()}");
-
-//       //Call create order API with prepared orderobject
-//       Map result = await peeplEatsService
-//           .createOrder(orderObject)
-//           .timeout(Duration(seconds: 10), onTimeout: () {
-//         return {}; //return empty map on timeout to trigger errorCallback
-//       });
-
-//       if (result.isNotEmpty) {
-//         store.dispatch(UpdatePaymentIntentID(result['paymentIntentID']));
-//         //Call Peepl Pay API to start checking the paymentIntentID
-//         Map checkResult = await peeplPayService
-//             .startPaymentIntentCheck(result['paymentIntentID']);
-
-//         print("Order Result $result");
-
-//         //Crosscheck the PaymentIntentID with the amount calculcated on device.
-//         if (checkResult['paymentIntent']['amount'] ==
-//             store.state.cartState.cartTotal) {
-//           store.dispatch(CreateOrder(
-//               result['orderID'].toString(), result['paymentIntentID']));
-
-//           //Payment Function that calls the actual app payment sheet
-//           paymentFunction(result['paymentIntentID']);
-//           successCallback();
-//         } else {
-//           //check if it is better to just update the total value with the api returned or return an error
-//           errorCallback("Order totals aren't matching");
-//         }
-//       } else {
-//         errorCallback("Our servers seem to be down");
-//       }
-//     } on DioError catch (e) {
-//       if (e.response != null) {
-//         print(e.response!.data);
-//         errorCallback(
-//             getErrorMessageForOrder(e.response!.data['cause']['code']));
-//       }
-//     } catch (e, s) {
-//       errorCallback("Something went wrong");
-//       log.error('ERROR - prepareAndSendOrder $e');
-//       await Sentry.captureException(
-//         e,
-//         stackTrace: s,
-//         hint: 'ERROR - prepareAndSendOrder $e',
-//       );
-//     }
-//   };
-// }

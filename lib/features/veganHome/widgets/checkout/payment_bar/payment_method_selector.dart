@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:vegan_liverpool/constants/analytics_events.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/models/restaurant/payment_methods.dart';
+import 'package:vegan_liverpool/redux/actions/cart_actions.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/checkout/payment_method_vm.dart';
 import 'package:vegan_liverpool/utils/analytics.dart';
 
@@ -48,16 +49,13 @@ class PaymentMethodSelector extends StatelessWidget {
           StoreConnector<AppState, PaymentMethodViewModel>(
             converter: PaymentMethodViewModel.fromStore,
             onInit: (store) {
-              //TODO: get ppl balance here
-              // final pplBalance = store
-              //     .state.cashWalletState.tokens[pplToken.address]!
-              //     .getAmount();
+              final pplBalance = store.state.userState.pplBalance;
 
-              // if (pplBalance < 10) {
-              //   store.dispatch(SetPaymentMethod(PaymentMethod.stripe));
-              //   return;
-              // }
-              // store.dispatch(SetPaymentMethod(PaymentMethod.peeplPay));
+              if (pplBalance < 10) {
+                store.dispatch(SetPaymentMethod(PaymentMethod.stripe));
+                return;
+              }
+              store.dispatch(SetPaymentMethod(PaymentMethod.peeplPay));
             },
             builder: (context, viewmodel) {
               return Text(

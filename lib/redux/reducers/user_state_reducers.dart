@@ -5,6 +5,7 @@ import 'package:vegan_liverpool/redux/actions/user_actions.dart';
 final userReducers = combineReducers<UserState>([
   TypedReducer<UserState, SetDisplayName>(_setDisplayName),
   TypedReducer<UserState, SetEmail>(_setEmail),
+  TypedReducer<UserState, SetUserInformation>(_setUserInformation),
   TypedReducer<UserState, UpdateListOfDeliveryAddresses>(_addDeliveryAddress),
 ]);
 
@@ -27,4 +28,19 @@ UserState _setEmail(
   SetEmail action,
 ) {
   return state.copyWith(email: action.email);
+}
+
+UserState _setUserInformation(
+  UserState state,
+  SetUserInformation action,
+) {
+  return state.copyWith(
+    displayName: action.displayName,
+    email: action.email,
+    gbpBalance: action.gbpBalance,
+    phoneNumber: action.phoneNumber,
+    postcode: action.postcode,
+    pplBalance: action.pplBalance,
+    walletAddress: action.walletAddress,
+  );
 }

@@ -6,11 +6,17 @@ external void JSlog(dynamic str);
 @JS('getWalletAddress')
 external String getWalletAddress();
 
-@JS('getOrderAmounts')
-external Map<String, String> getOrderAmounts();
+@JS('getSelectedPaymentAmounts')
+external dynamic getSelectedPaymentAmounts();
 
 @JS('getDisplayName')
 external String getDisplayName();
 
-@JS('makePayment')
-external void paymentFunction(String paymentIntentID);
+@JS('callPaymentHandlerOnDevice')
+external void callPaymentHandlerOnDevice(
+  String paymentIntentID,
+  String selectedPaymentMethod,
+);
+
+@JS('getUserInformation')
+external dynamic getUserInformation();

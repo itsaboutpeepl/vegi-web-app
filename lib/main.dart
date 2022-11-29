@@ -50,7 +50,6 @@ void main() async {
 //initial state is taken from the device storage
   AppState initialState = await loadState(persistor);
 
-//TODO: Ask what is this for?
   final List<Middleware<AppState>> wms = [
     thunkMiddleware,
     persistor.createMiddleware(),
@@ -74,7 +73,7 @@ void main() async {
       (options) {
         options.debug = !kReleaseMode;
         options.dsn = dotenv.env['SENTRY_DSN'];
-        options.environment = "prod";
+        options.environment = dotenv.env['MODE'];
       },
     );
 

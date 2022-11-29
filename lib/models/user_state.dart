@@ -9,10 +9,13 @@ class UserState with _$UserState {
   @JsonSerializable()
   factory UserState({
     @Default([]) List<DeliveryAddresses> listOfDeliveryAddresses,
-    @Default("") String walletAddress,
-    @Default("") String displayName,
-    @Default("") String phoneNumber,
-    @Default("") String email,
+    @Default('') String walletAddress,
+    @Default('') String displayName,
+    @Default('') String phoneNumber,
+    @Default('') String email,
+    @Default('') String postcode,
+    @Default(0) num gbpBalance,
+    @Default(0) num pplBalance,
   }) = _UserState;
 
   const UserState._();

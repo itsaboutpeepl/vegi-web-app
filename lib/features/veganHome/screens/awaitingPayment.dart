@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:vegan_liverpool/common/router/routes.dart';
 import 'package:vegan_liverpool/constants/theme.dart';
-import 'package:vegan_liverpool/features/shared/widgets/snackbars.dart';
+import 'package:vegan_liverpool/features/veganHome/widgets/checkout/dialogs/error_dialog.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
 import 'package:vegan_liverpool/redux/actions/cart_actions.dart';
-import 'package:vegan_liverpool/redux/viewsmodels/checkout.dart';
 
 class AwaitingPaymentPage extends StatelessWidget {
   const AwaitingPaymentPage({Key? key}) : super(key: key);
@@ -16,13 +15,22 @@ class AwaitingPaymentPage extends StatelessWidget {
     return StoreConnector<AppState, void>(
       converter: (store) {},
       onInit: (store) {
-        store.dispatch(startCheckTimer(
-            () => context.router.push(OrderConfirmedScreen()),
-            () => showErrorSnack(context: context)));
+        store.dispatch(
+          startCheckTimer(
+            successCallback: () => context.router.push(OrderConfirmedScreen()),
+            errorCallback: (error) {
+              showDialog(
+                context: context,
+                builder: (_) => ErrorDialog(
+                  message: error.toString(),
+                ),
+              );
+            },
+          ),
+        );
       },
       builder: (_, viewmodel) {
         return Scaffold(
-          appBar: AppBar(title: Text('Confirming Payment')),
           body: Padding(
             padding: EdgeInsets.only(
                 top: MediaQuery.of(context).size.height * 0.15,
@@ -32,7 +40,7 @@ class AwaitingPaymentPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "Confirming your order!",
+                  "Awaiting Payment",
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
                     fontSize: 30,

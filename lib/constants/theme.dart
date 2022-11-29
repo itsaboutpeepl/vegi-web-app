@@ -72,9 +72,7 @@ const List<Color> themeColors = [
 ];
 
 List<Color> colorToWhiteGradient = [
-  themeShade300,
-  themeShade300,
-  themeShade200,
-  themeShade100,
+  Colors.white,
+  Colors.white,
   Colors.white,
 ];

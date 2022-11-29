@@ -4,6 +4,7 @@ import 'package:vegan_liverpool/constants/theme.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/restaurant/singleRestaurantItem.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/shared/emptyStatePage.dart';
 import 'package:vegan_liverpool/models/app_state.dart';
+import 'package:vegan_liverpool/redux/actions/user_actions.dart';
 import 'package:vegan_liverpool/redux/viewsmodels/featuredRestaurantsVM.dart';
 
 class FeaturedRestaurantList extends StatelessWidget {
@@ -14,6 +15,9 @@ class FeaturedRestaurantList extends StatelessWidget {
     return StoreConnector<AppState, FeaturedRestaurantsVM>(
       converter: FeaturedRestaurantsVM.fromStore,
       distinct: true,
+      onInit: (store) {
+        store.dispatch(identifyCall());
+      },
       builder: (_, viewmodel) {
         return viewmodel.isLoadingHomePage
             ? const Center(

@@ -46,8 +46,6 @@ mixin _$UserCartState {
   DeliveryAddresses? get restaurantAddress =>
       throw _privateConstructorUsedError;
   String get restaurantWalletAddress => throw _privateConstructorUsedError;
-  int get deliveryCharge => throw _privateConstructorUsedError;
-  int get collectionCharge => throw _privateConstructorUsedError;
   FulfilmentMethod get fulfilmentMethod => throw _privateConstructorUsedError;
   bool get isDelivery => throw _privateConstructorUsedError;
   int get restaurantMinimumOrder => throw _privateConstructorUsedError;
@@ -97,8 +95,6 @@ abstract class $UserCartStateCopyWith<$Res> {
       String restaurantID,
       DeliveryAddresses? restaurantAddress,
       String restaurantWalletAddress,
-      int deliveryCharge,
-      int collectionCharge,
       FulfilmentMethod fulfilmentMethod,
       bool isDelivery,
       int restaurantMinimumOrder,
@@ -152,8 +148,6 @@ class _$UserCartStateCopyWithImpl<$Res>
     Object? restaurantID = freezed,
     Object? restaurantAddress = freezed,
     Object? restaurantWalletAddress = freezed,
-    Object? deliveryCharge = freezed,
-    Object? collectionCharge = freezed,
     Object? fulfilmentMethod = freezed,
     Object? isDelivery = freezed,
     Object? restaurantMinimumOrder = freezed,
@@ -262,14 +256,6 @@ class _$UserCartStateCopyWithImpl<$Res>
           ? _value.restaurantWalletAddress
           : restaurantWalletAddress // ignore: cast_nullable_to_non_nullable
               as String,
-      deliveryCharge: deliveryCharge == freezed
-          ? _value.deliveryCharge
-          : deliveryCharge // ignore: cast_nullable_to_non_nullable
-              as int,
-      collectionCharge: collectionCharge == freezed
-          ? _value.collectionCharge
-          : collectionCharge // ignore: cast_nullable_to_non_nullable
-              as int,
       fulfilmentMethod: fulfilmentMethod == freezed
           ? _value.fulfilmentMethod
           : fulfilmentMethod // ignore: cast_nullable_to_non_nullable
@@ -402,8 +388,6 @@ abstract class _$$_UserCartStateCopyWith<$Res>
       String restaurantID,
       DeliveryAddresses? restaurantAddress,
       String restaurantWalletAddress,
-      int deliveryCharge,
-      int collectionCharge,
       FulfilmentMethod fulfilmentMethod,
       bool isDelivery,
       int restaurantMinimumOrder,
@@ -464,8 +448,6 @@ class __$$_UserCartStateCopyWithImpl<$Res>
     Object? restaurantID = freezed,
     Object? restaurantAddress = freezed,
     Object? restaurantWalletAddress = freezed,
-    Object? deliveryCharge = freezed,
-    Object? collectionCharge = freezed,
     Object? fulfilmentMethod = freezed,
     Object? isDelivery = freezed,
     Object? restaurantMinimumOrder = freezed,
@@ -574,14 +556,6 @@ class __$$_UserCartStateCopyWithImpl<$Res>
           ? _value.restaurantWalletAddress
           : restaurantWalletAddress // ignore: cast_nullable_to_non_nullable
               as String,
-      deliveryCharge: deliveryCharge == freezed
-          ? _value.deliveryCharge
-          : deliveryCharge // ignore: cast_nullable_to_non_nullable
-              as int,
-      collectionCharge: collectionCharge == freezed
-          ? _value.collectionCharge
-          : collectionCharge // ignore: cast_nullable_to_non_nullable
-              as int,
       fulfilmentMethod: fulfilmentMethod == freezed
           ? _value.fulfilmentMethod
           : fulfilmentMethod // ignore: cast_nullable_to_non_nullable
@@ -655,8 +629,6 @@ class _$_UserCartState extends _UserCartState {
       this.restaurantID = '',
       this.restaurantAddress = null,
       this.restaurantWalletAddress = '',
-      this.deliveryCharge = 0,
-      this.collectionCharge = 0,
       this.fulfilmentMethod = FulfilmentMethod.delivery,
       this.isDelivery = false,
       this.restaurantMinimumOrder = 0,
@@ -746,12 +718,6 @@ class _$_UserCartState extends _UserCartState {
   final String restaurantWalletAddress;
   @override
   @JsonKey()
-  final int deliveryCharge;
-  @override
-  @JsonKey()
-  final int collectionCharge;
-  @override
-  @JsonKey()
   final FulfilmentMethod fulfilmentMethod;
   @override
   @JsonKey()
@@ -783,7 +749,7 @@ class _$_UserCartState extends _UserCartState {
 
   @override
   String toString() {
-    return 'UserCartState(cartItems: $cartItems, cartSubTotal: $cartSubTotal, cartTax: $cartTax, cartTotal: $cartTotal, cartDiscountPercent: $cartDiscountPercent, cartDiscountComputed: $cartDiscountComputed, deliverySlots: $deliverySlots, collectionSlots: $collectionSlots, selectedDeliveryAddress: $selectedDeliveryAddress, selectedTimeSlot: $selectedTimeSlot, selectedTipAmount: $selectedTipAmount, discountCode: $discountCode, paymentIntentID: $paymentIntentID, orderID: $orderID, selectedGBPxAmount: $selectedGBPxAmount, selectedPPLAmount: $selectedPPLAmount, payButtonLoading: $payButtonLoading, transferringTokens: $transferringTokens, errorCompletingPayment: $errorCompletingPayment, confirmedPayment: $confirmedPayment, restaurantName: $restaurantName, restaurantID: $restaurantID, restaurantAddress: $restaurantAddress, restaurantWalletAddress: $restaurantWalletAddress, deliveryCharge: $deliveryCharge, collectionCharge: $collectionCharge, fulfilmentMethod: $fulfilmentMethod, isDelivery: $isDelivery, restaurantMinimumOrder: $restaurantMinimumOrder, restaurantPlatformFee: $restaurantPlatformFee, deliveryInstructions: $deliveryInstructions, selectedPaymentMethod: $selectedPaymentMethod, fulfilmentPostalDistricts: $fulfilmentPostalDistricts, eligibleOrderDates: $eligibleOrderDates, nextCollectionSlot: $nextCollectionSlot, nextDeliverySlot: $nextDeliverySlot)';
+    return 'UserCartState(cartItems: $cartItems, cartSubTotal: $cartSubTotal, cartTax: $cartTax, cartTotal: $cartTotal, cartDiscountPercent: $cartDiscountPercent, cartDiscountComputed: $cartDiscountComputed, deliverySlots: $deliverySlots, collectionSlots: $collectionSlots, selectedDeliveryAddress: $selectedDeliveryAddress, selectedTimeSlot: $selectedTimeSlot, selectedTipAmount: $selectedTipAmount, discountCode: $discountCode, paymentIntentID: $paymentIntentID, orderID: $orderID, selectedGBPxAmount: $selectedGBPxAmount, selectedPPLAmount: $selectedPPLAmount, payButtonLoading: $payButtonLoading, transferringTokens: $transferringTokens, errorCompletingPayment: $errorCompletingPayment, confirmedPayment: $confirmedPayment, restaurantName: $restaurantName, restaurantID: $restaurantID, restaurantAddress: $restaurantAddress, restaurantWalletAddress: $restaurantWalletAddress, fulfilmentMethod: $fulfilmentMethod, isDelivery: $isDelivery, restaurantMinimumOrder: $restaurantMinimumOrder, restaurantPlatformFee: $restaurantPlatformFee, deliveryInstructions: $deliveryInstructions, selectedPaymentMethod: $selectedPaymentMethod, fulfilmentPostalDistricts: $fulfilmentPostalDistricts, eligibleOrderDates: $eligibleOrderDates, nextCollectionSlot: $nextCollectionSlot, nextDeliverySlot: $nextDeliverySlot)';
   }
 
   @override
@@ -836,10 +802,6 @@ class _$_UserCartState extends _UserCartState {
             const DeepCollectionEquality().equals(
                 other.restaurantWalletAddress, restaurantWalletAddress) &&
             const DeepCollectionEquality()
-                .equals(other.deliveryCharge, deliveryCharge) &&
-            const DeepCollectionEquality()
-                .equals(other.collectionCharge, collectionCharge) &&
-            const DeepCollectionEquality()
                 .equals(other.fulfilmentMethod, fulfilmentMethod) &&
             const DeepCollectionEquality()
                 .equals(other.isDelivery, isDelivery) &&
@@ -889,8 +851,6 @@ class _$_UserCartState extends _UserCartState {
         const DeepCollectionEquality().hash(restaurantID),
         const DeepCollectionEquality().hash(restaurantAddress),
         const DeepCollectionEquality().hash(restaurantWalletAddress),
-        const DeepCollectionEquality().hash(deliveryCharge),
-        const DeepCollectionEquality().hash(collectionCharge),
         const DeepCollectionEquality().hash(fulfilmentMethod),
         const DeepCollectionEquality().hash(isDelivery),
         const DeepCollectionEquality().hash(restaurantMinimumOrder),
@@ -942,8 +902,6 @@ abstract class _UserCartState extends UserCartState {
       final String restaurantID,
       final DeliveryAddresses? restaurantAddress,
       final String restaurantWalletAddress,
-      final int deliveryCharge,
-      final int collectionCharge,
       final FulfilmentMethod fulfilmentMethod,
       final bool isDelivery,
       final int restaurantMinimumOrder,
@@ -1007,10 +965,6 @@ abstract class _UserCartState extends UserCartState {
   DeliveryAddresses? get restaurantAddress;
   @override
   String get restaurantWalletAddress;
-  @override
-  int get deliveryCharge;
-  @override
-  int get collectionCharge;
   @override
   FulfilmentMethod get fulfilmentMethod;
   @override

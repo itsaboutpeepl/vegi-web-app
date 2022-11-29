@@ -26,6 +26,9 @@ mixin _$UserState {
   String get displayName => throw _privateConstructorUsedError;
   String get phoneNumber => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
+  String get postcode => throw _privateConstructorUsedError;
+  num get gbpBalance => throw _privateConstructorUsedError;
+  num get pplBalance => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,7 +45,10 @@ abstract class $UserStateCopyWith<$Res> {
       String walletAddress,
       String displayName,
       String phoneNumber,
-      String email});
+      String email,
+      String postcode,
+      num gbpBalance,
+      num pplBalance});
 }
 
 /// @nodoc
@@ -60,6 +66,9 @@ class _$UserStateCopyWithImpl<$Res> implements $UserStateCopyWith<$Res> {
     Object? displayName = freezed,
     Object? phoneNumber = freezed,
     Object? email = freezed,
+    Object? postcode = freezed,
+    Object? gbpBalance = freezed,
+    Object? pplBalance = freezed,
   }) {
     return _then(_value.copyWith(
       listOfDeliveryAddresses: listOfDeliveryAddresses == freezed
@@ -82,6 +91,18 @@ class _$UserStateCopyWithImpl<$Res> implements $UserStateCopyWith<$Res> {
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
+      postcode: postcode == freezed
+          ? _value.postcode
+          : postcode // ignore: cast_nullable_to_non_nullable
+              as String,
+      gbpBalance: gbpBalance == freezed
+          ? _value.gbpBalance
+          : gbpBalance // ignore: cast_nullable_to_non_nullable
+              as num,
+      pplBalance: pplBalance == freezed
+          ? _value.pplBalance
+          : pplBalance // ignore: cast_nullable_to_non_nullable
+              as num,
     ));
   }
 }
@@ -97,7 +118,10 @@ abstract class _$$_UserStateCopyWith<$Res> implements $UserStateCopyWith<$Res> {
       String walletAddress,
       String displayName,
       String phoneNumber,
-      String email});
+      String email,
+      String postcode,
+      num gbpBalance,
+      num pplBalance});
 }
 
 /// @nodoc
@@ -117,6 +141,9 @@ class __$$_UserStateCopyWithImpl<$Res> extends _$UserStateCopyWithImpl<$Res>
     Object? displayName = freezed,
     Object? phoneNumber = freezed,
     Object? email = freezed,
+    Object? postcode = freezed,
+    Object? gbpBalance = freezed,
+    Object? pplBalance = freezed,
   }) {
     return _then(_$_UserState(
       listOfDeliveryAddresses: listOfDeliveryAddresses == freezed
@@ -139,6 +166,18 @@ class __$$_UserStateCopyWithImpl<$Res> extends _$UserStateCopyWithImpl<$Res>
           ? _value.email
           : email // ignore: cast_nullable_to_non_nullable
               as String,
+      postcode: postcode == freezed
+          ? _value.postcode
+          : postcode // ignore: cast_nullable_to_non_nullable
+              as String,
+      gbpBalance: gbpBalance == freezed
+          ? _value.gbpBalance
+          : gbpBalance // ignore: cast_nullable_to_non_nullable
+              as num,
+      pplBalance: pplBalance == freezed
+          ? _value.pplBalance
+          : pplBalance // ignore: cast_nullable_to_non_nullable
+              as num,
     ));
   }
 }
@@ -149,10 +188,13 @@ class __$$_UserStateCopyWithImpl<$Res> extends _$UserStateCopyWithImpl<$Res>
 class _$_UserState extends _UserState {
   _$_UserState(
       {this.listOfDeliveryAddresses = const [],
-      this.walletAddress = "",
-      this.displayName = "",
-      this.phoneNumber = "",
-      this.email = ""})
+      this.walletAddress = '',
+      this.displayName = '',
+      this.phoneNumber = '',
+      this.email = '',
+      this.postcode = '',
+      this.gbpBalance = 0,
+      this.pplBalance = 0})
       : super._();
 
   factory _$_UserState.fromJson(Map<String, dynamic> json) =>
@@ -173,10 +215,19 @@ class _$_UserState extends _UserState {
   @override
   @JsonKey()
   final String email;
+  @override
+  @JsonKey()
+  final String postcode;
+  @override
+  @JsonKey()
+  final num gbpBalance;
+  @override
+  @JsonKey()
+  final num pplBalance;
 
   @override
   String toString() {
-    return 'UserState(listOfDeliveryAddresses: $listOfDeliveryAddresses, walletAddress: $walletAddress, displayName: $displayName, phoneNumber: $phoneNumber, email: $email)';
+    return 'UserState(listOfDeliveryAddresses: $listOfDeliveryAddresses, walletAddress: $walletAddress, displayName: $displayName, phoneNumber: $phoneNumber, email: $email, postcode: $postcode, gbpBalance: $gbpBalance, pplBalance: $pplBalance)';
   }
 
   @override
@@ -192,7 +243,12 @@ class _$_UserState extends _UserState {
                 .equals(other.displayName, displayName) &&
             const DeepCollectionEquality()
                 .equals(other.phoneNumber, phoneNumber) &&
-            const DeepCollectionEquality().equals(other.email, email));
+            const DeepCollectionEquality().equals(other.email, email) &&
+            const DeepCollectionEquality().equals(other.postcode, postcode) &&
+            const DeepCollectionEquality()
+                .equals(other.gbpBalance, gbpBalance) &&
+            const DeepCollectionEquality()
+                .equals(other.pplBalance, pplBalance));
   }
 
   @JsonKey(ignore: true)
@@ -203,7 +259,10 @@ class _$_UserState extends _UserState {
       const DeepCollectionEquality().hash(walletAddress),
       const DeepCollectionEquality().hash(displayName),
       const DeepCollectionEquality().hash(phoneNumber),
-      const DeepCollectionEquality().hash(email));
+      const DeepCollectionEquality().hash(email),
+      const DeepCollectionEquality().hash(postcode),
+      const DeepCollectionEquality().hash(gbpBalance),
+      const DeepCollectionEquality().hash(pplBalance));
 
   @JsonKey(ignore: true)
   @override
@@ -224,7 +283,10 @@ abstract class _UserState extends UserState {
       final String walletAddress,
       final String displayName,
       final String phoneNumber,
-      final String email}) = _$_UserState;
+      final String email,
+      final String postcode,
+      final num gbpBalance,
+      final num pplBalance}) = _$_UserState;
   _UserState._() : super._();
 
   factory _UserState.fromJson(Map<String, dynamic> json) =
@@ -240,6 +302,12 @@ abstract class _UserState extends UserState {
   String get phoneNumber;
   @override
   String get email;
+  @override
+  String get postcode;
+  @override
+  num get gbpBalance;
+  @override
+  num get pplBalance;
   @override
   @JsonKey(ignore: true)
   _$$_UserStateCopyWith<_$_UserState> get copyWith =>

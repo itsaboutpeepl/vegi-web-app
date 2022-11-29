@@ -52,11 +52,10 @@ class Candidate {
 class PlaceApiProvider {
   PlaceApiProvider(this.sessionToken);
   final Client client = Client();
+  static const CORS_URL = "https:/cors.itsaboutpeepl.com/";
 
   final String sessionToken;
-  final String apiKey = Platform.isIOS
-      ? dotenv.env['MAP_API_KEY_IOS'] ?? ''
-      : dotenv.env['MAP_API_KEY_ANDROID'] ?? '';
+  final String apiKey = dotenv.env['MAP_API_KEY'] ?? '';
   final Future<Map<String, String>> headers =
       const GoogleApiHeaders().getHeaders();
 
@@ -83,7 +82,10 @@ class PlaceApiProvider {
         'sessionToken': sessionToken
       },
     );
-    final response = await client.get(request, headers: await headers);
+
+    final response = await client.get(Uri.parse(CORS_URL + request.toString()),
+        headers: await headers);
+
     if (response.statusCode == 200) {
       final Map<String, dynamic> result =
           json.decode(response.body) as Map<String, dynamic>;
@@ -135,7 +137,8 @@ class PlaceApiProvider {
         'sessionToken': sessionToken
       },
     );
-    final response = await client.get(request, headers: await headers);
+    final response = await client.get(Uri.parse(CORS_URL + request.toString()),
+        headers: await headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> result =
@@ -177,7 +180,8 @@ class PlaceApiProvider {
       },
     );
 
-    final response = await client.get(request, headers: await headers);
+    final response = await client.get(Uri.parse(CORS_URL + request.toString()),
+        headers: await headers);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> result =

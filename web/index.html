@@ -116,15 +116,24 @@
       return temp['displayName'];
     }
 
-    async function getOrderAmounts() {
-      var temp =  await window.flutter_inappwebview.callHandler('getOrderAmounts', ["hello"]);
+    async function getSelectedPaymentAmounts() {
+      var temp =  await window.flutter_inappwebview.callHandler('getSelectedPaymentAmounts', ["hello"]);
 
       return temp;
     }
 
-    async function makePayment(paymentIntentID)
+    async function callPaymentHandlerOnDevice(paymentIntentID, selectedPaymentMethod)
     {
-      return await window.flutter_inappwebview.callHandler('makePayment', [paymentIntentID, "hello"]);
+      return await window.flutter_inappwebview.callHandler('callPaymentHandlerOnDevice', [paymentIntentID, selectedPaymentMethod]);
+    }
+
+    async function getUserInformation()
+    {
+      var temp = await window.flutter_inappwebview.callHandler('getUserInformation');
+
+      console.log(temp);
+
+      return temp;
     }
   </script>
 
