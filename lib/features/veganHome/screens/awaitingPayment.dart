@@ -31,6 +31,7 @@ class AwaitingPaymentPage extends StatelessWidget {
       },
       builder: (_, viewmodel) {
         return Scaffold(
+          appBar: AppBar(),
           body: Padding(
             padding: EdgeInsets.only(
                 top: MediaQuery.of(context).size.height * 0.15,
