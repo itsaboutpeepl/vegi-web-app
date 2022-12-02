@@ -32,7 +32,7 @@ class ShimmerButton extends StatelessWidget {
               child: Shimmer.fromColors(
                 period: const Duration(seconds: 3),
                 baseColor: baseColor,
-                highlightColor: highlightColor,
+                highlightColor: baseColor,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: 60,
