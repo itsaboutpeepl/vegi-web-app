@@ -1065,7 +1065,7 @@ ThunkAction<AppState> startCheckTimer({
             },
           );
 
-          if (counter > 15) {
+          if (counter > 25) {
             timer.cancel();
             unawaited(
               Analytics.track(
