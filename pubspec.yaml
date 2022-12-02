@@ -57,7 +57,7 @@ dev_dependencies:
     sdk: flutter
 flutter:
   assets:
-    - environment/.env
+    - environment/env.env
     - environment/.env_qa
     - assets/
     - assets/images/

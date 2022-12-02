@@ -36,7 +36,7 @@ void main() async {
 
   //choose a dev environment and load that file from .env folder
   // final envFile = env == 'prod' ? '.env' : '.env_qa';
-  await dotenv.load(fileName: 'environment/.env');
+  await dotenv.load(fileName: 'environment/env.env');
 
   await configureDependencies();
 
