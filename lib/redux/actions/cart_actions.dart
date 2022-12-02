@@ -869,76 +869,6 @@ ThunkAction<AppState> startPaymentProcess({
   };
 }
 
-ThunkAction<AppState> startPaymentConfirmationCheck() {
-  return (Store<AppState> store) async {
-    int counter = 0;
-    Timer.periodic(
-      const Duration(seconds: 4),
-      (timer) async {
-        try {
-          final Future<Map<dynamic, dynamic>> checkOrderResponse =
-              peeplEatsService.checkOrderStatus(store.state.cartState.orderID);
-
-          await checkOrderResponse.then(
-            (completedValue) {
-              counter++;
-              log.info(
-                'PaymentStatus: ${completedValue["paymentStatus"]}, '
-                'counter: $counter',
-              );
-              if (completedValue['paymentStatus'] == 'paid') {
-                store
-                  ..dispatch(SetTransferringPayment(flag: false))
-                  ..dispatch(SetConfirmed(flag: true));
-                timer.cancel();
-                unawaited(
-                  Analytics.track(
-                    eventName: AnalyticsEvents.payment,
-                    properties: {
-                      'status': 'success',
-                    },
-                  ),
-                );
-              }
-            },
-          );
-
-          if (counter > 15) {
-            timer.cancel();
-            unawaited(
-              Analytics.track(
-                eventName: AnalyticsEvents.payment,
-                properties: {
-                  'status': 'failure',
-                },
-              ),
-            );
-            throw Exception('Payment checks exceeded time limit: '
-                'orderID: ${store.state.cartState.orderID}');
-          }
-        } catch (e, s) {
-          timer.cancel();
-          unawaited(
-            Analytics.track(
-              eventName: AnalyticsEvents.payment,
-              properties: {
-                'status': 'failure',
-              },
-            ),
-          );
-          store.dispatch(SetError(flag: true));
-          log.error('ERROR - startPaymentConfirmationCheck $e');
-          await Sentry.captureException(
-            e,
-            stackTrace: s,
-            hint: 'ERROR - startPaymentConfirmationCheck $e',
-          );
-        }
-      },
-    );
-  };
-}
-
 ThunkAction<AppState> setRestaurantDetails({
   required RestaurantItem restaurantItem,
   required bool clearCart,
@@ -1027,7 +957,7 @@ ThunkAction<AppState> setDeliveryAddress({
   };
 }
 
-ThunkAction<AppState> startCheckTimer({
+ThunkAction<AppState> startPaymentConfirmationCheck({
   required void Function() successCallback,
   required void Function(String error) errorCallback,
 }) {

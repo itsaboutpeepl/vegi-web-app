@@ -16,7 +16,7 @@ class AwaitingPaymentPage extends StatelessWidget {
       converter: (store) {},
       onInit: (store) {
         store.dispatch(
-          startCheckTimer(
+          startPaymentConfirmationCheck(
             successCallback: () => context.router.push(OrderConfirmedScreen()),
             errorCallback: (error) {
               showDialog(
