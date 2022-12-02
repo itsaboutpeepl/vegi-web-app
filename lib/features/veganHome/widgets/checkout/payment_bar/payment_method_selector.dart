@@ -49,9 +49,9 @@ class PaymentMethodSelector extends StatelessWidget {
           StoreConnector<AppState, PaymentMethodViewModel>(
             converter: PaymentMethodViewModel.fromStore,
             onInit: (store) {
-              final pplBalance = store.state.userState.pplBalance;
+              final gbpBalance = store.state.userState.gbpBalance;
 
-              if (pplBalance < 10) {
+              if (gbpBalance < (store.state.cartState.cartTotal / 100)) {
                 store.dispatch(SetPaymentMethod(PaymentMethod.stripe));
                 return;
               }

@@ -832,14 +832,12 @@ ThunkAction<AppState> startPaymentProcess({
 }) {
   return (Store<AppState> store) async {
     try {
-      //TODO: start guide payment process here
       if (store.state.cartState.selectedPaymentMethod == PaymentMethod.stripe) {
         unawaited(
           Analytics.track(
             eventName: AnalyticsEvents.payStripe,
           ),
         );
-        log.info('inside stripe - start payment process');
         callPaymentHandlerOnDevice(
           store.state.cartState.paymentIntentID,
           PaymentMethod.stripe.name,
