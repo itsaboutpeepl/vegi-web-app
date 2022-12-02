@@ -116,90 +116,88 @@ class _DiscountSelectorModalSheetState
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: StoreConnector<AppState, void Function(String)>(
-            converter: (store) {
-              return (discountCode) {
-                store.dispatch(
-                  updateCartDiscount(
-                    newDiscountCode: discountCode,
-                    successCallback: () => setState(() {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: StoreConnector<AppState, void Function(String)>(
+          converter: (store) {
+            return (discountCode) {
+              store.dispatch(
+                updateCartDiscount(
+                  newDiscountCode: discountCode,
+                  successCallback: () => setState(() {
+                    _isLoading = false;
+                    context.router.pop();
+                  }),
+                  errorCallback: () {
+                    setState(() {
                       _isLoading = false;
-                      context.router.pop();
-                    }),
-                    errorCallback: () {
-                      setState(() {
-                        _isLoading = false;
-                        _discountForm.currentState!.invalidateField(
-                          name: 'discountCode',
-                          errorText: 'Discount code invalid',
-                        );
-                      });
-                    },
-                  ),
-                );
-              };
-            },
-            builder: (context, setDiscountCode) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Enter a discount code',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  FormBuilder(
-                    key: _discountForm,
-                    child: FormBuilderTextField(
-                      cursorColor: Colors.white,
-                      decoration: const InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Discount Code',
-                        isDense: true,
-                      ),
-                      name: 'discountCode',
-                      onChanged: (value) {
-                        if (_discountForm
-                            .currentState!.fields['discountCode']!.hasError) {
-                          _discountForm.currentState!.fields['discountCode']!
-                              .reset();
-                        }
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  PrimaryButton(
-                    onPressed: () {
-                      setState(() => _isLoading = true);
-                      setDiscountCode(
-                        _discountForm.currentState!.fields['discountCode']!
-                            .value as String,
+                      _discountForm.currentState!.invalidateField(
+                        name: 'discountCode',
+                        errorText: 'Discount code invalid',
                       );
-                    },
-                    label: 'Apply',
-                    width: double.infinity,
-                    preload: _isLoading,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
+                    });
+                  },
+                ),
               );
-            },
-          ),
+            };
+          },
+          builder: (context, setDiscountCode) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Enter a discount code',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                FormBuilder(
+                  key: _discountForm,
+                  child: FormBuilderTextField(
+                    cursorColor: Colors.white,
+                    decoration: const InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Discount Code',
+                      isDense: true,
+                    ),
+                    name: 'discountCode',
+                    onChanged: (value) {
+                      if (_discountForm
+                          .currentState!.fields['discountCode']!.hasError) {
+                        _discountForm.currentState!.fields['discountCode']!
+                            .reset();
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                PrimaryButton(
+                  onPressed: () {
+                    setState(() => _isLoading = true);
+                    setDiscountCode(
+                      _discountForm.currentState!.fields['discountCode']!.value
+                          as String,
+                    );
+                  },
+                  label: 'Apply',
+                  width: double.infinity,
+                  preload: _isLoading,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
+            );
+          },
         ),
-      ],
+      ),
     );
   }
 }
