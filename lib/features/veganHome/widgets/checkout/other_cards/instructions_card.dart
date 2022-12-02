@@ -113,96 +113,93 @@ class _AdditionalInstructionsModalSheetState
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: StoreConnector<AppState, void Function(String instructions)>(
-            converter: (store) {
-              return (String instructions) {
-                store.dispatch(
-                  updateInstructions(
-                    instructions: instructions,
-                    successCallback: () => setState(() {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: StoreConnector<AppState, void Function(String instructions)>(
+          converter: (store) {
+            return (String instructions) {
+              store.dispatch(
+                updateInstructions(
+                  instructions: instructions,
+                  successCallback: () => setState(() {
+                    _isLoading = false;
+                    context.router.pop();
+                  }),
+                  errorCallback: () {
+                    setState(() {
                       _isLoading = false;
-                      context.router.pop();
-                    }),
-                    errorCallback: () {
-                      setState(() {
-                        _isLoading = false;
-                        _additionalInstructionsForm.currentState!
-                            .invalidateField(
-                          name: 'discountCode',
-                          errorText: 'Discount code invalid',
-                        );
-                      });
-                    },
-                  ),
-                );
-              };
-            },
-            builder: (context, setInstructions) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Add additional instructions',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  FormBuilder(
-                    key: _additionalInstructionsForm,
-                    child: FormBuilderTextField(
-                      maxLines: 4,
-                      maxLength: 250,
-                      cursorColor: Colors.white,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Delivery Instructions',
-                        isDense: true,
-                      ),
-                      name: 'deliveryInstructions',
-                      onChanged: (value) {
-                        if (_additionalInstructionsForm.currentState!
-                            .fields['deliveryInstructions']!.hasError) {
-                          _additionalInstructionsForm
-                              .currentState!.fields['deliveryInstructions']!
-                              .reset();
-                        }
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  PrimaryButton(
-                    onPressed: () {
-                      setState(() => _isLoading = true);
-                      setInstructions(
-                        _additionalInstructionsForm.currentState!
-                            .fields['deliveryInstructions']!.value as String,
+                      _additionalInstructionsForm.currentState!.invalidateField(
+                        name: 'discountCode',
+                        errorText: 'Discount code invalid',
                       );
-                      context.router.pop();
-                    },
-                    label: 'Apply',
-                    width: double.infinity,
-                    preload: _isLoading,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
+                    });
+                  },
+                ),
               );
-            },
-          ),
+            };
+          },
+          builder: (context, setInstructions) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Add additional instructions',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                FormBuilder(
+                  key: _additionalInstructionsForm,
+                  child: FormBuilderTextField(
+                    maxLines: 4,
+                    maxLength: 250,
+                    cursorColor: Colors.white,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Delivery Instructions',
+                      isDense: true,
+                    ),
+                    name: 'deliveryInstructions',
+                    onChanged: (value) {
+                      if (_additionalInstructionsForm.currentState!
+                          .fields['deliveryInstructions']!.hasError) {
+                        _additionalInstructionsForm
+                            .currentState!.fields['deliveryInstructions']!
+                            .reset();
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                PrimaryButton(
+                  onPressed: () {
+                    setState(() => _isLoading = true);
+                    setInstructions(
+                      _additionalInstructionsForm.currentState!
+                          .fields['deliveryInstructions']!.value as String,
+                    );
+                    context.router.pop();
+                  },
+                  label: 'Apply',
+                  width: double.infinity,
+                  preload: _isLoading,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
+            );
+          },
         ),
-      ],
+      ),
     );
   }
 }
