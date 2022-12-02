@@ -12,34 +12,37 @@ class YourDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => showModalBottomSheet<Widget>(
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
-        ),
-        context: context,
-        builder: (_) => const YourDetailsModalSheet(),
-      ),
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        color: themeShade100,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 10,
+    return StoreConnector<AppState, DetailsCardViewModel>(
+      converter: DetailsCardViewModel.fromStore,
+      builder: (context, viewmodel) {
+        return GestureDetector(
+          onTap: () => showModalBottomSheet<Widget>(
+            isScrollControlled: true,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
             ),
-            child: StoreConnector<AppState, DetailsCardViewModel>(
-              converter: DetailsCardViewModel.fromStore,
-              builder: (context, viewmodel) {
-                return Row(
+            context: context,
+            builder: (_) => const YourDetailsModalSheet(),
+          ),
+          child: Card(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            color: themeShade100,
+            shape: RoundedRectangleBorder(
+              side: viewmodel.hasEmail
+                  ? BorderSide.none
+                  : BorderSide(color: Colors.red.shade900, width: 2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
@@ -81,12 +84,12 @@ class YourDetailsCard extends StatelessWidget {
                       size: 18,
                     )
                   ],
-                );
-              },
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
