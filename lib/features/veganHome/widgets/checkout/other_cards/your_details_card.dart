@@ -112,77 +112,75 @@ class _YourDetailsModalSheetState extends State<YourDetailsModalSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: FormBuilder(
-            key: _detailsForm,
-            child: StoreConnector<AppState, DetailsCardViewModel>(
-              converter: DetailsCardViewModel.fromStore,
-              builder: (context, viewmodel) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Update your details',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 18,
-                      ),
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: FormBuilder(
+          key: _detailsForm,
+          child: StoreConnector<AppState, DetailsCardViewModel>(
+            converter: DetailsCardViewModel.fromStore,
+            builder: (context, viewmodel) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Update your details',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
                     ),
-                    const SizedBox(
-                      height: 20,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  FormBuilderTextField(
+                    initialValue: viewmodel.name,
+                    cursorColor: Colors.white,
+                    decoration: const InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Full name',
+                      isDense: true,
                     ),
-                    FormBuilderTextField(
-                      initialValue: viewmodel.name,
-                      cursorColor: Colors.white,
-                      decoration: const InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Full name',
-                        isDense: true,
-                      ),
-                      name: 'name',
+                    name: 'name',
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  FormBuilderTextField(
+                    initialValue: viewmodel.email,
+                    cursorColor: Colors.white,
+                    decoration: const InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                      labelText: 'Email',
+                      isDense: true,
                     ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    FormBuilderTextField(
-                      initialValue: viewmodel.email,
-                      cursorColor: Colors.white,
-                      decoration: const InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        labelText: 'Email',
-                        isDense: true,
-                      ),
-                      name: 'email',
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    PrimaryButton(
-                      onPressed: () {
-                        viewmodel.updateDetails(
-                          email: _detailsForm
-                              .currentState!.fields['email']!.value as String,
-                          name: _detailsForm.currentState!.fields['name']!.value
-                              as String,
-                        );
-                        context.router.pop();
-                      },
-                      label: 'Update',
-                      width: double.infinity,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                );
-              },
-            ),
+                    name: 'email',
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  PrimaryButton(
+                    onPressed: () {
+                      viewmodel.updateDetails(
+                        email: _detailsForm.currentState!.fields['email']!.value
+                            as String,
+                        name: _detailsForm.currentState!.fields['name']!.value
+                            as String,
+                      );
+                      context.router.pop();
+                    },
+                    label: 'Update',
+                    width: double.infinity,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              );
+            },
           ),
         ),
-      ],
+      ),
     );
   }
 }
