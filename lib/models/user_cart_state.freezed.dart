@@ -46,7 +46,8 @@ mixin _$UserCartState {
   DeliveryAddresses? get restaurantAddress =>
       throw _privateConstructorUsedError;
   String get restaurantWalletAddress => throw _privateConstructorUsedError;
-  FulfilmentMethod get fulfilmentMethod => throw _privateConstructorUsedError;
+  FulfilmentMethodType get fulfilmentMethod =>
+      throw _privateConstructorUsedError;
   bool get isDelivery => throw _privateConstructorUsedError;
   int get restaurantMinimumOrder => throw _privateConstructorUsedError;
   int get restaurantPlatformFee => throw _privateConstructorUsedError;
@@ -95,7 +96,7 @@ abstract class $UserCartStateCopyWith<$Res> {
       String restaurantID,
       DeliveryAddresses? restaurantAddress,
       String restaurantWalletAddress,
-      FulfilmentMethod fulfilmentMethod,
+      FulfilmentMethodType fulfilmentMethod,
       bool isDelivery,
       int restaurantMinimumOrder,
       int restaurantPlatformFee,
@@ -259,7 +260,7 @@ class _$UserCartStateCopyWithImpl<$Res>
       fulfilmentMethod: fulfilmentMethod == freezed
           ? _value.fulfilmentMethod
           : fulfilmentMethod // ignore: cast_nullable_to_non_nullable
-              as FulfilmentMethod,
+              as FulfilmentMethodType,
       isDelivery: isDelivery == freezed
           ? _value.isDelivery
           : isDelivery // ignore: cast_nullable_to_non_nullable
@@ -388,7 +389,7 @@ abstract class _$$_UserCartStateCopyWith<$Res>
       String restaurantID,
       DeliveryAddresses? restaurantAddress,
       String restaurantWalletAddress,
-      FulfilmentMethod fulfilmentMethod,
+      FulfilmentMethodType fulfilmentMethod,
       bool isDelivery,
       int restaurantMinimumOrder,
       int restaurantPlatformFee,
@@ -559,7 +560,7 @@ class __$$_UserCartStateCopyWithImpl<$Res>
       fulfilmentMethod: fulfilmentMethod == freezed
           ? _value.fulfilmentMethod
           : fulfilmentMethod // ignore: cast_nullable_to_non_nullable
-              as FulfilmentMethod,
+              as FulfilmentMethodType,
       isDelivery: isDelivery == freezed
           ? _value.isDelivery
           : isDelivery // ignore: cast_nullable_to_non_nullable
@@ -629,7 +630,7 @@ class _$_UserCartState extends _UserCartState {
       this.restaurantID = '',
       this.restaurantAddress = null,
       this.restaurantWalletAddress = '',
-      this.fulfilmentMethod = FulfilmentMethod.delivery,
+      this.fulfilmentMethod = FulfilmentMethodType.delivery,
       this.isDelivery = false,
       this.restaurantMinimumOrder = 0,
       this.restaurantPlatformFee = 0,
@@ -718,7 +719,7 @@ class _$_UserCartState extends _UserCartState {
   final String restaurantWalletAddress;
   @override
   @JsonKey()
-  final FulfilmentMethod fulfilmentMethod;
+  final FulfilmentMethodType fulfilmentMethod;
   @override
   @JsonKey()
   final bool isDelivery;
@@ -902,7 +903,7 @@ abstract class _UserCartState extends UserCartState {
       final String restaurantID,
       final DeliveryAddresses? restaurantAddress,
       final String restaurantWalletAddress,
-      final FulfilmentMethod fulfilmentMethod,
+      final FulfilmentMethodType fulfilmentMethod,
       final bool isDelivery,
       final int restaurantMinimumOrder,
       final int restaurantPlatformFee,
@@ -966,7 +967,7 @@ abstract class _UserCartState extends UserCartState {
   @override
   String get restaurantWalletAddress;
   @override
-  FulfilmentMethod get fulfilmentMethod;
+  FulfilmentMethodType get fulfilmentMethod;
   @override
   bool get isDelivery;
   @override

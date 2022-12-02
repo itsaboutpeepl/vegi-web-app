@@ -43,6 +43,7 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, bottom: 25),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Column(
@@ -132,6 +133,12 @@ class _VeganSliverAppBarState extends State<VeganSliverAppBar> {
                         )
                       ],
                     ),
+                    IconButton(
+                      onPressed: () {
+                        Scaffold.of(context).openDrawer();
+                      },
+                      icon: Icon(Icons.menu),
+                    )
                   ],
                 ),
               ),

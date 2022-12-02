@@ -246,7 +246,7 @@ class SetFulfilmentMethodIds {
 
 class SetFulfilmentMethod {
   SetFulfilmentMethod(this.fulfilmentMethod);
-  final FulfilmentMethod fulfilmentMethod;
+  final FulfilmentMethodType fulfilmentMethod;
 
   @override
   String toString() {

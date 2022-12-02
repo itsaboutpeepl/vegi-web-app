@@ -364,7 +364,7 @@ class _$_RestaurantItem extends _RestaurantItem {
 
   @override
   String toString() {
-    return 'RestaurantItem(restaurantID: $restaurantID, name: $name,)';
+    return 'RestaurantItem(restaurantID: $restaurantID, name: $name, phoneNumber: $phoneNumber, description: $description, deliveryRestrictionDetails: $deliveryRestrictionDetails, imageURL: $imageURL, category: $category, costLevel: $costLevel, rating: $rating, address: $address, listOfMenuItems: $listOfMenuItems, walletAddress: $walletAddress, status: $status, isVegan: $isVegan, minimumOrderAmount: $minimumOrderAmount, platformFee: $platformFee)';
   }
 
   @override

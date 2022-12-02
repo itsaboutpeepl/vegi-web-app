@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/restaurant/featuredRestaurantList.dart';
+import 'package:vegan_liverpool/features/veganHome/widgets/shared/navDrawer.dart';
 import 'package:vegan_liverpool/features/veganHome/widgets/shared/veganSliverAppBar.dart';
 
 class VeganHomeScreen extends StatelessWidget {
@@ -10,6 +11,7 @@ class VeganHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavDrawer(),
       body: NestedScrollView(
         headerSliverBuilder: (_, flag) => [
           VeganSliverAppBar(),
