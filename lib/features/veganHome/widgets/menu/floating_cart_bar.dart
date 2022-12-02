@@ -70,11 +70,15 @@ class FloatingCartBar extends StatelessWidget {
                           ),
                           const Spacer(),
                           const Text(
-                            'Next',
+                            'Checkout',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
                             ),
+                          ),
+                          const Icon(
+                            Icons.arrow_right,
+                            size: 16,
                           ),
                         ],
                       ),
