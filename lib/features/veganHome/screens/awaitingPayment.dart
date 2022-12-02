@@ -12,8 +12,10 @@ class AwaitingPaymentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, void>(
-      converter: (store) {},
+    return StoreConnector<AppState, void Function()>(
+      converter: (store) {
+        return () => store.dispatch(ResetOrderProcess());
+      },
       onInit: (store) {
         store.dispatch(
           startPaymentConfirmationCheck(
@@ -29,9 +31,19 @@ class AwaitingPaymentPage extends StatelessWidget {
           ),
         );
       },
-      builder: (_, viewmodel) {
+      builder: (_, resetOrderProcess) {
         return Scaffold(
-          appBar: AppBar(),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            leading: IconButton(
+              icon: const BackButtonIcon(),
+              color: Colors.black,
+              onPressed: () {
+                resetOrderProcess();
+                context.router.pop();
+              },
+            ),
+          ),
           body: Padding(
             padding: EdgeInsets.only(
                 top: MediaQuery.of(context).size.height * 0.15,

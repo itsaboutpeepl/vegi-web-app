@@ -78,6 +78,15 @@ class ClearCart {
   }
 }
 
+class ResetOrderProcess {
+  ResetOrderProcess();
+
+  @override
+  String toString() {
+    return 'ResetOrderProcess';
+  }
+}
+
 class UpdateSlots {
   UpdateSlots({required this.deliverySlots, required this.collectionSlots});
   final List<TimeSlot> deliverySlots;

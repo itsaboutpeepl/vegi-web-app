@@ -7,6 +7,7 @@ final cartStateReducers = combineReducers<UserCartState>([
   TypedReducer<UserCartState, UpdateComputedCartValues>(_computeCartTotals),
   TypedReducer<UserCartState, UpdateCartDiscount>(_updateCartDiscount),
   TypedReducer<UserCartState, ClearCart>(_clearCart),
+  TypedReducer<UserCartState, ResetOrderProcess>(_resetOrderProcess),
   TypedReducer<UserCartState, UpdateSlots>(_updateSlots),
   TypedReducer<UserCartState, UpdateSelectedTimeSlot>(_updateSelectedTimeSlot),
   TypedReducer<UserCartState, UpdateTipAmount>(_updateTipAmount),
@@ -79,6 +80,22 @@ UserCartState _clearCart(
     restaurantName: '',
     restaurantID: '',
     restaurantAddress: null,
+  );
+}
+
+UserCartState _resetOrderProcess(
+  UserCartState state,
+  ResetOrderProcess action,
+) {
+  return state.copyWith(
+    paymentIntentID: '',
+    orderID: '',
+    selectedGBPxAmount: 0,
+    selectedPPLAmount: 0,
+    transferringTokens: false,
+    errorCompletingPayment: false,
+    confirmedPayment: false,
+    payButtonLoading: false,
   );
 }
 
