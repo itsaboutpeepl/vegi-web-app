@@ -160,10 +160,12 @@ class _YourDetailsModalSheetState extends State<YourDetailsModalSheet> {
                   PrimaryButton(
                     onPressed: () {
                       viewmodel.updateDetails(
-                        email: _detailsForm.currentState!.fields['email']!.value
-                            as String,
-                        name: _detailsForm.currentState!.fields['name']!.value
-                            as String,
+                        email: (_detailsForm
+                                .currentState!.fields['email']!.value as String)
+                            .trim(),
+                        name: (_detailsForm.currentState!.fields['name']!.value
+                                as String)
+                            .trim(),
                       );
                       context.router.pop();
                     },
