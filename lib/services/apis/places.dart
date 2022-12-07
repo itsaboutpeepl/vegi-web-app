@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:http/http.dart';
@@ -52,7 +53,7 @@ class Candidate {
 class PlaceApiProvider {
   PlaceApiProvider(this.sessionToken);
   final Client client = Client();
-  static const CORS_URL = "https:/cors.itsaboutpeepl.com/";
+  final CORS_URL = kDebugMode ? "https:/cors.itsaboutpeepl.com/" : "";
 
   final String sessionToken;
   final String apiKey = dotenv.env['MAP_API_KEY'] ?? '';
