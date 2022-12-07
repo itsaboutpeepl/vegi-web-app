@@ -643,13 +643,13 @@ ThunkAction<AppState> startOrderCreationProcess({
         showErrorSnack(context: context, title: 'Please select a time slot');
         return;
       }
-      if (store.state.userState.email.isEmpty) {
-        showErrorSnack(
-            context: context,
-            title: 'Please add your email in the '
-                'Your Details section of the checkout page');
-        return;
-      }
+      // if (store.state.userState.email.isEmpty) {
+      //   showErrorSnack(
+      //       context: context,
+      //       title: 'Please add your email in the '
+      //           'Your Details section of the checkout page');
+      //   return;
+      // }
       if (cartState.selectedDeliveryAddress == null && cartState.isDelivery) {
         showErrorSnack(
           context: context,

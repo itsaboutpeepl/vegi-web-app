@@ -30,9 +30,7 @@ class YourDetailsCard extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             color: themeShade100,
             shape: RoundedRectangleBorder(
-              side: viewmodel.hasEmail
-                  ? BorderSide.none
-                  : BorderSide(color: Colors.red.shade900, width: 2),
+              side: BorderSide.none,
               borderRadius: BorderRadius.circular(10),
             ),
             child: SizedBox(
