@@ -53,7 +53,7 @@ class Candidate {
 class PlaceApiProvider {
   PlaceApiProvider(this.sessionToken);
   final Client client = Client();
-  final CORS_URL = kDebugMode ? "https:/cors.itsaboutpeepl.com/" : "";
+  final CORS_URL = "https://cors.itsaboutpeepl.com/";
 
   final String sessionToken;
   final String apiKey = dotenv.env['MAP_API_KEY'] ?? '';
