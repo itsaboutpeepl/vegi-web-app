@@ -159,7 +159,6 @@ class _DiscountSelectorModalSheetState
                 FormBuilder(
                   key: _discountForm,
                   child: FormBuilderTextField(
-                    cursorColor: Colors.white,
                     decoration: const InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelText: 'Discount Code',

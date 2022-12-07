@@ -158,7 +158,6 @@ class _AdditionalInstructionsModalSheetState
                   child: FormBuilderTextField(
                     maxLines: 4,
                     maxLength: 250,
-                    cursorColor: Colors.white,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       floatingLabelBehavior: FloatingLabelBehavior.always,

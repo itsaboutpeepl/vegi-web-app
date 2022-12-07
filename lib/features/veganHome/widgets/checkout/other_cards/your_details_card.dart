@@ -135,7 +135,6 @@ class _YourDetailsModalSheetState extends State<YourDetailsModalSheet> {
                   ),
                   FormBuilderTextField(
                     initialValue: viewmodel.name,
-                    cursorColor: Colors.white,
                     decoration: const InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelText: 'Full name',
@@ -148,7 +147,6 @@ class _YourDetailsModalSheetState extends State<YourDetailsModalSheet> {
                   ),
                   FormBuilderTextField(
                     initialValue: viewmodel.email,
-                    cursorColor: Colors.white,
                     decoration: const InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelText: 'Email',
