@@ -54,13 +54,14 @@ class DetailMenuViewFloatingBar extends StatelessWidget {
                           );
                           if (viewmodel.loadingProductOptions) return;
                           final List<CartItem> orderList = [];
+                          final Random numGenerator = Random(
+                            DateTime.now().millisecondsSinceEpoch,
+                          );
 
                           for (var i = 0; i < viewmodel.quantity; i++) {
                             orderList.add(
                               CartItem(
-                                internalID: Random(
-                                  DateTime.now().millisecondsSinceEpoch,
-                                ).nextInt(100000),
+                                internalID: numGenerator.nextInt(10000),
                                 menuItem: viewmodel.menuItem!,
                                 totalItemPrice: viewmodel.totalPrice,
                                 itemQuantity: 1,
