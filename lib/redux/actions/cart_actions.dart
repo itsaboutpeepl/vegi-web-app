@@ -1009,7 +1009,7 @@ ThunkAction<AppState> startPaymentConfirmationCheck({
             },
           );
 
-          if (counter > 25) {
+          if (counter > 75) {
             timer.cancel();
             unawaited(
               Analytics.track(
