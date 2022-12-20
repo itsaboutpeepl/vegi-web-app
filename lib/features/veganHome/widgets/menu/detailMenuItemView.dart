@@ -56,6 +56,11 @@ class _DetailMenuItemViewState extends State<DetailMenuItemView> {
                         child: CachedNetworkImage(
                           imageUrl: viewmodel.menuItem!.imageURL,
                           fit: BoxFit.cover,
+                          errorWidget: (context, error, stackTrace) =>
+                              const Icon(
+                            Icons.broken_image,
+                            size: 50,
+                          ),
                         ),
                       ),
                       Positioned(

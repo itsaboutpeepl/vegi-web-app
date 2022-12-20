@@ -22,7 +22,6 @@ import '../../features/veganHome/screens/faqScreen.dart' as _i7;
 import '../../features/veganHome/screens/orderConfirmed.dart' as _i5;
 import '../../features/veganHome/screens/restaurantMenuScreen.dart' as _i2;
 import '../../features/veganHome/screens/veganHome.dart' as _i1;
-import '../../models/restaurant/restaurantMenuItem.dart' as _i11;
 
 class RootRouter extends _i9.RootStackRouter {
   RootRouter([_i10.GlobalKey<_i10.NavigatorState>? navigatorKey])
@@ -35,11 +34,9 @@ class RootRouter extends _i9.RootStackRouter {
           routeData: routeData, child: const _i1.VeganHomeScreen());
     },
     RestaurantMenuScreen.name: (routeData) {
-      final args = routeData.argsAs<RestaurantMenuScreenArgs>();
       return _i9.CustomPage<dynamic>(
           routeData: routeData,
-          child:
-              _i2.RestaurantMenuScreen(key: args.key, menuList: args.menuList),
+          child: const _i2.RestaurantMenuScreen(),
           transitionsBuilder: _i9.TransitionsBuilders.slideLeft,
           opaque: true,
           barrierDismissible: false);
@@ -106,27 +103,11 @@ class VeganHomeScreen extends _i9.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.RestaurantMenuScreen]
-class RestaurantMenuScreen extends _i9.PageRouteInfo<RestaurantMenuScreenArgs> {
-  RestaurantMenuScreen(
-      {_i10.Key? key, required List<_i11.RestaurantMenuItem> menuList})
-      : super(RestaurantMenuScreen.name,
-            path: '/restaurant-menu-screen',
-            args: RestaurantMenuScreenArgs(key: key, menuList: menuList));
+class RestaurantMenuScreen extends _i9.PageRouteInfo<void> {
+  const RestaurantMenuScreen()
+      : super(RestaurantMenuScreen.name, path: '/restaurant-menu-screen');
 
   static const String name = 'RestaurantMenuScreen';
-}
-
-class RestaurantMenuScreenArgs {
-  const RestaurantMenuScreenArgs({this.key, required this.menuList});
-
-  final _i10.Key? key;
-
-  final List<_i11.RestaurantMenuItem> menuList;
-
-  @override
-  String toString() {
-    return 'RestaurantMenuScreenArgs{key: $key, menuList: $menuList}';
-  }
 }
 
 /// generated route for

@@ -8,7 +8,8 @@ part of 'cartItem.dart';
 
 _$_CartItem _$$_CartItemFromJson(Map<String, dynamic> json) => _$_CartItem(
       internalID: json['internalID'] as int,
-      menuItem: RestaurantMenuItem.fromJson(json['menuItem']),
+      menuItem:
+          RestaurantMenuItem.fromJson(json['menuItem'] as Map<String, dynamic>),
       totalItemPrice: json['totalItemPrice'] as int,
       itemQuantity: json['itemQuantity'] as int,
       selectedProductOptions:

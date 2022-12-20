@@ -6,15 +6,14 @@ part 'restaurantMenuItem.g.dart';
 
 @Freezed()
 class RestaurantMenuItem with _$RestaurantMenuItem {
-  const RestaurantMenuItem._();
-
   @JsonSerializable()
   factory RestaurantMenuItem({
     required String menuItemID,
     required String restaurantID,
     required String name,
     required String imageURL,
-    required String category,
+    required String categoryName,
+    required int categoryId,
     required int price,
     required String description,
     required Map<String, int> extras,
@@ -23,7 +22,10 @@ class RestaurantMenuItem with _$RestaurantMenuItem {
     required int priority,
   }) = _RestaurantMenuItem;
 
-  factory RestaurantMenuItem.fromJson(dynamic json) => _$RestaurantMenuItemFromJson(json);
+  const RestaurantMenuItem._();
 
-  String get formattedPrice => "£" + (this.price * 0.01).toStringAsFixed(2);
+  factory RestaurantMenuItem.fromJson(Map<String, dynamic> json) =>
+      _$RestaurantMenuItemFromJson(json);
+
+  String get formattedPrice => '£${(price * 0.01).toStringAsFixed(2)}';
 }

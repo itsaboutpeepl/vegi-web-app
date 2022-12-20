@@ -23,7 +23,7 @@ _$_RestaurantItem _$$_RestaurantItemFromJson(Map<String, dynamic> json) =>
       address:
           DeliveryAddresses.fromJson(json['address'] as Map<String, dynamic>),
       listOfMenuItems: (json['listOfMenuItems'] as List<dynamic>)
-          .map((e) => RestaurantMenuItem.fromJson(e))
+          .map((e) => RestaurantMenuItem.fromJson(e as Map<String, dynamic>))
           .toList(),
       walletAddress: json['walletAddress'] as String,
       status: json['status'] as String,

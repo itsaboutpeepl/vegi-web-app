@@ -96,12 +96,13 @@ class PeeplEatsService {
       if (element['isAvailable'] as bool) {
         menuItems.add(
           RestaurantMenuItem(
-            isFeatured: element['isFeatured'] as bool? ?? Random().nextBool(),
+            isFeatured: element['isFeatured'] as bool? ?? false,
             menuItemID: element['id'].toString(),
             restaurantID: restaurantID,
             name: element['name'] as String? ?? '',
             imageURL: element['imageUrl'] as String? ?? '',
-            category: 'Category',
+            categoryName: element['category']['name'] as String? ?? '',
+            categoryId: element['category']['id'] as int? ?? 0,
             price: element['basePrice'] as int? ?? 0,
             description: element['description'] as String? ?? '',
             extras: {},
