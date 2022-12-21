@@ -39,9 +39,9 @@ class _RestaurantMenuListState extends State<RestaurantMenuList> {
     categoryItemsControllers = {
       for (var cat in widget.categories)
         cat: ExpandableSliverListController(
-          initialStatus: cat.toLowerCase() == 'general'
-              ? ExpandableSliverListStatus.collapsed
-              : ExpandableSliverListStatus.expanded,
+          initialStatus: cat.toLowerCase() == 'featured'
+              ? ExpandableSliverListStatus.expanded
+              : ExpandableSliverListStatus.collapsed,
         )
     };
     super.initState();
